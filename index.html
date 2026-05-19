@@ -3,51 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>NSWER Zone - Fanpage NMIXX</title>
+    <title>NSWER WORLD - Fanpage NMIXX</title>
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCDFKC1WS8PccR633Sd_9KWag7WcWOKQsY",
-  authDomain: "chat-nswer.firebaseapp.com",
-  projectId: "chat-nswer",
-  storageBucket: "chat-nswer.firebasestorage.app",
-  messagingSenderId: "267108137321",
-  appId: "1:267108137321:web:c884165584762703bc65f8",
-  measurementId: "G-2B1RXHCBXY"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-    <style> 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCDFKC1MS8PccR6335d_9KMg7WcMOQyY",
+            authDomain: "chat-news.firebaseapp.com",
+            projectId: "chat-news",
+            storageBucket: "chat-news.firebasestorage.app",
+            messagingSenderId: "267108137321",
+            appId: "1:267108137321:web:c884165584762703bc65f8",
+            measurementId: "G-2B1RXHCBXH"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+    
+    <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
         }
-
         body {
             background: linear-gradient(135deg, #0a0f2a 0%, #1a1a3e 100%);
             color: #f0f0f0;
             padding: 20px;
         }
-
-        /* Contenedor principal */
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-
-        /* Header */
         header {
             text-align: center;
             padding: 30px 20px;
@@ -57,7 +48,6 @@ const analytics = getAnalytics(app);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         h1 {
             font-size: 3rem;
             background: linear-gradient(135deg, #ff7eb3, #8a2be2, #3b82f6);
@@ -66,22 +56,17 @@ const analytics = getAnalytics(app);
             color: transparent;
             letter-spacing: 2px;
         }
-
         .sub {
             color: #b9c3ff;
             margin-top: 10px;
             font-style: italic;
         }
-
-        /* Grid principal */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
             margin-bottom: 30px;
         }
-
-        /* Tarjetas */
         .card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(10px);
@@ -90,33 +75,26 @@ const analytics = getAnalytics(app);
             border: 1px solid rgba(255, 255, 255, 0.15);
             transition: transform 0.2s ease;
         }
-
         .card:hover {
             transform: translateY(-5px);
         }
-
         .card h2 {
             margin-bottom: 18px;
             border-left: 5px solid #ff7eb3;
             padding-left: 15px;
             font-size: 1.7rem;
         }
-
-        /* Noticias y curiosidades */
         .news-item, .curio-item {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 20px;
             padding: 12px 15px;
             margin-bottom: 12px;
         }
-
         .date {
             font-size: 0.75rem;
             color: #9ca3ff;
             display: block;
         }
-
-        /* Panel de usuario */
         .profile-area {
             background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
             border-radius: 28px;
@@ -128,37 +106,30 @@ const analytics = getAnalytics(app);
             align-items: center;
             gap: 15px;
         }
-
         .user-info {
             display: flex;
             align-items: center;
             gap: 20px;
             flex-wrap: wrap;
         }
-
         .level-badge {
-            background: #ffb347;
             background: linear-gradient(135deg, #ffb347, #ff7e05);
             padding: 8px 18px;
             border-radius: 40px;
             font-weight: bold;
             color: #1e1a2f;
         }
-
         .points {
             background: #2a2a5a;
             padding: 8px 18px;
             border-radius: 40px;
         }
-
-        /* selector de bias */
         .bias-selector {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin: 10px 0;
         }
-
         .bias-btn {
             background: #2d2a55;
             border: none;
@@ -169,21 +140,17 @@ const analytics = getAnalytics(app);
             transition: all 0.2s;
             font-weight: bold;
         }
-
         .bias-btn.active {
             background: #ff7eb3;
             color: #1e1a2f;
             box-shadow: 0 0 10px #ff7eb3;
         }
-
-        /* Chat */
         .chat-container {
             grid-column: span 2;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 28px;
             padding: 20px;
         }
-
         .chat-messages {
             background: #0a0c1a;
             border-radius: 24px;
@@ -195,7 +162,6 @@ const analytics = getAnalytics(app);
             flex-direction: column;
             gap: 12px;
         }
-
         .message {
             background: #1f2348;
             border-radius: 20px;
@@ -203,13 +169,11 @@ const analytics = getAnalytics(app);
             max-width: 80%;
             align-self: flex-start;
         }
-
         .message.own {
             background: #3b2b6e;
             align-self: flex-end;
             border-bottom-right-radius: 5px;
         }
-
         .msg-header {
             display: flex;
             align-items: center;
@@ -218,7 +182,6 @@ const analytics = getAnalytics(app);
             margin-bottom: 5px;
             flex-wrap: wrap;
         }
-
         .bias-icon {
             background: #ffb3c6;
             color: #1a0f2a;
@@ -227,22 +190,18 @@ const analytics = getAnalytics(app);
             font-size: 0.7rem;
             font-weight: bold;
         }
-
         .username {
             font-weight: bold;
             color: #ffb3e0;
         }
-
         .message-text {
             word-break: break-word;
         }
-
         .chat-input {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .chat-input input {
             flex: 1;
             padding: 14px;
@@ -252,7 +211,6 @@ const analytics = getAnalytics(app);
             color: white;
             font-size: 1rem;
         }
-
         .chat-input button {
             background: #7c3aed;
             border: none;
@@ -263,18 +221,15 @@ const analytics = getAnalytics(app);
             cursor: pointer;
             transition: 0.2s;
         }
-
         .chat-input button:hover {
             background: #a855f7;
         }
-
         footer {
             text-align: center;
             margin-top: 30px;
             font-size: 0.8rem;
             color: #aaa;
         }
-
         @media (max-width: 800px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -288,11 +243,10 @@ const analytics = getAnalytics(app);
 <body>
 <div class="container">
     <header>
-        <h1>✨ NSWER ZONE ✨</h1>
+        <h1>✨ NSWER WORLD ✨</h1>
         <p class="sub">💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
     </header>
 
-    <!-- Panel de usuario y nivel -->
     <div class="profile-area" id="profileArea">
         <div class="user-info">
             <div class="level-badge" id="levelDisplay">Nivel 1</div>
@@ -306,20 +260,16 @@ const analytics = getAnalytics(app);
     </div>
 
     <div class="grid">
-        <!-- NOVEDADES -->
         <div class="card">
             <h2>📢 Novedades</h2>
             <div id="newsContainer"></div>
         </div>
-
-        <!-- CURIOSIDADES -->
         <div class="card">
             <h2>🤯 Curiosidades</h2>
             <div id="curiositiesContainer"></div>
         </div>
     </div>
 
-    <!-- CHAT -->
     <div class="chat-container">
         <h2>💬 CHAT NSWER <span style="font-size:0.8rem;">(envía mensajes y gana XP)</span></h2>
         <div class="chat-messages" id="chatMessages"></div>
@@ -361,10 +311,9 @@ const analytics = getAnalytics(app);
         bias: "Lily"
     };
 
-    const levelThresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800]; // nivel 1 necesita 0xp, nivel2->100xp...
+    const levelThresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
 
-    // Cargar datos guardados
     function loadUserData() {
         const saved = localStorage.getItem("nmixx_fan_user");
         if (saved) {
@@ -407,7 +356,6 @@ const analytics = getAnalytics(app);
         }
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
-            // Notificar subida de nivel
             setTimeout(() => {
                 alert(`🎉 ¡FELICIDADES ${currentUser.username}! Has subido al NIVEL ${currentUser.level} 🎉\n¡Eres un NSWER de verdad!`);
             }, 100);
@@ -427,78 +375,57 @@ const analytics = getAnalytics(app);
         document.getElementById("usernameDisplay").innerText = currentUser.username;
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
-        // resaltar bias activo
         document.querySelectorAll(".bias-btn").forEach(btn => {
             if(btn.innerText === currentUser.bias) btn.classList.add("active");
             else btn.classList.remove("active");
         });
     }
 
-    // ---------- CHAT CON SISTEMA DE XP Y BADGES ----------
-    let messages = [];
-
-    function loadMessages() {
-        const stored = localStorage.getItem("nmixx_chat");
-        if(stored) {
-            try {
-                messages = JSON.parse(stored);
-            } catch(e) {}
-        }
-        if(!messages.length) {
-            messages.push({
-                username: "NSWER_Lover",
-                text: "¡Bienvenid@s a la NSWER Zone! Hablen de NMIXX 💙💗",
-                bias: "Lily",
-                timestamp: Date.now()
-            });
-            messages.push({
-                username: "MiXXia",
-                text: "¿Cuál es su canción favorita? Para mí O.O 🔥",
-                bias: "Haewon",
-                timestamp: Date.now()
-            });
-        }
-        renderChat();
-    }
-
-    function saveMessages() {
-        // solo guardamos últimos 200 mensajes
-        if(messages.length > 200) messages = messages.slice(-200);
-        localStorage.setItem("nmixx_chat", JSON.stringify(messages));
-    }
-
+    // ---------- CHAT EN VIVO CON FIREBASE ----------
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
         if(text === "") return;
-        // AÑADIR MENSAJE CON BIAS ACTUAL
-        messages.push({
+        
+        const newMessage = {
             username: currentUser.username,
             text: text,
             bias: currentUser.bias,
             timestamp: Date.now()
-        });
-        saveMessages();
-        renderChat();
+        };
+        
+        const messagesRef = database.ref('chatMessages');
+        messagesRef.push(newMessage);
+        
         input.value = "";
-        // DAR XP AL ENVIAR MENSAJE
         addXP(1);
-        // scroll abajo
-        const chatDiv = document.getElementById("chatMessages");
-        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    function loadMessages() {
+        const messagesRef = database.ref('chatMessages');
+        messagesRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                window.messages = Object.values(data);
+            } else {
+                window.messages = [];
+            }
+            renderChat();
+        });
     }
 
     function renderChat() {
         const container = document.getElementById("chatMessages");
         if(!container) return;
         container.innerHTML = "";
-        messages.slice().reverse().forEach(msg => {
+        if(!window.messages) return;
+        
+        window.messages.slice().reverse().forEach(msg => {
             const isOwn = (msg.username === currentUser.username);
             const msgDiv = document.createElement("div");
             msgDiv.className = `message ${isOwn ? 'own' : ''}`;
             const header = document.createElement("div");
             header.className = "msg-header";
-            // Insignia del bias
             const biasSpan = document.createElement("span");
             biasSpan.className = "bias-icon";
             biasSpan.innerText = msg.bias ? `✨ ${msg.bias}` : "💖 NMIXX";
@@ -514,9 +441,10 @@ const analytics = getAnalytics(app);
             msgDiv.appendChild(textSpan);
             container.appendChild(msgDiv);
         });
+        const chatDiv = document.getElementById("chatMessages");
+        chatDiv.scrollTop = chatDiv.scrollHeight;
     }
 
-    // ---------- BIAS SELECTOR ----------
     function buildBiasSelector() {
         const container = document.getElementById("biasSelector");
         container.innerHTML = "";
@@ -529,15 +457,13 @@ const analytics = getAnalytics(app);
                 currentUser.bias = member;
                 saveUserData();
                 updateUI();
-                // opcional: notificar cambio
                 alert(`Ahora tu bias es ${member} 💖 ¡Se mostrará en el chat!`);
-                renderChat(); // refrescar chat con nuevo bias en futuros mensajes, los anteriores ya tienen bias antiguo
+                renderChat();
             });
             container.appendChild(btn);
         });
     }
 
-    // cargar noticias y curiosidades
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
         newsDiv.innerHTML = "";
@@ -550,7 +476,6 @@ const analytics = getAnalytics(app);
 
         const curioDiv = document.getElementById("curiositiesContainer");
         curioDiv.innerHTML = "";
-        // mostrar 3 curiosidades aleatorias
         const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
         shuffled.slice(0, 4).forEach(c => {
             const div = document.createElement("div");
@@ -560,7 +485,6 @@ const analytics = getAnalytics(app);
         });
     }
 
-    // inicializar todo
     function init() {
         loadUserData();
         loadMessages();
@@ -570,10 +494,6 @@ const analytics = getAnalytics(app);
         document.getElementById("messageInput").addEventListener("keypress", (e) => {
             if(e.key === "Enter") sendMessage();
         });
-        // refrescar chat cada 2s por si hay otros usuarios en el mismo navegador (misma máquina)
-        setInterval(() => {
-            loadMessages();
-        }, 3000);
     }
 
     init();
