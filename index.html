@@ -121,7 +121,7 @@
             box-shadow: 0 0 8px #a855f7;
         }
 
-        /* Perfil */
+        /* Perfil (sin nivel, solo nombre y bias) */
         .profile-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -140,24 +140,42 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .level-badge, .points {
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-weight: bold;
-        }
-        .level-badge {
-            background: linear-gradient(135deg, #ffb347, #ff7e05);
-            color: #1e1a2f;
-        }
-        .points {
-            background: #2a2a5a;
-        }
         .bias-fixed {
             background: #2d2a55;
             padding: 6px 16px;
             border-radius: 40px;
             display: flex;
             gap: 8px;
+        }
+        /* El nivel y XP ahora estarán solo en inicio */
+        .level-area {
+            background: rgba(30, 27, 75, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #ffb347;
+        }
+        .level-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .level-badge {
+            background: linear-gradient(135deg, #ffb347, #ff7e05);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e1a2f;
+        }
+        .points {
+            background: #2a2a5a;
+            padding: 6px 16px;
+            border-radius: 40px;
         }
 
         /* Secciones */
@@ -211,16 +229,22 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ff7eb3, #a855f7);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.5rem;
             font-weight: bold;
-            color: white;
+            color: #1e1a2f;
             margin: 0 auto 8px;
             border: 3px solid #ffb347;
         }
+        /* Colores pastel para cada avatar (se asignan dinámicamente o con clases) */
+        .avatar-lily { background: #FFB7C5; }
+        .avatar-haewon { background: #FFD8B7; }
+        .avatar-sullyoon { background: #B7F0C4; }
+        .avatar-bae { background: #C5B9FF; }
+        .avatar-jiwoo { background: #FFF2B7; }
+        .avatar-kyujin { background: #B7E4FF; }
         .member-name {
             font-weight: bold;
             color: #ffb3e0;
@@ -276,15 +300,27 @@
         }
         .msg-header {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             font-size: 0.75rem;
             margin-bottom: 5px;
+            flex-wrap: wrap;
+            align-items: baseline;
         }
         .bias-icon {
             background: #ffb3c6;
             color: #1a0f2a;
             padding: 2px 8px;
             border-radius: 40px;
+        }
+        .username {
+            font-weight: bold;
+        }
+        .level-tag {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.4);
+            padding: 2px 6px;
+            border-radius: 20px;
+            margin-left: 5px;
         }
         .chat-input {
             display: flex;
@@ -426,11 +462,9 @@
         </div>
     </div>
 
-    <!-- Perfil usuario -->
+    <!-- Perfil usuario (sin nivel, solo nombre y bias) -->
     <div class="profile-area">
         <div class="user-info">
-            <div class="level-badge" id="levelDisplay">Nivel 1</div>
-            <div class="points" id="pointsDisplay">⭐ 0 XP</div>
             <div>👤 <span id="usernameDisplay">Fan</span></div>
         </div>
         <div class="bias-fixed">
@@ -439,19 +473,21 @@
         </div>
     </div>
 
-    <!-- INICIO -->
+    <!-- INICIO (aquí estará el sistema de niveles) -->
     <div id="homeSection" class="section active-section">
+        <!-- Tarjeta de nivel y XP solo en inicio -->
+        <div class="level-area">
+            <div class="level-stats">
+                <div class="level-badge" id="levelDisplay">Nivel 1</div>
+                <div class="points" id="pointsDisplay">⭐ 0 XP</div>
+            </div>
+        </div>
         <div class="hero">
             <h1>✨ NSWER WORLD ✨</h1>
             <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </div>
-        <div class="member-grid">
-            <div class="member-card"><div class="avatar">L</div><div class="member-name">Lily</div></div>
-            <div class="member-card"><div class="avatar">H</div><div class="member-name">Haewon</div></div>
-            <div class="member-card"><div class="avatar">S</div><div class="member-name">Sullyoon</div></div>
-            <div class="member-card"><div class="avatar">B</div><div class="member-name">BAE</div></div>
-            <div class="member-card"><div class="avatar">J</div><div class="member-name">Jiwoo</div></div>
-            <div class="member-card"><div class="avatar">K</div><div class="member-name">Kyujin</div></div>
+        <div class="member-grid" id="memberGrid">
+            <!-- Las tarjetas se generarán con JS para asignar colores pastel -->
         </div>
         <div style="text-align:center; margin-top:30px;">
             <p>🌸 Bienvenido, <strong id="homeUsername">NSWER</strong>! 🌸</p>
@@ -482,7 +518,7 @@
 </div>
 
 <script>
-    // DATOS
+    // ---------- DATOS ----------
     const novedades = [
         { fecha: "19 Mayo 2026", texto: "¡Nuevo comeback 'Fe3O4: STICK OUT' anunciado para junio!" },
         { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en K-Vibe Awards." },
@@ -501,67 +537,160 @@
     const levelThresholds = [0, 100, 300, 600, 1000];
     let currentUser = { username: "", xp: 0, level: 1, bias: "Lily" };
 
-    function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
+    // Colores pastel para los nombres en el chat según bias
+    const biasColors = {
+        "Lily": "#D95B7A",    // rosa pastel oscuro
+        "Haewon": "#E6A157",  // melocotón
+        "Sullyoon": "#4CAF7A", // verde menta
+        "BAE": "#8A6ED1",     // lavanda
+        "Jiwoo": "#D9A83C",   // amarillo mostaza pastel
+        "Kyujin": "#4A9ED9"    // azul cielo
+    };
+
+    // Colores de fondo para avatares
+    const avatarColors = {
+        "Lily": "#FFB7C5",
+        "Haewon": "#FFD8B7",
+        "Sullyoon": "#B7F0C4",
+        "BAE": "#C5B9FF",
+        "Jiwoo": "#FFF2B7",
+        "Kyujin": "#B7E4FF"
+    };
+
+    // Funciones usuario
+    function saveUserData() {
+        localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser));
+    }
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
-        document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
+        document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
+        // Cambiar el color del nombre del bias fijo? opcional
+        const biasFixedSpan = document.getElementById("biasFixedDisplay");
+        if (biasFixedSpan) {
+            biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
+        }
     }
     function recalcLevel() {
         let newLevel = 1;
-        for (let i=levelThresholds.length-1; i>=0; i--) if (currentUser.xp >= levelThresholds[i]) { newLevel = i+1; break; }
+        for (let i=levelThresholds.length-1; i>=0; i--) {
+            if (currentUser.xp >= levelThresholds[i]) {
+                newLevel = i+1;
+                break;
+            }
+        }
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
-            alert(`🎉 ¡Subiste al NIVEL ${currentUser.level}!`);
-            saveUserData(); updateUI();
+            alert(`🎉 ¡Felicidades! Has subido al NIVEL ${currentUser.level}`);
+            saveUserData();
+            updateUI();
         }
         saveUserData();
     }
-    function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
+    function addXP(points = 1) {
+        currentUser.xp += points;
+        recalcLevel();
+        updateUI();
+        saveUserData();
+    }
 
-    // Chat Firebase
+    // Generar las tarjetas de miembros con colores pastel
+    function generateMemberCards() {
+        const container = document.getElementById("memberGrid");
+        container.innerHTML = "";
+        members.forEach(member => {
+            const card = document.createElement("div");
+            card.className = "member-card";
+            const avatar = document.createElement("div");
+            avatar.className = `avatar avatar-${member.toLowerCase()}`;
+            avatar.style.backgroundColor = avatarColors[member];
+            avatar.innerText = member.charAt(0);
+            const nameSpan = document.createElement("div");
+            nameSpan.className = "member-name";
+            nameSpan.innerText = member;
+            card.appendChild(avatar);
+            card.appendChild(nameSpan);
+            container.appendChild(card);
+        });
+    }
+
+    // Firebase Chat: guardamos también el nivel del usuario en el momento del mensaje
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
         if (!text) return;
-        database.ref('chatMessages').push({ username: currentUser.username, text, bias: currentUser.bias, timestamp: Date.now() });
+        database.ref('chatMessages').push({
+            username: currentUser.username,
+            text: text,
+            bias: currentUser.bias,
+            level: currentUser.level,   // guardamos el nivel actual
+            timestamp: Date.now()
+        });
         input.value = "";
         addXP(1);
     }
+
     function loadMessages() {
-        database.ref('chatMessages').on('value', snap => {
-            const data = snap.val();
+        database.ref('chatMessages').on('value', snapshot => {
+            const data = snapshot.val();
             const messages = data ? Object.values(data) : [];
-            messages.sort((a,b)=> (a.timestamp||0)-(b.timestamp||0));
+            messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
             const container = document.getElementById("chatMessages");
             container.innerHTML = "";
-            if (messages.length===0) { container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>'; return; }
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>';
+                return;
+            }
             messages.forEach(msg => {
                 const isOwn = msg.username === currentUser.username;
                 const div = document.createElement("div");
                 div.className = `message ${isOwn ? 'own' : ''}`;
-                div.innerHTML = `<div class="msg-header"><span class="bias-icon">✨ ${escapeHtml(msg.bias||"NMIXX")}</span><span class="username">${escapeHtml(msg.username)}</span></div><div>${escapeHtml(msg.text)}</div>`;
+                const usernameColor = biasColors[msg.bias] || "#ffb3e0";
+                // Mostrar el nivel guardado o el actual? usamos el guardado
+                const levelTag = msg.level ? `<span class="level-tag">⚡ Nvl ${msg.level}</span>` : '';
+                div.innerHTML = `
+                    <div class="msg-header">
+                        <span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span>
+                        <span class="username" style="color: ${usernameColor};">${escapeHtml(msg.username)}</span>
+                        ${levelTag}
+                    </div>
+                    <div>${escapeHtml(msg.text)}</div>
+                `;
                 container.appendChild(div);
             });
             container.scrollTop = container.scrollHeight;
         });
     }
-    function escapeHtml(str) { return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
         newsDiv.innerHTML = "";
-        novedades.forEach(n => newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${n.texto}</div>`);
+        novedades.forEach(n => newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${escapeHtml(n.texto)}</div>`);
         const curioDiv = document.getElementById("curiositiesContainer");
         curioDiv.innerHTML = "";
-        [...curiosidadesList].sort(()=>0.5-Math.random()).slice(0,5).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${c}</div>`);
+        [...curiosidadesList].sort(()=>0.5-Math.random()).slice(0,5).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
+    // Navegación por pestañas
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
-        const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection') };
+        const sections = {
+            home: document.getElementById('homeSection'),
+            news: document.getElementById('newsSection'),
+            chat: document.getElementById('chatSection')
+        };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
             btns.forEach(b => b.classList.remove('active'));
@@ -573,6 +702,7 @@
         }));
     }
 
+    // Modal de bienvenida
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
@@ -582,7 +712,11 @@
             const btn = document.createElement("button");
             btn.innerText = m;
             btn.classList.add("bias-option");
-            btn.onclick = () => { document.querySelectorAll(".bias-option").forEach(b=>b.classList.remove("selected")); btn.classList.add("selected"); currentUser.bias = m; };
+            btn.onclick = () => {
+                document.querySelectorAll(".bias-option").forEach(b=>b.classList.remove("selected"));
+                btn.classList.add("selected");
+                currentUser.bias = m;
+            };
             container.appendChild(btn);
         });
         document.querySelector(".bias-option")?.classList.add("selected");
@@ -591,13 +725,18 @@
 
     function finalizeWelcome() {
         const username = document.getElementById("newUsername").value.trim();
-        if (!username || username.length<3) { alert("Nombre válido (mínimo 3 caracteres)"); return; }
+        if (!username || username.length<3) {
+            alert("Nombre válido (mínimo 3 caracteres)");
+            return;
+        }
         currentUser.username = username;
-        currentUser.xp = 0; currentUser.level = 1;
+        currentUser.xp = 0;
+        currentUser.level = 1;
         saveUserData();
         document.getElementById("welcomeModal").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
         updateUI();
+        generateMemberCards();
         loadMessages();
         loadNewsAndCuriosities();
         document.getElementById("sendBtn").onclick = sendMessage;
@@ -605,19 +744,26 @@
         initNavigation();
     }
 
+    // Inicialización
     function init() {
         const saved = localStorage.getItem("nmixx_fan_user");
         if (saved) {
-            try { currentUser = JSON.parse(saved); } catch(e) {}
-            document.getElementById("welcomeModal").style.display = "none";
-            document.getElementById("mainContent").style.display = "block";
-            updateUI();
-            loadMessages();
-            loadNewsAndCuriosities();
-            document.getElementById("sendBtn").onclick = sendMessage;
-            document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-            initNavigation();
-        } else { showWelcomeModal(); }
+            try {
+                const data = JSON.parse(saved);
+                currentUser = data;
+                document.getElementById("welcomeModal").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                updateUI();
+                generateMemberCards();
+                loadMessages();
+                loadNewsAndCuriosities();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+                initNavigation();
+            } catch(e) { showWelcomeModal(); }
+        } else {
+            showWelcomeModal();
+        }
         document.getElementById("enterButton").onclick = finalizeWelcome;
     }
     init();
