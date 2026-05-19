@@ -10,17 +10,23 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <script>
+        // Configuración CORREGIDA de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCDFKC1MS8PccR6335d_9KMg7WcMOQyY",
             authDomain: "chat-news.firebaseapp.com",
+            databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com/", // URL correcta
             projectId: "chat-news",
             storageBucket: "chat-news.firebasestorage.app",
             messagingSenderId: "267108137321",
             appId: "1:267108137321:web:c884165584762703bc65f8",
             measurementId: "G-2B1RXHCBXH"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        
+        // Verificar conexión (opcional, para depuración)
+        console.log("✅ Firebase conectado con URL:", firebaseConfig.databaseURL);
     </script>
     
     <style>
@@ -395,7 +401,9 @@
         };
         
         const messagesRef = database.ref('chatMessages');
-        messagesRef.push(newMessage);
+        messagesRef.push(newMessage)
+            .then(() => console.log("Mensaje enviado"))
+            .catch(err => console.error("Error al enviar:", err));
         
         input.value = "";
         addXP(1);
@@ -406,11 +414,17 @@
         messagesRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if(data) {
-                window.messages = Object.values(data);
+                // Convertir objeto a array
+                const messagesArray = Object.values(data);
+                // Ordenar por timestamp
+                messagesArray.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+                window.messages = messagesArray;
             } else {
                 window.messages = [];
             }
             renderChat();
+        }, (error) => {
+            console.error("Error cargando mensajes:", error);
         });
     }
 
@@ -418,9 +432,16 @@
         const container = document.getElementById("chatMessages");
         if(!container) return;
         container.innerHTML = "";
-        if(!window.messages) return;
+        if(!window.messages || window.messages.length === 0) {
+            // Mostrar mensaje de bienvenida si no hay mensajes
+            const emptyMsg = document.createElement("div");
+            emptyMsg.className = "message";
+            emptyMsg.innerHTML = '<div class="msg-header"><span class="bias-icon">💖</span><span class="username">System</span></div><div class="message-text">¡Sé el primero en escribir en el chat NSWER!</div>';
+            container.appendChild(emptyMsg);
+            return;
+        }
         
-        window.messages.slice().reverse().forEach(msg => {
+        window.messages.forEach(msg => {
             const isOwn = (msg.username === currentUser.username);
             const msgDiv = document.createElement("div");
             msgDiv.className = `message ${isOwn ? 'own' : ''}`;
@@ -441,12 +462,13 @@
             msgDiv.appendChild(textSpan);
             container.appendChild(msgDiv);
         });
-        const chatDiv = document.getElementById("chatMessages");
-        chatDiv.scrollTop = chatDiv.scrollHeight;
+        // Auto-scroll al final
+        container.scrollTop = container.scrollHeight;
     }
 
     function buildBiasSelector() {
         const container = document.getElementById("biasSelector");
+        if(!container) return;
         container.innerHTML = "";
         members.forEach(member => {
             const btn = document.createElement("button");
@@ -458,7 +480,7 @@
                 saveUserData();
                 updateUI();
                 alert(`Ahora tu bias es ${member} 💖 ¡Se mostrará en el chat!`);
-                renderChat();
+                // No es necesario re-renderizar todo el chat, solo los futuros mensajes
             });
             container.appendChild(btn);
         });
@@ -466,37 +488,45 @@
 
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
-        newsDiv.innerHTML = "";
-        novedades.forEach(n => {
-            const div = document.createElement("div");
-            div.className = "news-item";
-            div.innerHTML = `<span class="date">📅 ${n.fecha}</span><br>${n.texto}`;
-            newsDiv.appendChild(div);
-        });
+        if(newsDiv) {
+            newsDiv.innerHTML = "";
+            novedades.forEach(n => {
+                const div = document.createElement("div");
+                div.className = "news-item";
+                div.innerHTML = `<span class="date">📅 ${n.fecha}</span><br>${n.texto}`;
+                newsDiv.appendChild(div);
+            });
+        }
 
         const curioDiv = document.getElementById("curiositiesContainer");
-        curioDiv.innerHTML = "";
-        const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
-        shuffled.slice(0, 4).forEach(c => {
-            const div = document.createElement("div");
-            div.className = "curio-item";
-            div.innerHTML = `🔮 ${c}`;
-            curioDiv.appendChild(div);
-        });
+        if(curioDiv) {
+            curioDiv.innerHTML = "";
+            // Mostrar 4 curiosidades aleatorias
+            const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
+            shuffled.slice(0, 4).forEach(c => {
+                const div = document.createElement("div");
+                div.className = "curio-item";
+                div.innerHTML = `🔮 ${c}`;
+                curioDiv.appendChild(div);
+            });
+        }
     }
 
     function init() {
         loadUserData();
-        loadMessages();
+        loadMessages();   // Inicia escucha en tiempo real
         buildBiasSelector();
         loadNewsAndCuriosities();
-        document.getElementById("sendBtn").addEventListener("click", sendMessage);
-        document.getElementById("messageInput").addEventListener("keypress", (e) => {
+        const sendBtn = document.getElementById("sendBtn");
+        const msgInput = document.getElementById("messageInput");
+        if(sendBtn) sendBtn.addEventListener("click", sendMessage);
+        if(msgInput) msgInput.addEventListener("keypress", (e) => {
             if(e.key === "Enter") sendMessage();
         });
     }
 
-    init();
+    // Esperar a que el DOM esté listo
+    document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
