@@ -84,13 +84,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: #ff7eb3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #1e1a2f;
+            object-fit: cover;
         }
         .logo-text {
             font-size: 1.6rem;
@@ -121,7 +115,7 @@
             box-shadow: 0 0 8px #a855f7;
         }
 
-        /* Perfil (sin nivel, solo nombre y bias) */
+        /* Perfil (sin nivel) */
         .profile-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -147,7 +141,6 @@
             display: flex;
             gap: 8px;
         }
-        /* El nivel y XP ahora estarán solo en inicio */
         .level-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -191,7 +184,6 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Inicio */
         .hero {
             text-align: center;
             background: rgba(0,0,0,0.5);
@@ -238,19 +230,10 @@
             margin: 0 auto 8px;
             border: 3px solid #ffb347;
         }
-        /* Colores pastel para cada avatar (se asignan dinámicamente o con clases) */
-        .avatar-lily { background: #FFB7C5; }
-        .avatar-haewon { background: #FFD8B7; }
-        .avatar-sullyoon { background: #B7F0C4; }
-        .avatar-bae { background: #C5B9FF; }
-        .avatar-jiwoo { background: #FFF2B7; }
-        .avatar-kyujin { background: #B7E4FF; }
         .member-name {
             font-weight: bold;
             color: #ffb3e0;
         }
-
-        /* Novedades */
         .news-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -272,8 +255,6 @@
             font-size: 0.7rem;
             color: #9ca3ff;
         }
-
-        /* Chat */
         .chat-container {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -343,22 +324,18 @@
             color: white;
             cursor: pointer;
         }
-
         footer {
             text-align: center;
             margin-top: 40px;
             padding: 20px;
             color: #aaa;
         }
-
         @media (max-width: 750px) {
             .navbar { flex-direction: column; gap: 10px; }
             .member-card { width: 100px; }
             .avatar { width: 70px; height: 70px; font-size: 2rem; }
             .news-grid { grid-template-columns: 1fr; }
         }
-
-        /* Modal bienvenida */
         .welcome-modal {
             position: fixed;
             top: 0;
@@ -449,10 +426,10 @@
 </div>
 
 <div id="mainContent" class="main-content" style="display: none;">
-    <!-- Barra de navegación -->
     <div class="navbar">
         <div class="logo-area">
-            <img class="logo-img" src="https://supermurloc03.github.io/NSWERworld/img/logo.png" alt="Logo NSWER">
+            <!-- TU LOGO AQUÍ - URL CORREGIDA -->
+            <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER" onerror="this.src='https://via.placeholder.com/45?text=N'">
             <span class="logo-text">NSWER WORLD</span>
         </div>
         <div class="nav-links">
@@ -462,7 +439,6 @@
         </div>
     </div>
 
-    <!-- Perfil usuario (sin nivel, solo nombre y bias) -->
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
@@ -473,9 +449,7 @@
         </div>
     </div>
 
-    <!-- INICIO (aquí estará el sistema de niveles) -->
     <div id="homeSection" class="section active-section">
-        <!-- Tarjeta de nivel y XP solo en inicio -->
         <div class="level-area">
             <div class="level-stats">
                 <div class="level-badge" id="levelDisplay">Nivel 1</div>
@@ -486,16 +460,13 @@
             <h1>✨ NSWER WORLD ✨</h1>
             <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </div>
-        <div class="member-grid" id="memberGrid">
-            <!-- Las tarjetas se generarán con JS para asignar colores pastel -->
-        </div>
+        <div class="member-grid" id="memberGrid"></div>
         <div style="text-align:center; margin-top:30px;">
             <p>🌸 Bienvenido, <strong id="homeUsername">NSWER</strong>! 🌸</p>
             <p>Comparte tu amor por NMIXX, gana experiencia y sube de nivel.</p>
         </div>
     </div>
 
-    <!-- NOVEDADES -->
     <div id="newsSection" class="section">
         <div class="news-grid">
             <div class="news-card"><h3>📰 Últimas noticias</h3><div id="newsContainer"></div></div>
@@ -503,7 +474,6 @@
         </div>
     </div>
 
-    <!-- CHAT -->
     <div id="chatSection" class="section">
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages"></div>
@@ -518,7 +488,6 @@
 </div>
 
 <script>
-    // ---------- DATOS ----------
     const novedades = [
         { fecha: "19 Mayo 2026", texto: "¡Nuevo comeback 'Fe3O4: STICK OUT' anunciado para junio!" },
         { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en K-Vibe Awards." },
@@ -537,17 +506,14 @@
     const levelThresholds = [0, 100, 300, 600, 1000];
     let currentUser = { username: "", xp: 0, level: 1, bias: "Lily" };
 
-    // Colores pastel para los nombres en el chat según bias
     const biasColors = {
-        "Lily": "#D95B7A",    // rosa pastel oscuro
-        "Haewon": "#E6A157",  // melocotón
-        "Sullyoon": "#4CAF7A", // verde menta
-        "BAE": "#8A6ED1",     // lavanda
-        "Jiwoo": "#D9A83C",   // amarillo mostaza pastel
-        "Kyujin": "#4A9ED9"    // azul cielo
+        "Lily": "#D95B7A",
+        "Haewon": "#E6A157",
+        "Sullyoon": "#4CAF7A",
+        "BAE": "#8A6ED1",
+        "Jiwoo": "#D9A83C",
+        "Kyujin": "#4A9ED9"
     };
-
-    // Colores de fondo para avatares
     const avatarColors = {
         "Lily": "#FFB7C5",
         "Haewon": "#FFD8B7",
@@ -557,66 +523,30 @@
         "Kyujin": "#B7E4FF"
     };
 
-    // Funciones usuario
-    function saveUserData() {
-        localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser));
-    }
+    function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
-        // Cambiar el color del nombre del bias fijo? opcional
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
-        if (biasFixedSpan) {
-            biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
-        }
+        if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
     }
     function recalcLevel() {
         let newLevel = 1;
         for (let i=levelThresholds.length-1; i>=0; i--) {
-            if (currentUser.xp >= levelThresholds[i]) {
-                newLevel = i+1;
-                break;
-            }
+            if (currentUser.xp >= levelThresholds[i]) { newLevel = i+1; break; }
         }
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
             alert(`🎉 ¡Felicidades! Has subido al NIVEL ${currentUser.level}`);
-            saveUserData();
-            updateUI();
+            saveUserData(); updateUI();
         }
         saveUserData();
     }
-    function addXP(points = 1) {
-        currentUser.xp += points;
-        recalcLevel();
-        updateUI();
-        saveUserData();
-    }
+    function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
 
-    // Generar las tarjetas de miembros con colores pastel
-    function generateMemberCards() {
-        const container = document.getElementById("memberGrid");
-        container.innerHTML = "";
-        members.forEach(member => {
-            const card = document.createElement("div");
-            card.className = "member-card";
-            const avatar = document.createElement("div");
-            avatar.className = `avatar avatar-${member.toLowerCase()}`;
-            avatar.style.backgroundColor = avatarColors[member];
-            avatar.innerText = member.charAt(0);
-            const nameSpan = document.createElement("div");
-            nameSpan.className = "member-name";
-            nameSpan.innerText = member;
-            card.appendChild(avatar);
-            card.appendChild(nameSpan);
-            container.appendChild(card);
-        });
-    }
-
-    // Firebase Chat: guardamos también el nivel del usuario en el momento del mensaje
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
@@ -625,13 +555,12 @@
             username: currentUser.username,
             text: text,
             bias: currentUser.bias,
-            level: currentUser.level,   // guardamos el nivel actual
+            level: currentUser.level,
             timestamp: Date.now()
         });
         input.value = "";
         addXP(1);
     }
-
     function loadMessages() {
         database.ref('chatMessages').on('value', snapshot => {
             const data = snapshot.val();
@@ -648,7 +577,6 @@
                 const div = document.createElement("div");
                 div.className = `message ${isOwn ? 'own' : ''}`;
                 const usernameColor = biasColors[msg.bias] || "#ffb3e0";
-                // Mostrar el nivel guardado o el actual? usamos el guardado
                 const levelTag = msg.level ? `<span class="level-tag">⚡ Nvl ${msg.level}</span>` : '';
                 div.innerHTML = `
                     <div class="msg-header">
@@ -663,16 +591,7 @@
             container.scrollTop = container.scrollHeight;
         });
     }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
 
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
@@ -683,7 +602,25 @@
         [...curiosidadesList].sort(()=>0.5-Math.random()).slice(0,5).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
-    // Navegación por pestañas
+    function generateMemberCards() {
+        const container = document.getElementById("memberGrid");
+        container.innerHTML = "";
+        members.forEach(member => {
+            const card = document.createElement("div");
+            card.className = "member-card";
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.style.backgroundColor = avatarColors[member];
+            avatar.innerText = member.charAt(0);
+            const nameSpan = document.createElement("div");
+            nameSpan.className = "member-name";
+            nameSpan.innerText = member;
+            card.appendChild(avatar);
+            card.appendChild(nameSpan);
+            container.appendChild(card);
+        });
+    }
+
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -702,7 +639,6 @@
         }));
     }
 
-    // Modal de bienvenida
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
@@ -725,13 +661,9 @@
 
     function finalizeWelcome() {
         const username = document.getElementById("newUsername").value.trim();
-        if (!username || username.length<3) {
-            alert("Nombre válido (mínimo 3 caracteres)");
-            return;
-        }
+        if (!username || username.length<3) { alert("Nombre válido (mínimo 3 caracteres)"); return; }
         currentUser.username = username;
-        currentUser.xp = 0;
-        currentUser.level = 1;
+        currentUser.xp = 0; currentUser.level = 1;
         saveUserData();
         document.getElementById("welcomeModal").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
@@ -744,26 +676,20 @@
         initNavigation();
     }
 
-    // Inicialización
     function init() {
         const saved = localStorage.getItem("nmixx_fan_user");
         if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                currentUser = data;
-                document.getElementById("welcomeModal").style.display = "none";
-                document.getElementById("mainContent").style.display = "block";
-                updateUI();
-                generateMemberCards();
-                loadMessages();
-                loadNewsAndCuriosities();
-                document.getElementById("sendBtn").onclick = sendMessage;
-                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-                initNavigation();
-            } catch(e) { showWelcomeModal(); }
-        } else {
-            showWelcomeModal();
-        }
+            try { currentUser = JSON.parse(saved); } catch(e) {}
+            document.getElementById("welcomeModal").style.display = "none";
+            document.getElementById("mainContent").style.display = "block";
+            updateUI();
+            generateMemberCards();
+            loadMessages();
+            loadNewsAndCuriosities();
+            document.getElementById("sendBtn").onclick = sendMessage;
+            document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            initNavigation();
+        } else { showWelcomeModal(); }
         document.getElementById("enterButton").onclick = finalizeWelcome;
     }
     init();
