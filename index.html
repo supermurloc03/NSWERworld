@@ -10,23 +10,19 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <script>
-        // Configuración CORREGIDA de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCDFKC1MS8PccR6335d_9KMg7WcMOQyY",
             authDomain: "chat-news.firebaseapp.com",
-            databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com/", // URL correcta
+            databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com/",
             projectId: "chat-news",
             storageBucket: "chat-news.firebasestorage.app",
             messagingSenderId: "267108137321",
             appId: "1:267108137321:web:c884165584762703bc65f8",
             measurementId: "G-2B1RXHCBXH"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        
-        // Verificar conexión (opcional, para depuración)
-        console.log("✅ Firebase conectado con URL:", firebaseConfig.databaseURL);
+        console.log("✅ Firebase conectado");
     </script>
     
     <style>
@@ -34,17 +30,141 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
         }
+
         body {
             background: linear-gradient(135deg, #0a0f2a 0%, #1a1a3e 100%);
             color: #f0f0f0;
             padding: 20px;
+            min-height: 100vh;
         }
-        .container {
+
+        /* Contenedor principal (se oculta hasta elegir datos) */
+        .main-content {
+            display: none;
             max-width: 1400px;
             margin: 0 auto;
         }
+
+        /* --- MODAL DE BIENVENIDA --- */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .welcome-card {
+            background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
+            border-radius: 40px;
+            padding: 35px 25px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid rgba(255, 126, 179, 0.5);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-card h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff7eb3, #8a2be2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            color: #b9c3ff;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ffb3e0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            border: none;
+            background: #141829;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .bias-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .bias-option {
+            background: #2d2a55;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .bias-option.selected {
+            background: #ff7eb3;
+            color: #1e1a2f;
+            box-shadow: 0 0 12px #ff7eb3;
+        }
+
+        .enter-btn {
+            background: #7c3aed;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .enter-btn:hover {
+            background: #a855f7;
+            transform: scale(1.02);
+        }
+
+        /* --- ESTILOS DE LA PÁGINA PRINCIPAL (igual que antes, pero con una mejora) --- */
         header {
             text-align: center;
             padding: 30px 20px;
@@ -52,7 +172,6 @@
             border-radius: 40px;
             margin-bottom: 30px;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         h1 {
             font-size: 3rem;
@@ -60,12 +179,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: 2px;
-        }
-        .sub {
-            color: #b9c3ff;
-            margin-top: 10px;
-            font-style: italic;
         }
         .grid {
             display: grid;
@@ -79,27 +192,11 @@
             border-radius: 28px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            transition: transform 0.2s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
         }
         .card h2 {
             margin-bottom: 18px;
             border-left: 5px solid #ff7eb3;
             padding-left: 15px;
-            font-size: 1.7rem;
-        }
-        .news-item, .curio-item {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 12px 15px;
-            margin-bottom: 12px;
-        }
-        .date {
-            font-size: 0.75rem;
-            color: #9ca3ff;
-            display: block;
         }
         .profile-area {
             background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
@@ -110,13 +207,12 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
         }
         .user-info {
             display: flex;
-            align-items: center;
             gap: 20px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .level-badge {
             background: linear-gradient(135deg, #ffb347, #ff7e05);
@@ -134,7 +230,6 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin: 10px 0;
         }
         .bias-btn {
             background: #2d2a55;
@@ -143,13 +238,22 @@
             padding: 6px 14px;
             border-radius: 40px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
+            transition: 0.2s;
+            opacity: 0.6;
+            filter: grayscale(0.2);
         }
         .bias-btn.active {
             background: #ff7eb3;
             color: #1e1a2f;
-            box-shadow: 0 0 10px #ff7eb3;
+            opacity: 1;
+            filter: none;
+        }
+        /* Deshabilitado para evitar cambios hasta nueva función */
+        .bias-btn.disabled-change {
+            cursor: not-allowed;
+            opacity: 0.5;
+            filter: grayscale(0.5);
+            pointer-events: none;
         }
         .chat-container {
             grid-column: span 2;
@@ -164,29 +268,23 @@
             overflow-y: auto;
             padding: 15px;
             margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
         }
         .message {
             background: #1f2348;
             border-radius: 20px;
             padding: 10px 15px;
             max-width: 80%;
-            align-self: flex-start;
+            margin-bottom: 12px;
         }
         .message.own {
             background: #3b2b6e;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
+            margin-left: auto;
         }
         .msg-header {
             display: flex;
-            align-items: center;
             gap: 10px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin-bottom: 5px;
-            flex-wrap: wrap;
         }
         .bias-icon {
             background: #ffb3c6;
@@ -196,17 +294,9 @@
             font-size: 0.7rem;
             font-weight: bold;
         }
-        .username {
-            font-weight: bold;
-            color: #ffb3e0;
-        }
-        .message-text {
-            word-break: break-word;
-        }
         .chat-input {
             display: flex;
             gap: 12px;
-            flex-wrap: wrap;
         }
         .chat-input input {
             flex: 1;
@@ -215,7 +305,6 @@
             border: none;
             background: #141829;
             color: white;
-            font-size: 1rem;
         }
         .chat-input button {
             background: #7c3aed;
@@ -223,310 +312,262 @@
             padding: 0 24px;
             border-radius: 60px;
             color: white;
-            font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        .chat-input button:hover {
-            background: #a855f7;
         }
         footer {
             text-align: center;
             margin-top: 30px;
             font-size: 0.8rem;
-            color: #aaa;
         }
         @media (max-width: 800px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .chat-container {
-                grid-column: span 1;
-            }
+            .grid { grid-template-columns: 1fr; }
+            .chat-container { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>✨ NSWER WORLD ✨</h1>
-        <p class="sub">💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
-    </header>
 
-    <div class="profile-area" id="profileArea">
-        <div class="user-info">
-            <div class="level-badge" id="levelDisplay">Nivel 1</div>
-            <div class="points" id="pointsDisplay">⭐ 0 XP</div>
-            <div>👤 <span id="usernameDisplay">Fan</span></div>
+<!-- MODAL DE BIENVENIDA -->
+<div id="welcomeModal" class="welcome-modal">
+    <div class="welcome-card">
+        <h2>✨ NSWER WORLD ✨</h2>
+        <p>Completa tu perfil para entrar a la comunidad</p>
+        <div class="input-group">
+            <label>🎤 Tu nombre de NSWER:</label>
+            <input type="text" id="newUsername" placeholder="Ej: NSWER_Lover" maxlength="20">
         </div>
-        <div>
-            <div style="font-size:0.9rem;">🎀 Mi bias favorita:</div>
-            <div class="bias-selector" id="biasSelector"></div>
+        <div class="input-group">
+            <label>💖 Elige a tu bias (por ahora no podrás cambiarlo):</label>
+            <div id="biasSelection" class="bias-buttons">
+                <!-- Botones se generarán con JS -->
+            </div>
         </div>
+        <button id="enterButton" class="enter-btn">🌟 Entrar al mundo NSWER 🌟</button>
     </div>
+</div>
 
-    <div class="grid">
-        <div class="card">
-            <h2>📢 Novedades</h2>
-            <div id="newsContainer"></div>
-        </div>
-        <div class="card">
-            <h2>🤯 Curiosidades</h2>
-            <div id="curiositiesContainer"></div>
-        </div>
-    </div>
+<!-- CONTENIDO PRINCIPAL -->
+<div id="mainContent" class="main-content">
+    <div class="container">
+        <header>
+            <h1>✨ NSWER WORLD ✨</h1>
+            <p class="sub">💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
+        </header>
 
-    <div class="chat-container">
-        <h2>💬 CHAT NSWER <span style="font-size:0.8rem;">(envía mensajes y gana XP)</span></h2>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Escribe algo para tus NSWERs... ¡cada mensaje da +1 XP!" autocomplete="off">
-            <button id="sendBtn">Enviar ✨</button>
+        <div class="profile-area">
+            <div class="user-info">
+                <div class="level-badge" id="levelDisplay">Nivel 1</div>
+                <div class="points" id="pointsDisplay">⭐ 0 XP</div>
+                <div>👤 <span id="usernameDisplay">Fan</span></div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;">🎀 Mi bias (fijo por ahora):</div>
+                <div class="bias-selector" id="biasSelector"></div>
+                <small style="color:#aaa;">🔒 Cambio de bias disponible próximamente</small>
+            </div>
         </div>
-        <p style="font-size:12px; margin-top:10px;">🪄 Cada mensaje te da experiencia. ¡Sube de nivel y consigue nuevas insignias!</p>
+
+        <div class="grid">
+            <div class="card"><h2>📢 Novedades</h2><div id="newsContainer"></div></div>
+            <div class="card"><h2>🤯 Curiosidades</h2><div id="curiositiesContainer"></div></div>
+        </div>
+
+        <div class="chat-container">
+            <h2>💬 CHAT NSWER <span style="font-size:0.8rem;">(envía mensajes y gana XP)</span></h2>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Escribe algo... ¡cada mensaje da +1 XP!">
+                <button id="sendBtn">Enviar ✨</button>
+            </div>
+        </div>
+        <footer>💖 Hecho con mucho 💖 para NSWERs | NMIXX cambio💿</footer>
     </div>
-    <footer>
-        💖 Hecho con mucho 💖 para NSWERs de todo el mundo | NMIXX cambio💿
-    </footer>
 </div>
 
 <script>
-    // ---------- DATOS DE LA FANPAGE ----------
+    // ---------- DATOS ESTÁTICOS ----------
     const novedades = [
         { fecha: "19 Mayo 2026", texto: "¡Nuevo comeback 'Fe3O4: STICK OUT' anunciado para junio!" },
         { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en K-Vibe Awards." },
-        { fecha: "10 Mayo 2026", texto: "Lily y Haewon harán un live especial este viernes." },
-        { fecha: "5 Mayo 2026", texto: "Nuevo merch oficial: lightstick versión 2.0." }
+        { fecha: "10 Mayo 2026", texto: "Lily y Haewon harán un live especial este viernes." }
     ];
-
     const curiosidadesList = [
-        "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
-        "Haewon fue aprendiz por 7 años antes de debutar.",
-        "Sullyoon fue modelo infantil y le encanta dibujar.",
-        "BAE toca la batería y practicó artes marciales.",
-        "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.",
-        "Kyujin puede imitar a todos los miembros a la perfección.",
-        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans."
+        "Lily tiene nacionalidad australiana y coreana.",
+        "Haewon fue aprendiz por 7 años.",
+        "Sullyoon fue modelo infantil.",
+        "BAE toca la batería.",
+        "Jiwoo aprendió a bailar viendo YouTube.",
+        "Kyujin imita a todos los miembros.",
+        "El fandom se llama NSWER (Answer)."
     ];
-
-    // ---------- SISTEMA DE USUARIO Y NIVEL ----------
-    let currentUser = {
-        username: "",
-        xp: 0,
-        level: 1,
-        bias: "Lily"
-    };
-
-    const levelThresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
+    const levelThresholds = [0, 100, 300, 600, 1000];
 
-    function loadUserData() {
-        const saved = localStorage.getItem("nmixx_fan_user");
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                currentUser.username = data.username;
-                currentUser.xp = data.xp;
-                currentUser.level = data.level;
-                currentUser.bias = data.bias;
-            } catch(e) {}
-        }
-        if (!currentUser.username) {
-            let name = prompt("¡Bienvenido NSWER! 💙 Escribe tu nombre de usuario:", "NSWER_" + Math.floor(Math.random()*1000));
-            if (!name) name = "NSWER_Fan";
-            currentUser.username = name;
-            currentUser.xp = 0;
-            currentUser.level = 1;
-            currentUser.bias = "Lily";
-            saveUserData();
-        }
-        updateUI();
-    }
+    let currentUser = { username: "", xp: 0, level: 1, bias: "Lily" };
 
+    // Funciones de usuario y nivel
     function saveUserData() {
-        localStorage.setItem("nmixx_fan_user", JSON.stringify({
-            username: currentUser.username,
-            xp: currentUser.xp,
-            level: currentUser.level,
-            bias: currentUser.bias
-        }));
+        localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser));
     }
-
-    function recalcLevel() {
-        let newLevel = 1;
-        for (let i = levelThresholds.length-1; i >= 0; i--) {
-            if (currentUser.xp >= levelThresholds[i]) {
-                newLevel = i+1;
-                break;
-            }
-        }
-        if (newLevel !== currentUser.level) {
-            currentUser.level = newLevel;
-            setTimeout(() => {
-                alert(`🎉 ¡FELICIDADES ${currentUser.username}! Has subido al NIVEL ${currentUser.level} 🎉\n¡Eres un NSWER de verdad!`);
-            }, 100);
-        }
-        currentUser.level = newLevel;
-        saveUserData();
-    }
-
-    function addXP(points = 1) {
-        currentUser.xp += points;
-        recalcLevel();
-        saveUserData();
-        updateUI();
-    }
-
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
-        document.querySelectorAll(".bias-btn").forEach(btn => {
-            if(btn.innerText === currentUser.bias) btn.classList.add("active");
-            else btn.classList.remove("active");
-        });
+        // Mostrar bias fijo en el perfil (solo visual)
+        const container = document.getElementById("biasSelector");
+        if (container) {
+            container.innerHTML = "";
+            const fixedBadge = document.createElement("div");
+            fixedBadge.className = "bias-btn active disabled-change";
+            fixedBadge.innerText = `${currentUser.bias} 🔒`;
+            fixedBadge.style.pointerEvents = "none";
+            container.appendChild(fixedBadge);
+        }
+    }
+    function recalcLevel() {
+        let newLevel = 1;
+        for (let i = levelThresholds.length-1; i >= 0; i--) {
+            if (currentUser.xp >= levelThresholds[i]) { newLevel = i+1; break; }
+        }
+        if (newLevel !== currentUser.level) {
+            currentUser.level = newLevel;
+            alert(`🎉 ¡FELICIDADES! Subiste al NIVEL ${currentUser.level}`);
+        }
+        saveUserData();
+    }
+    function addXP(points = 1) {
+        currentUser.xp += points;
+        recalcLevel();
+        updateUI();
+        saveUserData();
     }
 
-    // ---------- CHAT EN VIVO CON FIREBASE ----------
+    // ---------- FIREBASE CHAT ----------
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
-        if(text === "") return;
-        
-        const newMessage = {
+        if (!text) return;
+        database.ref('chatMessages').push({
             username: currentUser.username,
             text: text,
             bias: currentUser.bias,
             timestamp: Date.now()
-        };
-        
-        const messagesRef = database.ref('chatMessages');
-        messagesRef.push(newMessage)
-            .then(() => console.log("Mensaje enviado"))
-            .catch(err => console.error("Error al enviar:", err));
-        
+        });
         input.value = "";
         addXP(1);
     }
-
     function loadMessages() {
-        const messagesRef = database.ref('chatMessages');
-        messagesRef.on('value', (snapshot) => {
+        database.ref('chatMessages').on('value', snapshot => {
             const data = snapshot.val();
-            if(data) {
-                // Convertir objeto a array
-                const messagesArray = Object.values(data);
-                // Ordenar por timestamp
-                messagesArray.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
-                window.messages = messagesArray;
-            } else {
-                window.messages = [];
+            const messages = data ? Object.values(data) : [];
+            messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+            const container = document.getElementById("chatMessages");
+            container.innerHTML = "";
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="message"><div class="msg-header"><span class="bias-icon">💖</span><span class="username">System</span></div><div class="message-text">¡Escribe el primer mensaje!</div></div>';
+                return;
             }
-            renderChat();
-        }, (error) => {
-            console.error("Error cargando mensajes:", error);
-        });
-    }
-
-    function renderChat() {
-        const container = document.getElementById("chatMessages");
-        if(!container) return;
-        container.innerHTML = "";
-        if(!window.messages || window.messages.length === 0) {
-            // Mostrar mensaje de bienvenida si no hay mensajes
-            const emptyMsg = document.createElement("div");
-            emptyMsg.className = "message";
-            emptyMsg.innerHTML = '<div class="msg-header"><span class="bias-icon">💖</span><span class="username">System</span></div><div class="message-text">¡Sé el primero en escribir en el chat NSWER!</div>';
-            container.appendChild(emptyMsg);
-            return;
-        }
-        
-        window.messages.forEach(msg => {
-            const isOwn = (msg.username === currentUser.username);
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `message ${isOwn ? 'own' : ''}`;
-            const header = document.createElement("div");
-            header.className = "msg-header";
-            const biasSpan = document.createElement("span");
-            biasSpan.className = "bias-icon";
-            biasSpan.innerText = msg.bias ? `✨ ${msg.bias}` : "💖 NMIXX";
-            const nameSpan = document.createElement("span");
-            nameSpan.className = "username";
-            nameSpan.innerText = msg.username;
-            header.appendChild(biasSpan);
-            header.appendChild(nameSpan);
-            const textSpan = document.createElement("div");
-            textSpan.className = "message-text";
-            textSpan.innerText = msg.text;
-            msgDiv.appendChild(header);
-            msgDiv.appendChild(textSpan);
-            container.appendChild(msgDiv);
-        });
-        // Auto-scroll al final
-        container.scrollTop = container.scrollHeight;
-    }
-
-    function buildBiasSelector() {
-        const container = document.getElementById("biasSelector");
-        if(!container) return;
-        container.innerHTML = "";
-        members.forEach(member => {
-            const btn = document.createElement("button");
-            btn.innerText = member;
-            btn.className = "bias-btn";
-            if(currentUser.bias === member) btn.classList.add("active");
-            btn.addEventListener("click", () => {
-                currentUser.bias = member;
-                saveUserData();
-                updateUI();
-                alert(`Ahora tu bias es ${member} 💖 ¡Se mostrará en el chat!`);
-                // No es necesario re-renderizar todo el chat, solo los futuros mensajes
+            messages.forEach(msg => {
+                const isOwn = msg.username === currentUser.username;
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `message ${isOwn ? 'own' : ''}`;
+                msgDiv.innerHTML = `
+                    <div class="msg-header">
+                        <span class="bias-icon">✨ ${msg.bias || "NMIXX"}</span>
+                        <span class="username">${msg.username}</span>
+                    </div>
+                    <div class="message-text">${msg.text}</div>
+                `;
+                container.appendChild(msgDiv);
             });
-            container.appendChild(btn);
+            container.scrollTop = container.scrollHeight;
         });
     }
 
+    // Cargar noticias y curiosidades
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
-        if(newsDiv) {
-            newsDiv.innerHTML = "";
-            novedades.forEach(n => {
-                const div = document.createElement("div");
-                div.className = "news-item";
-                div.innerHTML = `<span class="date">📅 ${n.fecha}</span><br>${n.texto}`;
-                newsDiv.appendChild(div);
-            });
-        }
-
+        newsDiv.innerHTML = "";
+        novedades.forEach(n => {
+            newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${n.texto}</div>`;
+        });
         const curioDiv = document.getElementById("curiositiesContainer");
-        if(curioDiv) {
-            curioDiv.innerHTML = "";
-            // Mostrar 4 curiosidades aleatorias
-            const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
-            shuffled.slice(0, 4).forEach(c => {
-                const div = document.createElement("div");
-                div.className = "curio-item";
-                div.innerHTML = `🔮 ${c}`;
-                curioDiv.appendChild(div);
-            });
-        }
-    }
-
-    function init() {
-        loadUserData();
-        loadMessages();   // Inicia escucha en tiempo real
-        buildBiasSelector();
-        loadNewsAndCuriosities();
-        const sendBtn = document.getElementById("sendBtn");
-        const msgInput = document.getElementById("messageInput");
-        if(sendBtn) sendBtn.addEventListener("click", sendMessage);
-        if(msgInput) msgInput.addEventListener("keypress", (e) => {
-            if(e.key === "Enter") sendMessage();
+        curioDiv.innerHTML = "";
+        [...curiosidadesList].sort(() => 0.5 - Math.random()).slice(0,4).forEach(c => {
+            curioDiv.innerHTML += `<div class="curio-item">🔮 ${c}</div>`;
         });
     }
 
-    // Esperar a que el DOM esté listo
-    document.addEventListener("DOMContentLoaded", init);
+    // ---------- FLUJO DE BIENVENIDA (MODAL) ----------
+    function showWelcomeModal() {
+        document.getElementById("welcomeModal").style.display = "flex";
+        document.getElementById("mainContent").style.display = "none";
+        // Generar botones de bias
+        const container = document.getElementById("biasSelection");
+        container.innerHTML = "";
+        members.forEach(m => {
+            const btn = document.createElement("button");
+            btn.innerText = m;
+            btn.classList.add("bias-option");
+            btn.onclick = () => {
+                document.querySelectorAll(".bias-option").forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                currentUser.bias = m;
+            };
+            container.appendChild(btn);
+        });
+        // Preseleccionar primero
+        document.querySelector(".bias-option")?.classList.add("selected");
+        currentUser.bias = members[0];
+    }
+
+    function finalizeWelcome() {
+        const usernameInput = document.getElementById("newUsername");
+        let username = usernameInput.value.trim();
+        if (!username) {
+            alert("Por favor, ingresa un nombre de usuario.");
+            return;
+        }
+        if (username.length < 3) {
+            alert("El nombre debe tener al menos 3 caracteres.");
+            return;
+        }
+        currentUser.username = username;
+        currentUser.xp = 0;
+        currentUser.level = 1;
+        saveUserData();
+        document.getElementById("welcomeModal").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        updateUI();
+        loadMessages();
+        loadNewsAndCuriosities();
+        // Eventos del chat
+        document.getElementById("sendBtn").onclick = sendMessage;
+        document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+    }
+
+    // Inicialización: si ya hay usuario guardado, se salta el modal.
+    function init() {
+        const saved = localStorage.getItem("nmixx_fan_user");
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                currentUser = data;
+                document.getElementById("welcomeModal").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                updateUI();
+                loadMessages();
+                loadNewsAndCuriosities();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            } catch(e) { showWelcomeModal(); }
+        } else {
+            showWelcomeModal();
+        }
+        document.getElementById("enterButton").onclick = finalizeWelcome;
+    }
+
+    init();
 </script>
 </body>
 </html>
