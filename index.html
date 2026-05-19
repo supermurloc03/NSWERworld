@@ -43,25 +43,24 @@
         /* Contenedor principal (se oculta hasta elegir datos) */
         .main-content {
             display: none;
-            max-width: 1400px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
-        /* --- MODAL DE BIENVENIDA --- */
+        /* --- MODAL DE BIENVENIDA (igual que antes) --- */
         .welcome-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
         }
-
         .welcome-card {
             background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
             border-radius: 40px;
@@ -73,18 +72,10 @@
             box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
             animation: fadeInUp 0.5s ease;
         }
-
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
         }
-
         .welcome-card h2 {
             font-size: 2rem;
             background: linear-gradient(135deg, #ff7eb3, #8a2be2);
@@ -93,24 +84,20 @@
             color: transparent;
             margin-bottom: 10px;
         }
-
         .welcome-card p {
             color: #b9c3ff;
             margin-bottom: 25px;
         }
-
         .input-group {
             margin-bottom: 20px;
             text-align: left;
         }
-
         .input-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
             color: #ffb3e0;
         }
-
         .input-group input {
             width: 100%;
             padding: 14px;
@@ -120,7 +107,6 @@
             color: white;
             font-size: 1rem;
         }
-
         .bias-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -128,7 +114,6 @@
             justify-content: center;
             margin: 20px 0;
         }
-
         .bias-option {
             background: #2d2a55;
             border: none;
@@ -139,13 +124,11 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-
         .bias-option.selected {
             background: #ff7eb3;
             color: #1e1a2f;
             box-shadow: 0 0 12px #ff7eb3;
         }
-
         .enter-btn {
             background: #7c3aed;
             border: none;
@@ -158,55 +141,43 @@
             width: 100%;
             transition: 0.2s;
         }
-
         .enter-btn:hover {
             background: #a855f7;
             transform: scale(1.02);
         }
 
-        /* --- ESTILOS DE LA PÁGINA PRINCIPAL (igual que antes, pero con una mejora) --- */
+        /* --- ESTILOS DE LA PÁGINA PRINCIPAL (con pestañas) --- */
         header {
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px 20px;
             background: rgba(0, 0, 0, 0.4);
             border-radius: 40px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             backdrop-filter: blur(5px);
         }
         h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             background: linear-gradient(135deg, #ff7eb3, #8a2be2, #3b82f6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
+        .sub {
+            color: #b9c3ff;
+            margin-top: 5px;
         }
-        .card {
-            background: rgba(20, 25, 55, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .card h2 {
-            margin-bottom: 18px;
-            border-left: 5px solid #ff7eb3;
-            padding-left: 15px;
-        }
+
+        /* Perfil de usuario (siempre visible) */
         .profile-area {
             background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
             border-radius: 28px;
-            padding: 20px;
+            padding: 15px 25px;
             margin-bottom: 25px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
         .user-info {
             display: flex;
@@ -216,47 +187,116 @@
         }
         .level-badge {
             background: linear-gradient(135deg, #ffb347, #ff7e05);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 40px;
             font-weight: bold;
             color: #1e1a2f;
         }
         .points {
             background: #2a2a5a;
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 40px;
         }
-        .bias-selector {
+        .bias-fixed {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .bias-btn {
+            align-items: center;
+            gap: 8px;
             background: #2d2a55;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+        .bias-fixed span:first-child {
+            font-size: 0.8rem;
+            color: #ffb3c6;
+        }
+        .bias-fixed span:last-child {
+            font-weight: bold;
+            background: #ff7eb3;
+            padding: 2px 12px;
+            border-radius: 40px;
+            color: #1e1a2f;
+        }
+        small.locked-info {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        /* --- ESTILO DE PESTAÑAS (TABS) --- */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: transparent;
             border: none;
-            color: white;
-            padding: 6px 14px;
+            color: #ccc;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 24px;
             border-radius: 40px;
             cursor: pointer;
-            transition: 0.2s;
-            opacity: 0.6;
-            filter: grayscale(0.2);
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
         }
-        .bias-btn.active {
-            background: #ff7eb3;
-            color: #1e1a2f;
-            opacity: 1;
-            filter: none;
+        .tab-btn.active {
+            background: #7c3aed;
+            color: white;
+            box-shadow: 0 4px 12px rgba(124,58,237,0.4);
         }
-        /* Deshabilitado para evitar cambios hasta nueva función */
-        .bias-btn.disabled-change {
-            cursor: not-allowed;
-            opacity: 0.5;
-            filter: grayscale(0.5);
-            pointer-events: none;
+        .tab-btn:hover:not(.active) {
+            background: rgba(124,58,237,0.4);
+            color: white;
         }
+
+        /* Contenedor de las pestañas */
+        .tab-content {
+            display: none;
+            animation: fade 0.3s ease;
+        }
+        .tab-content.active-tab {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Contenido de la pestaña Novedades: dos columnas (noticias y curiosidades) */
+        .news-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .news-card, .curiosities-card {
+            background: rgba(20, 25, 55, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .news-card h3, .curiosities-card h3 {
+            margin-bottom: 18px;
+            border-left: 4px solid #ff7eb3;
+            padding-left: 15px;
+            font-size: 1.4rem;
+        }
+        .news-item, .curio-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+        }
+        .date {
+            font-size: 0.7rem;
+            color: #9ca3ff;
+            display: block;
+        }
+
+        /* Chat */
         .chat-container {
-            grid-column: span 2;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 28px;
             padding: 20px;
@@ -264,27 +304,32 @@
         .chat-messages {
             background: #0a0c1a;
             border-radius: 24px;
-            height: 400px;
+            height: 420px;
             overflow-y: auto;
             padding: 15px;
             margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         .message {
             background: #1f2348;
             border-radius: 20px;
             padding: 10px 15px;
             max-width: 80%;
-            margin-bottom: 12px;
+            align-self: flex-start;
         }
         .message.own {
             background: #3b2b6e;
-            margin-left: auto;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
         }
         .msg-header {
             display: flex;
             gap: 10px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-bottom: 5px;
+            flex-wrap: wrap;
         }
         .bias-icon {
             background: #ffb3c6;
@@ -294,9 +339,14 @@
             font-size: 0.7rem;
             font-weight: bold;
         }
+        .username {
+            font-weight: bold;
+            color: #ffb3e0;
+        }
         .chat-input {
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
         .chat-input input {
             flex: 1;
@@ -305,6 +355,7 @@
             border: none;
             background: #141829;
             color: white;
+            font-size: 1rem;
         }
         .chat-input button {
             background: #7c3aed;
@@ -312,16 +363,26 @@
             padding: 0 24px;
             border-radius: 60px;
             color: white;
+            font-weight: bold;
             cursor: pointer;
         }
         footer {
             text-align: center;
             margin-top: 30px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            color: #aaa;
         }
-        @media (max-width: 800px) {
-            .grid { grid-template-columns: 1fr; }
-            .chat-container { grid-column: span 1; }
+        @media (max-width: 750px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs {
+                justify-content: center;
+            }
+            .tab-btn {
+                font-size: 1rem;
+                padding: 6px 18px;
+            }
         }
     </style>
 </head>
@@ -338,9 +399,7 @@
         </div>
         <div class="input-group">
             <label>💖 Elige a tu bias (por ahora no podrás cambiarlo):</label>
-            <div id="biasSelection" class="bias-buttons">
-                <!-- Botones se generarán con JS -->
-            </div>
+            <div id="biasSelection" class="bias-buttons"></div>
         </div>
         <button id="enterButton" class="enter-btn">🌟 Entrar al mundo NSWER 🌟</button>
     </div>
@@ -354,6 +413,7 @@
             <p class="sub">💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </header>
 
+        <!-- Perfil de usuario (siempre visible) -->
         <div class="profile-area">
             <div class="user-info">
                 <div class="level-badge" id="levelDisplay">Nivel 1</div>
@@ -361,25 +421,46 @@
                 <div>👤 <span id="usernameDisplay">Fan</span></div>
             </div>
             <div>
-                <div style="font-size:0.8rem;">🎀 Mi bias (fijo por ahora):</div>
-                <div class="bias-selector" id="biasSelector"></div>
-                <small style="color:#aaa;">🔒 Cambio de bias disponible próximamente</small>
+                <div class="bias-fixed">
+                    <span>🎀 Mi bias fijo:</span>
+                    <span id="biasFixedDisplay">Lily</span>
+                </div>
+                <small class="locked-info">🔒 Cambio de bias disponible próximamente</small>
             </div>
         </div>
 
-        <div class="grid">
-            <div class="card"><h2>📢 Novedades</h2><div id="newsContainer"></div></div>
-            <div class="card"><h2>🤯 Curiosidades</h2><div id="curiositiesContainer"></div></div>
+        <!-- Pestañas -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="news">📢 Novedades</button>
+            <button class="tab-btn" data-tab="chat">💬 Chat NSWER</button>
         </div>
 
-        <div class="chat-container">
-            <h2>💬 CHAT NSWER <span style="font-size:0.8rem;">(envía mensajes y gana XP)</span></h2>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input">
-                <input type="text" id="messageInput" placeholder="Escribe algo... ¡cada mensaje da +1 XP!">
-                <button id="sendBtn">Enviar ✨</button>
+        <!-- Contenido de pestaña Novedades -->
+        <div id="newsTab" class="tab-content active-tab">
+            <div class="news-grid">
+                <div class="news-card">
+                    <h3>📰 Últimas noticias</h3>
+                    <div id="newsContainer"></div>
+                </div>
+                <div class="curiosities-card">
+                    <h3>🤯 Curiosidades de NMIXX</h3>
+                    <div id="curiositiesContainer"></div>
+                </div>
             </div>
         </div>
+
+        <!-- Contenido de pestaña Chat -->
+        <div id="chatTab" class="tab-content">
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Escribe algo... ¡cada mensaje da +1 XP!" autocomplete="off">
+                    <button id="sendBtn">Enviar ✨</button>
+                </div>
+                <p style="font-size:12px; margin-top:10px;">🪄 Cada mensaje te da experiencia. ¡Sube de nivel!</p>
+            </div>
+        </div>
+
         <footer>💖 Hecho con mucho 💖 para NSWERs | NMIXX cambio💿</footer>
     </div>
 </div>
@@ -389,16 +470,17 @@
     const novedades = [
         { fecha: "19 Mayo 2026", texto: "¡Nuevo comeback 'Fe3O4: STICK OUT' anunciado para junio!" },
         { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en K-Vibe Awards." },
-        { fecha: "10 Mayo 2026", texto: "Lily y Haewon harán un live especial este viernes." }
+        { fecha: "10 Mayo 2026", texto: "Lily y Haewon harán un live especial este viernes." },
+        { fecha: "7 Mayo 2026", texto: "Nuevo merch oficial: lightstick versión 2.0." }
     ];
     const curiosidadesList = [
-        "Lily tiene nacionalidad australiana y coreana.",
-        "Haewon fue aprendiz por 7 años.",
-        "Sullyoon fue modelo infantil.",
-        "BAE toca la batería.",
-        "Jiwoo aprendió a bailar viendo YouTube.",
-        "Kyujin imita a todos los miembros.",
-        "El fandom se llama NSWER (Answer)."
+        "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
+        "Haewon fue aprendiz por 7 años antes de debutar.",
+        "Sullyoon fue modelo infantil y le encanta dibujar.",
+        "BAE toca la batería y practicó artes marciales.",
+        "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.",
+        "Kyujin puede imitar a todos los miembros a la perfección.",
+        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans."
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
@@ -413,16 +495,7 @@
         document.getElementById("usernameDisplay").innerText = currentUser.username;
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
-        // Mostrar bias fijo en el perfil (solo visual)
-        const container = document.getElementById("biasSelector");
-        if (container) {
-            container.innerHTML = "";
-            const fixedBadge = document.createElement("div");
-            fixedBadge.className = "bias-btn active disabled-change";
-            fixedBadge.innerText = `${currentUser.bias} 🔒`;
-            fixedBadge.style.pointerEvents = "none";
-            container.appendChild(fixedBadge);
-        }
+        document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
     }
     function recalcLevel() {
         let newLevel = 1;
@@ -474,35 +547,49 @@
                 msgDiv.innerHTML = `
                     <div class="msg-header">
                         <span class="bias-icon">✨ ${msg.bias || "NMIXX"}</span>
-                        <span class="username">${msg.username}</span>
+                        <span class="username">${escapeHtml(msg.username)}</span>
                     </div>
-                    <div class="message-text">${msg.text}</div>
+                    <div class="message-text">${escapeHtml(msg.text)}</div>
                 `;
                 container.appendChild(msgDiv);
             });
             container.scrollTop = container.scrollHeight;
         });
     }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 
-    // Cargar noticias y curiosidades
+    // Cargar noticias y curiosidades (en la pestaña novedades)
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
-        newsDiv.innerHTML = "";
-        novedades.forEach(n => {
-            newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${n.texto}</div>`;
-        });
+        if (newsDiv) {
+            newsDiv.innerHTML = "";
+            novedades.forEach(n => {
+                newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${escapeHtml(n.texto)}</div>`;
+            });
+        }
         const curioDiv = document.getElementById("curiositiesContainer");
-        curioDiv.innerHTML = "";
-        [...curiosidadesList].sort(() => 0.5 - Math.random()).slice(0,4).forEach(c => {
-            curioDiv.innerHTML += `<div class="curio-item">🔮 ${c}</div>`;
-        });
+        if (curioDiv) {
+            curioDiv.innerHTML = "";
+            // Mostrar 5 curiosidades aleatorias
+            const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
+            shuffled.slice(0, 5).forEach(c => {
+                curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`;
+            });
+        }
     }
 
     // ---------- FLUJO DE BIENVENIDA (MODAL) ----------
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
-        // Generar botones de bias
         const container = document.getElementById("biasSelection");
         container.innerHTML = "";
         members.forEach(m => {
@@ -516,7 +603,6 @@
             };
             container.appendChild(btn);
         });
-        // Preseleccionar primero
         document.querySelector(".bias-option")?.classList.add("selected");
         currentUser.bias = members[0];
     }
@@ -546,7 +632,28 @@
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
 
-    // Inicialización: si ya hay usuario guardado, se salta el modal.
+    // ---------- PESTAÑAS (TABS) ----------
+    function initTabs() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                // Desactivar todos
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active-tab'));
+                // Activar el seleccionado
+                tab.classList.add('active');
+                if (target === 'news') {
+                    document.getElementById('newsTab').classList.add('active-tab');
+                } else if (target === 'chat') {
+                    document.getElementById('chatTab').classList.add('active-tab');
+                }
+            });
+        });
+    }
+
+    // Inicialización
     function init() {
         const saved = localStorage.getItem("nmixx_fan_user");
         if (saved) {
@@ -560,6 +667,7 @@
                 loadNewsAndCuriosities();
                 document.getElementById("sendBtn").onclick = sendMessage;
                 document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+                initTabs();
             } catch(e) { showWelcomeModal(); }
         } else {
             showWelcomeModal();
