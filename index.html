@@ -36,148 +36,67 @@
         body {
             background: linear-gradient(135deg, #0a0f2a 0%, #1a1a3e 100%);
             color: #f0f0f0;
-            padding: 20px;
             min-height: 100vh;
+            padding-top: 80px; /* Para que la barra fija no tape el contenido */
         }
 
-        /* Contenedor principal (se oculta hasta elegir datos) */
-        .main-content {
-            display: none;
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-
-        /* --- MODAL DE BIENVENIDA (igual que antes) --- */
-        .welcome-modal {
+        /* --- BARRA DE NAVEGACIÓN FIJA --- */
+        .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(10, 15, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 126, 179, 0.3);
+            padding: 12px 20px;
+            z-index: 100;
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 1000;
-        }
-        .welcome-card {
-            background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
-            border-radius: 40px;
-            padding: 35px 25px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            border: 1px solid rgba(255, 126, 179, 0.5);
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
-            animation: fadeInUp 0.5s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px);}
-            to { opacity: 1; transform: translateY(0);}
-        }
-        .welcome-card h2 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #ff7eb3, #8a2be2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
-        }
-        .welcome-card p {
-            color: #b9c3ff;
-            margin-bottom: 25px;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #ffb3e0;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 60px;
-            border: none;
-            background: #141829;
-            color: white;
-            font-size: 1rem;
-        }
-        .bias-buttons {
-            display: flex;
+            gap: 30px;
             flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0;
         }
-        .bias-option {
-            background: #2d2a55;
+        .nav-btn {
+            background: transparent;
             border: none;
-            color: white;
-            padding: 8px 18px;
-            border-radius: 60px;
-            cursor: pointer;
+            color: #ddd;
+            font-size: 1.2rem;
             font-weight: bold;
+            padding: 8px 24px;
+            border-radius: 40px;
+            cursor: pointer;
             transition: all 0.2s;
         }
-        .bias-option.selected {
-            background: #ff7eb3;
-            color: #1e1a2f;
-            box-shadow: 0 0 12px #ff7eb3;
-        }
-        .enter-btn {
+        .nav-btn.active {
             background: #7c3aed;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 60px;
             color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(124,58,237,0.5);
         }
-        .enter-btn:hover {
-            background: #a855f7;
-            transform: scale(1.02);
+        .nav-btn:hover:not(.active) {
+            background: rgba(124,58,237,0.4);
+            color: white;
         }
 
-        /* --- ESTILOS DE LA PÁGINA PRINCIPAL (con pestañas) --- */
-        header {
-            text-align: center;
-            padding: 20px 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 40px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(5px);
-        }
-        h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(135deg, #ff7eb3, #8a2be2, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .sub {
-            color: #b9c3ff;
-            margin-top: 5px;
+        /* Contenedor principal del contenido */
+        .main-content {
+            display: none;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        /* Perfil de usuario (siempre visible) */
+        /* Perfil de usuario (siempre visible debajo de la barra) */
         .profile-area {
             background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
             border-radius: 28px;
             padding: 15px 25px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             gap: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .user-info {
             display: flex;
@@ -221,50 +140,50 @@
             color: #aaa;
         }
 
-        /* --- ESTILO DE PESTAÑAS (TABS) --- */
-        .tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 10px;
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: #ccc;
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 10px 24px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-        }
-        .tab-btn.active {
-            background: #7c3aed;
-            color: white;
-            box-shadow: 0 4px 12px rgba(124,58,237,0.4);
-        }
-        .tab-btn:hover:not(.active) {
-            background: rgba(124,58,237,0.4);
-            color: white;
-        }
-
-        /* Contenedor de las pestañas */
-        .tab-content {
+        /* Contenedor de secciones (cada sección se oculta/muestra) */
+        .section {
             display: none;
-            animation: fade 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
-        .tab-content.active-tab {
+        .section.active-section {
             display: block;
         }
-        @keyframes fade {
+        @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px);}
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Contenido de la pestaña Novedades: dos columnas (noticias y curiosidades) */
+        /* --- SECCIÓN INICIO (página principal) --- */
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .hero h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ff7eb3, #8a2be2, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #e0d9ff;
+        }
+        .welcome-message {
+            background: rgba(20, 25, 55, 0.6);
+            border-radius: 30px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* --- SECCIÓN NOVEDADES (dos columnas) --- */
         .news-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -295,7 +214,7 @@
             display: block;
         }
 
-        /* Chat */
+        /* --- SECCIÓN CHAT --- */
         .chat-container {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 28px;
@@ -304,7 +223,7 @@
         .chat-messages {
             background: #0a0c1a;
             border-radius: 24px;
-            height: 420px;
+            height: 450px;
             overflow-y: auto;
             padding: 15px;
             margin-bottom: 15px;
@@ -368,21 +287,103 @@
         }
         footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
+            padding: 20px;
             font-size: 0.75rem;
             color: #aaa;
         }
         @media (max-width: 750px) {
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-            .tabs {
-                justify-content: center;
-            }
-            .tab-btn {
-                font-size: 1rem;
-                padding: 6px 18px;
-            }
+            .news-grid { grid-template-columns: 1fr; }
+            .navbar { gap: 10px; }
+            .nav-btn { font-size: 1rem; padding: 6px 16px; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        /* Modal de bienvenida (igual que antes) */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .welcome-card {
+            background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
+            border-radius: 40px;
+            padding: 35px 25px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid rgba(255, 126, 179, 0.5);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .welcome-card h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff7eb3, #8a2be2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ffb3e0;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            border: none;
+            background: #141829;
+            color: white;
+        }
+        .bias-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .bias-option {
+            background: #2d2a55;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .bias-option.selected {
+            background: #ff7eb3;
+            color: #1e1a2f;
+            box-shadow: 0 0 12px #ff7eb3;
+        }
+        .enter-btn {
+            background: #7c3aed;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
         }
     </style>
 </head>
@@ -405,64 +406,72 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL -->
+<!-- CONTENIDO PRINCIPAL (se muestra después del modal) -->
 <div id="mainContent" class="main-content">
-    <div class="container">
-        <header>
-            <h1>✨ NSWER WORLD ✨</h1>
-            <p class="sub">💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
-        </header>
-
-        <!-- Perfil de usuario (siempre visible) -->
-        <div class="profile-area">
-            <div class="user-info">
-                <div class="level-badge" id="levelDisplay">Nivel 1</div>
-                <div class="points" id="pointsDisplay">⭐ 0 XP</div>
-                <div>👤 <span id="usernameDisplay">Fan</span></div>
-            </div>
-            <div>
-                <div class="bias-fixed">
-                    <span>🎀 Mi bias fijo:</span>
-                    <span id="biasFixedDisplay">Lily</span>
-                </div>
-                <small class="locked-info">🔒 Cambio de bias disponible próximamente</small>
-            </div>
-        </div>
-
-        <!-- Pestañas -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="news">📢 Novedades</button>
-            <button class="tab-btn" data-tab="chat">💬 Chat NSWER</button>
-        </div>
-
-        <!-- Contenido de pestaña Novedades -->
-        <div id="newsTab" class="tab-content active-tab">
-            <div class="news-grid">
-                <div class="news-card">
-                    <h3>📰 Últimas noticias</h3>
-                    <div id="newsContainer"></div>
-                </div>
-                <div class="curiosities-card">
-                    <h3>🤯 Curiosidades de NMIXX</h3>
-                    <div id="curiositiesContainer"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contenido de pestaña Chat -->
-        <div id="chatTab" class="tab-content">
-            <div class="chat-container">
-                <div class="chat-messages" id="chatMessages"></div>
-                <div class="chat-input">
-                    <input type="text" id="messageInput" placeholder="Escribe algo... ¡cada mensaje da +1 XP!" autocomplete="off">
-                    <button id="sendBtn">Enviar ✨</button>
-                </div>
-                <p style="font-size:12px; margin-top:10px;">🪄 Cada mensaje te da experiencia. ¡Sube de nivel!</p>
-            </div>
-        </div>
-
-        <footer>💖 Hecho con mucho 💖 para NSWERs | NMIXX cambio💿</footer>
+    <!-- Barra de navegación fija -->
+    <div class="navbar">
+        <button class="nav-btn active" data-section="home">🏠 Inicio</button>
+        <button class="nav-btn" data-section="news">📢 Novedades</button>
+        <button class="nav-btn" data-section="chat">💬 Chat</button>
     </div>
+
+    <!-- Perfil de usuario (siempre visible) -->
+    <div class="profile-area">
+        <div class="user-info">
+            <div class="level-badge" id="levelDisplay">Nivel 1</div>
+            <div class="points" id="pointsDisplay">⭐ 0 XP</div>
+            <div>👤 <span id="usernameDisplay">Fan</span></div>
+        </div>
+        <div>
+            <div class="bias-fixed">
+                <span>🎀 Mi bias fijo:</span>
+                <span id="biasFixedDisplay">Lily</span>
+            </div>
+            <small class="locked-info">🔒 Cambio de bias disponible próximamente</small>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INICIO (Home) -->
+    <div id="homeSection" class="section active-section">
+        <div class="hero">
+            <h1>✨ NSWER WORLD ✨</h1>
+            <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
+        </div>
+        <div class="welcome-message">
+            <h2>🌸 ¡Bienvenido, <span id="homeUsername">NSWER</span>! 🌸</h2>
+            <p>Aquí encontrarás las últimas novedades, curiosidades y un chat en vivo con otros NSWERs.</p>
+            <p>Comparte tu amor por NMIXX, gana experiencia y sube de nivel.</p>
+            <p style="margin-top: 20px;">✨ Usa las pestañas de arriba para navegar ✨</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN NOVEDADES -->
+    <div id="newsSection" class="section">
+        <div class="news-grid">
+            <div class="news-card">
+                <h3>📰 Últimas noticias</h3>
+                <div id="newsContainer"></div>
+            </div>
+            <div class="curiosities-card">
+                <h3>🤯 Curiosidades de NMIXX</h3>
+                <div id="curiositiesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CHAT -->
+    <div id="chatSection" class="section">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Escribe algo... ¡cada mensaje da +1 XP!" autocomplete="off">
+                <button id="sendBtn">Enviar ✨</button>
+            </div>
+            <p style="font-size:12px; margin-top:10px;">🪄 Cada mensaje te da experiencia. ¡Sube de nivel!</p>
+        </div>
+    </div>
+
+    <footer>💖 Hecho con mucho 💖 para NSWERs | NMIXX cambio💿</footer>
 </div>
 
 <script>
@@ -487,7 +496,7 @@
 
     let currentUser = { username: "", xp: 0, level: 1, bias: "Lily" };
 
-    // Funciones de usuario y nivel
+    // Funciones usuario
     function saveUserData() {
         localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser));
     }
@@ -496,6 +505,8 @@
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
+        const homeSpan = document.getElementById("homeUsername");
+        if (homeSpan) homeSpan.innerText = currentUser.username;
     }
     function recalcLevel() {
         let newLevel = 1;
@@ -505,6 +516,8 @@
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
             alert(`🎉 ¡FELICIDADES! Subiste al NIVEL ${currentUser.level}`);
+            saveUserData();
+            updateUI();
         }
         saveUserData();
     }
@@ -515,7 +528,7 @@
         saveUserData();
     }
 
-    // ---------- FIREBASE CHAT ----------
+    // Firebase Chat
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
@@ -535,6 +548,7 @@
             const messages = data ? Object.values(data) : [];
             messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
             const container = document.getElementById("chatMessages");
+            if (!container) return;
             container.innerHTML = "";
             if (messages.length === 0) {
                 container.innerHTML = '<div class="message"><div class="msg-header"><span class="bias-icon">💖</span><span class="username">System</span></div><div class="message-text">¡Escribe el primer mensaje!</div></div>';
@@ -546,7 +560,7 @@
                 msgDiv.className = `message ${isOwn ? 'own' : ''}`;
                 msgDiv.innerHTML = `
                     <div class="msg-header">
-                        <span class="bias-icon">✨ ${msg.bias || "NMIXX"}</span>
+                        <span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span>
                         <span class="username">${escapeHtml(msg.username)}</span>
                     </div>
                     <div class="message-text">${escapeHtml(msg.text)}</div>
@@ -566,7 +580,7 @@
         });
     }
 
-    // Cargar noticias y curiosidades (en la pestaña novedades)
+    // Cargar noticias y curiosidades
     function loadNewsAndCuriosities() {
         const newsDiv = document.getElementById("newsContainer");
         if (newsDiv) {
@@ -578,7 +592,6 @@
         const curioDiv = document.getElementById("curiositiesContainer");
         if (curioDiv) {
             curioDiv.innerHTML = "";
-            // Mostrar 5 curiosidades aleatorias
             const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
             shuffled.slice(0, 5).forEach(c => {
                 curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`;
@@ -586,7 +599,31 @@
         }
     }
 
-    // ---------- FLUJO DE BIENVENIDA (MODAL) ----------
+    // Navegación por secciones
+    function initNavigation() {
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = {
+            home: document.getElementById('homeSection'),
+            news: document.getElementById('newsSection'),
+            chat: document.getElementById('chatSection')
+        };
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sectionId = btn.getAttribute('data-section');
+                // Actualizar botones activos
+                navBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // Ocultar todas las secciones
+                Object.values(sections).forEach(sec => sec.classList.remove('active-section'));
+                // Mostrar la sección correspondiente
+                if (sectionId === 'home') sections.home.classList.add('active-section');
+                if (sectionId === 'news') sections.news.classList.add('active-section');
+                if (sectionId === 'chat') sections.chat.classList.add('active-section');
+            });
+        });
+    }
+
+    // Modal de bienvenida
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
@@ -627,30 +664,9 @@
         updateUI();
         loadMessages();
         loadNewsAndCuriosities();
-        // Eventos del chat
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-    }
-
-    // ---------- PESTAÑAS (TABS) ----------
-    function initTabs() {
-        const tabs = document.querySelectorAll('.tab-btn');
-        const contents = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const target = tab.getAttribute('data-tab');
-                // Desactivar todos
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active-tab'));
-                // Activar el seleccionado
-                tab.classList.add('active');
-                if (target === 'news') {
-                    document.getElementById('newsTab').classList.add('active-tab');
-                } else if (target === 'chat') {
-                    document.getElementById('chatTab').classList.add('active-tab');
-                }
-            });
-        });
+        initNavigation();
     }
 
     // Inicialización
@@ -667,14 +683,13 @@
                 loadNewsAndCuriosities();
                 document.getElementById("sendBtn").onclick = sendMessage;
                 document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-                initTabs();
+                initNavigation();
             } catch(e) { showWelcomeModal(); }
         } else {
             showWelcomeModal();
         }
         document.getElementById("enterButton").onclick = finalizeWelcome;
     }
-
     init();
 </script>
 </body>
