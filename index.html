@@ -63,7 +63,7 @@
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
         .news-text { font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
         .like-controls { display: flex; justify-content: flex-end; }
-        .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
         .curio-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 10px 15px; margin-bottom: 12px; }
         .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
@@ -173,6 +173,7 @@
 </div>
 
 <script>
+    // ========== DATOS ESTÁTICOS ==========
     const curiosidadesList = [
         "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
         "Haewon fue aprendiz por 7 años antes de debutar.",
@@ -197,6 +198,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
+    // ========== FUNCIONES USUARIO Y NIVEL ==========
     function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
@@ -221,6 +223,7 @@
     }
     function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
 
+    // ========== CHAT FIREBASE ==========
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
@@ -257,71 +260,104 @@
         shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
-    // ========== NOTICIAS DESDE ARCHIVO JSON LOCAL ==========
+    // ========== NOTICIAS CON LIKES GLOBALES (FIREBASE) ==========
+    let noticiasActuales = []; // guardamos las noticias para referenciar ids
+
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
         try {
-            const response = await fetch('noticias.json');
+            const response = await fetch('noticias.json?t=' + Date.now()); // evitar caché
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const noticias = await response.json();
             if (!noticias.length) {
-                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias. Edita el archivo noticias.json para añadir.</div>';
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias. Edita noticias.json para añadir.</div>';
                 return;
             }
+            noticiasActuales = noticias;
             newsContainer.innerHTML = '';
+            // Crear contenedores para cada noticia (sin el botón aún, se añadirá después)
             noticias.forEach(noticia => {
                 const item = document.createElement('div');
                 item.className = 'news-item';
+                item.id = `news-${noticia.id}`;
                 item.innerHTML = `
                     <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
                     <div class="news-text">${escapeHtml(noticia.texto)}</div>
                     <div class="like-controls">
                         <button class="like-btn" data-id="${noticia.id}">
-                            ${localStorage.getItem(`liked_${noticia.id}`) === 'true' ? '❤️' : '🤍'} Me gusta
+                            ❤️ <span class="like-count">0</span>
                         </button>
                     </div>
                 `;
                 newsContainer.appendChild(item);
             });
-            attachLikeEvents();
+            // Inicializar listeners de Firebase para cada noticia
+            noticias.forEach(noticia => {
+                const likeRef = database.ref(`likes/${noticia.id}`);
+                // Escuchar cambios en el contador
+                likeRef.child('count').on('value', (snapshot) => {
+                    const count = snapshot.val() || 0;
+                    const btnSpan = document.querySelector(`#news-${noticia.id} .like-count`);
+                    if (btnSpan) btnSpan.innerText = count;
+                });
+                // Escuchar si el usuario actual ya ha dado like (para marcar el botón)
+                const userLikeRef = likeRef.child(`users/${currentUser.username}`);
+                userLikeRef.on('value', (snapshot) => {
+                    const liked = snapshot.val() === true;
+                    const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
+                    if (btn) {
+                        if (liked) {
+                            btn.classList.add('liked');
+                            btn.style.background = "#ff7eb3";
+                            btn.style.color = "#1e1a2f";
+                        } else {
+                            btn.classList.remove('liked');
+                            btn.style.background = "rgba(255,255,255,0.1)";
+                            btn.style.color = "white";
+                        }
+                    }
+                });
+            });
+            attachLikeEventsFirebase();
         } catch (error) {
             console.error('Error cargando noticias:', error);
-            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias. Asegúrate de que el archivo <strong>noticias.json</strong> existe en el repositorio y tiene el formato correcto.<br><br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;">Reintentar</button></div>`;
+            document.getElementById('newsContainer').innerHTML = `<div class="news-item">⚠️ Error al cargar noticias. Asegúrate de que noticias.json existe.<br><br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;">Reintentar</button></div>`;
         }
     }
 
-    function attachLikeEvents() {
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.removeEventListener('click', handleLike);
-            btn.addEventListener('click', handleLike);
-            const id = btn.dataset.id;
-            if (localStorage.getItem(`liked_${id}`) === 'true') {
-                btn.innerHTML = '❤️ Me gusta';
-                btn.classList.add('liked');
-            } else {
-                btn.innerHTML = '🤍 Me gusta';
-                btn.classList.remove('liked');
-            }
+    function attachLikeEventsFirebase() {
+        const btns = document.querySelectorAll('.like-btn');
+        btns.forEach(btn => {
+            btn.removeEventListener('click', handleLikeFirebase);
+            btn.addEventListener('click', handleLikeFirebase);
         });
     }
-    function handleLike(e) {
-        const btn = e.currentTarget;
-        const id = btn.dataset.id;
-        const liked = localStorage.getItem(`liked_${id}`) === 'true';
-        if (!liked) {
-            localStorage.setItem(`liked_${id}`, 'true');
-            btn.innerHTML = '❤️ Me gusta';
-            btn.classList.add('liked');
+
+    async function handleLikeFirebase(event) {
+        const btn = event.currentTarget;
+        const newsId = btn.dataset.id;
+        const likeRef = database.ref(`likes/${newsId}`);
+        const userLikeRef = likeRef.child(`users/${currentUser.username}`);
+        
+        // Verificar si ya dio like
+        const snapshot = await userLikeRef.once('value');
+        const alreadyLiked = snapshot.val() === true;
+        
+        if (!alreadyLiked) {
+            // Transacción para incrementar contador y añadir usuario
+            likeRef.child('count').transaction(current => (current || 0) + 1);
+            userLikeRef.set(true);
             Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false });
         } else {
-            localStorage.removeItem(`liked_${id}`);
-            btn.innerHTML = '🤍 Me gusta';
-            btn.classList.remove('liked');
-            Swal.fire({ title: 'Me gusta eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
+            // Opcional: permitir quitar like
+            likeRef.child('count').transaction(current => (current || 1) - 1);
+            userLikeRef.remove();
+            Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
         }
     }
 
+    // ========== INICIALIZACIÓN GENERAL ==========
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         container.innerHTML = "";
@@ -383,7 +419,7 @@
         generateMemberCards();
         loadMessages();
         loadCuriosities();
-        loadNewsFromJSON();
+        loadNewsFromJSON(); // esto ahora configura los likes globales
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         initNavigation();
