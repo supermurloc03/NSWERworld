@@ -7,6 +7,7 @@
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <!-- SweetAlert2 -->
@@ -24,10 +25,12 @@
             measurementId: "G-2B1RXHCBXH"
         };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const database = firebase.database();
     </script>
     
     <style>
+        /* ========== ESTILOS (igual que antes, pero añadimos estilos para login) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 70px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -78,35 +81,72 @@
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .chat-input button { background: #7c3aed; padding: 0 20px; border-radius: 60px; border: none; color: white; cursor: pointer; }
         @media (max-width: 750px) { .navbar { flex-direction: column; gap: 6px; padding: 6px 15px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .hero-logo { max-width: 300px; } body { padding-top: 90px; } }
-        .welcome-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .welcome-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 500px; text-align: center; border: 2px solid #ff7eb3; }
-        .bias-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; }
-        .bias-option { background: #2d2a55; border: none; color: white; padding: 8px 18px; border-radius: 60px; cursor: pointer; }
-        .bias-option.selected { background: #ff7eb3; color: #1e1a2f; }
-        .enter-btn { background: #7c3aed; border: none; padding: 14px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 8px; color: #ffb3e0; }
+        
+        /* Estilos para los modales de login y registro */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .auth-card {
+            background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
+            border-radius: 40px;
+            padding: 35px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            border: 2px solid #ff7eb3;
+        }
+        .auth-card h2 { margin-bottom: 10px; }
+        .auth-card p { margin-bottom: 20px; color: #b9c3ff; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; color: #ffb3e0; }
         .input-group input { width: 100%; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
+        .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
+        .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
+        .nickname-group { margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div id="welcomeModal" class="welcome-modal">
-    <div class="welcome-card">
-        <h2>✨ NSWER WORLD ✨</h2>
-        <p>Completa tu perfil para entrar</p>
+<!-- MODAL DE LOGIN/REGISTRO -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
+        <p id="authSubtitle">Accede con tu cuenta NSWER</p>
+        
         <div class="input-group">
-            <label>🎤 Tu nombre de NSWER:</label>
-            <input type="text" id="newUsername" placeholder="Ej: NSWER_Lover" maxlength="20">
+            <label>📧 Correo electrónico</label>
+            <input type="email" id="authEmail" placeholder="tu@email.com">
         </div>
         <div class="input-group">
-            <label>💖 Elige a tu bias (fijo por ahora):</label>
-            <div id="biasSelection" class="bias-buttons"></div>
+            <label>🔒 Contraseña</label>
+            <input type="password" id="authPassword" placeholder="••••••">
         </div>
-        <button id="enterButton" class="enter-btn">🌟 Entrar 🌟</button>
+        
+        <div id="nicknameGroup" class="input-group nickname-group" style="display: none;">
+            <label>🎤 Nombre de NSWER (visible en el chat)</label>
+            <input type="text" id="authNickname" placeholder="Ej: NSWER_Lover">
+        </div>
+        
+        <button id="authActionBtn" class="auth-btn">Ingresar</button>
+        
+        <div class="toggle-auth">
+            ¿No tienes cuenta? <span id="toggleAuthLink">Regístrate aquí</span>
+        </div>
     </div>
 </div>
 
+<!-- CONTENIDO PRINCIPAL (se oculta hasta iniciar sesión) -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="logo-area">
@@ -118,6 +158,7 @@
             <button class="nav-btn" data-section="news">📢 Novedades</button>
             <button class="nav-btn" data-section="chat">💬 Chat</button>
         </div>
+        <button id="logoutBtn" style="background:#ff4757; border:none; padding:4px 12px; border-radius:40px; color:white; cursor:pointer;">Cerrar sesión</button>
     </div>
 
     <div class="profile-area">
@@ -150,14 +191,8 @@
 
     <div id="newsSection" class="section">
         <div class="news-grid">
-            <div class="news-card">
-                <h3>📰 Últimas noticias</h3>
-                <div id="newsContainer"></div>
-            </div>
-            <div class="curiosities-card">
-                <h3>🤯 Curiosidades de NMIXX</h3>
-                <div id="curiositiesContainer"></div>
-            </div>
+            <div class="news-card"><h3>📰 Últimas noticias</h3><div id="newsContainer"></div></div>
+            <div class="curiosities-card"><h3>🤯 Curiosidades de NMIXX</h3><div id="curiositiesContainer"></div></div>
         </div>
     </div>
 
@@ -187,8 +222,12 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-    let currentUser = { username: "", xp: 0, level: 1, bias: "Lily" };
 
+    // Estado global del usuario autenticado
+    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "" };
+    let isAuthReady = false;
+
+    // Colores
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
         "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9"
@@ -198,8 +237,81 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== FUNCIONES USUARIO Y NIVEL ==========
-    function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
+    // ========== GUARDAR Y CARGAR DATOS DEL USUARIO EN FIREBASE ==========
+    function saveUserDataToFirebase() {
+        if (!currentUser.uid) return;
+        const userRef = database.ref(`users/${currentUser.uid}`);
+        userRef.update({
+            username: currentUser.username,
+            xp: currentUser.xp,
+            level: currentUser.level,
+            bias: currentUser.bias,
+            email: currentUser.email
+        });
+    }
+
+    async function loadUserDataFromFirebase(uid) {
+        const snapshot = await database.ref(`users/${uid}`).once('value');
+        const data = snapshot.val();
+        if (data) {
+            currentUser.username = data.username || "NSWER_Fan";
+            currentUser.xp = data.xp || 0;
+            currentUser.level = data.level || 1;
+            currentUser.bias = data.bias || "Lily";
+        } else {
+            // Primer inicio: pedir nombre y bias
+            currentUser.username = "NSWER_Fan";
+            currentUser.xp = 0;
+            currentUser.level = 1;
+            currentUser.bias = "Lily";
+            // Mostrar modal para elegir nombre y bias
+            await showProfileSetupModal();
+        }
+        updateUI();
+        saveUserDataToFirebase(); // guardar por si acaso
+    }
+
+    async function showProfileSetupModal() {
+        return new Promise((resolve) => {
+            Swal.fire({
+                title: '¡Bienvenido NSWER!',
+                html: `
+                    <div style="text-align:left">
+                        <label>🎤 Tu nombre de usuario:</label>
+                        <input id="swal-nickname" class="swal2-input" placeholder="Ej: NSWER_Lover" value="NSWER_${Math.floor(Math.random()*1000)}">
+                        <label style="margin-top:10px">💖 Elige tu bias (no podrás cambiarlo después):</label>
+                        <select id="swal-bias" class="swal2-select">
+                            ${members.map(m => `<option value="${m}">${m}</option>`).join('')}
+                        </select>
+                    </div>
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const nickname = document.getElementById('swal-nickname').value.trim();
+                    const bias = document.getElementById('swal-bias').value;
+                    if (!nickname || nickname.length < 3) {
+                        Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
+                        return false;
+                    }
+                    return { nickname, bias };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    currentUser.username = result.value.nickname;
+                    currentUser.bias = result.value.bias;
+                    currentUser.xp = 0;
+                    currentUser.level = 1;
+                    saveUserDataToFirebase();
+                    updateUI();
+                    resolve();
+                } else {
+                    // Por si cierra, recargamos valores por defecto
+                    resolve();
+                }
+            });
+        });
+    }
+
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
         document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
@@ -209,6 +321,7 @@
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
     }
+
     function recalcLevel() {
         let newLevel = 1;
         for (let i=levelThresholds.length-1; i>=0; i--) {
@@ -217,18 +330,31 @@
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
             Swal.fire({ title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`, text: `Has subido al NIVEL ${currentUser.level}`, icon: 'success', timer: 2000, showConfirmButton: false });
-            saveUserData(); updateUI();
+            saveUserDataToFirebase();
+            updateUI();
         }
-        saveUserData();
+        saveUserDataToFirebase();
     }
-    function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
+    function addXP(points=1) { 
+        currentUser.xp += points; 
+        recalcLevel(); 
+        updateUI(); 
+        saveUserDataToFirebase(); 
+    }
 
-    // ========== CHAT FIREBASE ==========
+    // ========== CHAT ==========
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
         if (!text) return;
-        database.ref('chatMessages').push({ username: currentUser.username, text, bias: currentUser.bias, level: currentUser.level, timestamp: Date.now() });
+        database.ref('chatMessages').push({
+            username: currentUser.username,
+            text: text,
+            bias: currentUser.bias,
+            level: currentUser.level,
+            timestamp: Date.now(),
+            uid: currentUser.uid
+        });
         input.value = "";
         addXP(1);
     }
@@ -241,7 +367,7 @@
             container.innerHTML = "";
             if (messages.length === 0) { container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>'; return; }
             messages.forEach(msg => {
-                const isOwn = msg.username === currentUser.username;
+                const isOwn = msg.uid === currentUser.uid;
                 const div = document.createElement("div");
                 div.className = `message ${isOwn ? 'own' : ''}`;
                 const usernameColor = biasColors[msg.bias] || "#ffb3e0";
@@ -261,22 +387,21 @@
     }
 
     // ========== NOTICIAS CON LIKES GLOBALES (FIREBASE) ==========
-    let noticiasActuales = []; // guardamos las noticias para referenciar ids
+    let noticiasActuales = [];
 
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
         try {
-            const response = await fetch('noticias.json?t=' + Date.now()); // evitar caché
+            const response = await fetch('noticias.json?t=' + Date.now());
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const noticias = await response.json();
             if (!noticias.length) {
-                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias. Edita noticias.json para añadir.</div>';
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>';
                 return;
             }
             noticiasActuales = noticias;
             newsContainer.innerHTML = '';
-            // Crear contenedores para cada noticia (sin el botón aún, se añadirá después)
             noticias.forEach(noticia => {
                 const item = document.createElement('div');
                 item.className = 'news-item';
@@ -292,72 +417,67 @@
                 `;
                 newsContainer.appendChild(item);
             });
-            // Inicializar listeners de Firebase para cada noticia
+            // Escuchar contadores
             noticias.forEach(noticia => {
                 const likeRef = database.ref(`likes/${noticia.id}`);
-                // Escuchar cambios en el contador
                 likeRef.child('count').on('value', (snapshot) => {
                     const count = snapshot.val() || 0;
-                    const btnSpan = document.querySelector(`#news-${noticia.id} .like-count`);
-                    if (btnSpan) btnSpan.innerText = count;
+                    const span = document.querySelector(`#news-${noticia.id} .like-count`);
+                    if (span) span.innerText = count;
                 });
-                // Escuchar si el usuario actual ya ha dado like (para marcar el botón)
-                const userLikeRef = likeRef.child(`users/${currentUser.username}`);
-                userLikeRef.on('value', (snapshot) => {
-                    const liked = snapshot.val() === true;
-                    const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
-                    if (btn) {
-                        if (liked) {
-                            btn.classList.add('liked');
-                            btn.style.background = "#ff7eb3";
-                            btn.style.color = "#1e1a2f";
-                        } else {
-                            btn.classList.remove('liked');
-                            btn.style.background = "rgba(255,255,255,0.1)";
-                            btn.style.color = "white";
+                if (currentUser.uid) {
+                    const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
+                    userLikeRef.on('value', (snapshot) => {
+                        const liked = snapshot.val() === true;
+                        const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
+                        if (btn) {
+                            if (liked) {
+                                btn.classList.add('liked');
+                                btn.style.background = "#ff7eb3";
+                                btn.style.color = "#1e1a2f";
+                            } else {
+                                btn.classList.remove('liked');
+                                btn.style.background = "rgba(255,255,255,0.1)";
+                                btn.style.color = "white";
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
             attachLikeEventsFirebase();
         } catch (error) {
-            console.error('Error cargando noticias:', error);
-            document.getElementById('newsContainer').innerHTML = `<div class="news-item">⚠️ Error al cargar noticias. Asegúrate de que noticias.json existe.<br><br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;">Reintentar</button></div>`;
+            console.error(error);
+            document.getElementById('newsContainer').innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
         }
     }
 
     function attachLikeEventsFirebase() {
-        const btns = document.querySelectorAll('.like-btn');
-        btns.forEach(btn => {
+        document.querySelectorAll('.like-btn').forEach(btn => {
             btn.removeEventListener('click', handleLikeFirebase);
             btn.addEventListener('click', handleLikeFirebase);
         });
     }
 
     async function handleLikeFirebase(event) {
+        if (!currentUser.uid) return;
         const btn = event.currentTarget;
         const newsId = btn.dataset.id;
         const likeRef = database.ref(`likes/${newsId}`);
-        const userLikeRef = likeRef.child(`users/${currentUser.username}`);
-        
-        // Verificar si ya dio like
+        const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
         const snapshot = await userLikeRef.once('value');
         const alreadyLiked = snapshot.val() === true;
-        
         if (!alreadyLiked) {
-            // Transacción para incrementar contador y añadir usuario
             likeRef.child('count').transaction(current => (current || 0) + 1);
             userLikeRef.set(true);
             Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false });
         } else {
-            // Opcional: permitir quitar like
             likeRef.child('count').transaction(current => (current || 1) - 1);
             userLikeRef.remove();
             Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
         }
     }
 
-    // ========== INICIALIZACIÓN GENERAL ==========
+    // ========== GENERAR TARJETAS DE MIEMBROS ==========
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         container.innerHTML = "";
@@ -377,6 +497,7 @@
         });
     }
 
+    // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection') };
@@ -391,58 +512,149 @@
         }));
     }
 
-    function showWelcomeModal() {
-        document.getElementById("welcomeModal").style.display = "flex";
-        document.getElementById("mainContent").style.display = "none";
-        const container = document.getElementById("biasSelection");
-        container.innerHTML = "";
-        members.forEach(m => {
-            const btn = document.createElement("button");
-            btn.innerText = m;
-            btn.classList.add("bias-option");
-            btn.onclick = () => { document.querySelectorAll(".bias-option").forEach(b=>b.classList.remove("selected")); btn.classList.add("selected"); currentUser.bias = m; };
-            container.appendChild(btn);
-        });
-        document.querySelector(".bias-option")?.classList.add("selected");
-        currentUser.bias = members[0];
-    }
+    // ========== LOGIN / REGISTRO ==========
+    let isLoginMode = true;
+    const authModal = document.getElementById('authModal');
+    const authTitle = document.getElementById('authTitle');
+    const authSubtitle = document.getElementById('authSubtitle');
+    const nicknameGroup = document.getElementById('nicknameGroup');
+    const authActionBtn = document.getElementById('authActionBtn');
+    const toggleLink = document.getElementById('toggleAuthLink');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authNickname = document.getElementById('authNickname');
 
-    function finalizeWelcome() {
-        const username = document.getElementById("newUsername").value.trim();
-        if (!username || username.length<3) { Swal.fire('Error', 'Nombre válido (mínimo 3 caracteres)', 'error'); return; }
-        currentUser.username = username;
-        currentUser.xp = 0; currentUser.level = 1;
-        saveUserData();
-        document.getElementById("welcomeModal").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-        updateUI();
-        generateMemberCards();
-        loadMessages();
-        loadCuriosities();
-        loadNewsFromJSON(); // esto ahora configura los likes globales
-        document.getElementById("sendBtn").onclick = sendMessage;
-        document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-        initNavigation();
-    }
+    toggleLink.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            authTitle.innerText = '✨ Iniciar Sesión ✨';
+            authSubtitle.innerText = 'Accede con tu cuenta NSWER';
+            authActionBtn.innerText = 'Ingresar';
+            nicknameGroup.style.display = 'none';
+            toggleLink.innerText = 'Regístrate aquí';
+        } else {
+            authTitle.innerText = '✨ Registro NSWER ✨';
+            authSubtitle.innerText = 'Crea tu cuenta para unirte';
+            authActionBtn.innerText = 'Registrarse';
+            nicknameGroup.style.display = 'block';
+            toggleLink.innerText = 'Iniciar sesión';
+        }
+    });
 
-    function init() {
-        const saved = localStorage.getItem("nmixx_fan_user");
-        if (saved) {
-            try { currentUser = JSON.parse(saved); } catch(e) {}
-            document.getElementById("welcomeModal").style.display = "none";
-            document.getElementById("mainContent").style.display = "block";
+    authActionBtn.addEventListener('click', async () => {
+        const email = authEmail.value.trim();
+        const password = authPassword.value.trim();
+        if (!email || !password) {
+            Swal.fire('Error', 'Completa todos los campos', 'error');
+            return;
+        }
+        if (!isLoginMode) {
+            const nickname = authNickname.value.trim();
+            if (!nickname || nickname.length < 3) {
+                Swal.fire('Error', 'El nombre de NSWER debe tener al menos 3 caracteres', 'error');
+                return;
+            }
+            try {
+                const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCred.user;
+                // Guardar nickname y datos iniciales en Realtime Database
+                await database.ref(`users/${user.uid}`).set({
+                    username: nickname,
+                    xp: 0,
+                    level: 1,
+                    bias: "Lily",
+                    email: email
+                });
+                Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
+                authModal.style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: "Lily", email: email };
+                updateUI();
+                generateMemberCards();
+                loadMessages();
+                loadCuriosities();
+                loadNewsFromJSON();
+                initNavigation();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+            }
+        } else {
+            // Login
+            try {
+                const userCred = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCred.user;
+                const snapshot = await database.ref(`users/${user.uid}`).once('value');
+                const data = snapshot.val();
+                if (data) {
+                    currentUser = {
+                        uid: user.uid,
+                        username: data.username || "NSWER_Fan",
+                        xp: data.xp || 0,
+                        level: data.level || 1,
+                        bias: data.bias || "Lily",
+                        email: email
+                    };
+                } else {
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email };
+                }
+                authModal.style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                updateUI();
+                generateMemberCards();
+                loadMessages();
+                loadCuriosities();
+                loadNewsFromJSON();
+                initNavigation();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+            }
+        }
+    });
+
+    // Cerrar sesión
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await auth.signOut();
+        window.location.reload();
+    });
+
+    // Verificar si ya hay sesión activa al cargar
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            // Ya hay sesión, cargar datos y mostrar página
+            const snapshot = await database.ref(`users/${user.uid}`).once('value');
+            const data = snapshot.val();
+            if (data) {
+                currentUser = {
+                    uid: user.uid,
+                    username: data.username || "NSWER_Fan",
+                    xp: data.xp || 0,
+                    level: data.level || 1,
+                    bias: data.bias || "Lily",
+                    email: user.email
+                };
+            } else {
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email };
+            }
+            authModal.style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
             updateUI();
             generateMemberCards();
             loadMessages();
             loadCuriosities();
             loadNewsFromJSON();
+            initNavigation();
             document.getElementById("sendBtn").onclick = sendMessage;
             document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-            initNavigation();
-        } else { showWelcomeModal(); }
-        document.getElementById("enterButton").onclick = finalizeWelcome;
-    }
-    init();
+        } else {
+            // No hay sesión, mostrar modal de login
+            authModal.style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+    });
 </script>
 </body>
 </html>
