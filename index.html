@@ -59,7 +59,7 @@
             padding: 0 20px;
         }
 
-        /* Barra navegación - logo más pequeño y sin solapamiento */
+        /* Barra navegación - logo rectangular sin círculo */
         .navbar {
             position: fixed;
             top: 0;
@@ -78,13 +78,14 @@
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .logo-img {
-            width: 24px;    /* Más pequeño para que no se tape */
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
+            height: 30px;      /* Altura fija, ancho automático */
+            width: auto;
+            object-fit: contain;
+            /* Sin border-radius, sin círculo */
+            display: block;
         }
         .logo-text {
             font-size: 1.1rem;
@@ -198,11 +199,10 @@
             margin-bottom: 30px;
         }
         .hero-logo {
-            max-width: 320px;   /* Aumentado a 320px */
-            width: 85%;
+            max-width: 450px;   /* Aumentado a 450px */
+            width: 90%;
             margin: 0 auto 20px;
             display: block;
-            border-radius: 30px;
         }
         .hero p {
             font-size: 1.1rem;
@@ -339,7 +339,7 @@
             .member-card { width: 95px; }
             .avatar { width: 65px; height: 65px; font-size: 1.8rem; }
             .news-grid { grid-template-columns: 1fr; }
-            .hero-logo { max-width: 250px; }
+            .hero-logo { max-width: 300px; }
             body { padding-top: 90px; }
         }
         .welcome-modal {
@@ -434,7 +434,8 @@
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="logo-area">
-            <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER" onerror="this.src='https://via.placeholder.com/24?text=N'">
+            <!-- Logo rectangular, sin círculo -->
+            <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER">
             <span class="logo-text">NSWER WORLD</span>
         </div>
         <div class="nav-links">
@@ -462,7 +463,8 @@
             </div>
         </div>
         <div class="hero">
-            <img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="NSWER WORLD Logo" onerror="this.src='https://via.placeholder.com/320?text=NSWER'">
+            <!-- Logo central más grande -->
+            <img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="NSWER WORLD Logo">
             <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </div>
         <div class="member-grid" id="memberGrid"></div>
