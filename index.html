@@ -173,13 +173,6 @@
 </div>
 
 <script>
-    // ========== NOTICIAS DIRECTAMENTE AQUÍ (SIN ARCHIVO EXTERNO) ==========
-    const noticias = [
-        { fecha: "20 Mayo 2026", texto: "NMIXX anuncia su nuevo comeback 'Fe3O4: STICK OUT' para el 15 de junio!", id: 1 },
-        { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en los K-Vibe Awards 2026.", id: 2 },
-        { fecha: "10 Mayo 2026", texto: "Lily y Haewon realizarán un live especial este viernes en YouTube.", id: 3 }
-    ];
-
     const curiosidadesList = [
         "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
         "Haewon fue aprendiz por 7 años antes de debutar.",
@@ -187,7 +180,9 @@
         "BAE toca la batería y practicó artes marciales.",
         "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.",
         "Kyujin puede imitar a todos los miembros a la perfección.",
-        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans."
+        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.",
+        "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.",
+        "El nombre NMIXX combina 'N' (now) y 'MIX' (combinación), simbolizando diversidad."
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
@@ -262,26 +257,38 @@
         shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
-    // Cargar noticias desde la variable local (siempre funciona)
-    function loadNews() {
+    // ========== NOTICIAS DESDE ARCHIVO JSON LOCAL ==========
+    async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
-        if (!newsContainer) return;
-        newsContainer.innerHTML = '';
-        noticias.forEach(noticia => {
-            const item = document.createElement('div');
-            item.className = 'news-item';
-            item.innerHTML = `
-                <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
-                <div class="news-text">${escapeHtml(noticia.texto)}</div>
-                <div class="like-controls">
-                    <button class="like-btn" data-id="${noticia.id}">
-                        ${localStorage.getItem(`liked_${noticia.id}`) === 'true' ? '❤️' : '🤍'} Me gusta
-                    </button>
-                </div>
-            `;
-            newsContainer.appendChild(item);
-        });
-        attachLikeEvents();
+        newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
+        try {
+            const response = await fetch('noticias.json');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const noticias = await response.json();
+            if (!noticias.length) {
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias. Edita el archivo noticias.json para añadir.</div>';
+                return;
+            }
+            newsContainer.innerHTML = '';
+            noticias.forEach(noticia => {
+                const item = document.createElement('div');
+                item.className = 'news-item';
+                item.innerHTML = `
+                    <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
+                    <div class="news-text">${escapeHtml(noticia.texto)}</div>
+                    <div class="like-controls">
+                        <button class="like-btn" data-id="${noticia.id}">
+                            ${localStorage.getItem(`liked_${noticia.id}`) === 'true' ? '❤️' : '🤍'} Me gusta
+                        </button>
+                    </div>
+                `;
+                newsContainer.appendChild(item);
+            });
+            attachLikeEvents();
+        } catch (error) {
+            console.error('Error cargando noticias:', error);
+            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias. Asegúrate de que el archivo <strong>noticias.json</strong> existe en el repositorio y tiene el formato correcto.<br><br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;">Reintentar</button></div>`;
+        }
     }
 
     function attachLikeEvents() {
@@ -376,7 +383,7 @@
         generateMemberCards();
         loadMessages();
         loadCuriosities();
-        loadNews();
+        loadNewsFromJSON();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         initNavigation();
@@ -392,7 +399,7 @@
             generateMemberCards();
             loadMessages();
             loadCuriosities();
-            loadNews();
+            loadNewsFromJSON();
             document.getElementById("sendBtn").onclick = sendMessage;
             document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
             initNavigation();
