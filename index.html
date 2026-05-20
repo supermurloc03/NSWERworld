@@ -163,16 +163,16 @@
 </div>
 
 <script>
-    // ========== CONFIGURACIÓN CORRECTA DE FIREBASE ==========
+    // ========== CONFIGURACIÓN DEFINITIVA DE FIREBASE ==========
     const firebaseConfig = {
-        apiKey: "AIzaSyCDFKc1Ws8PccR633Sd_9KWag7WcwOKQsY",
+        apiKey: "AIzaSyCDFKC1WS8PccR633Sd_9KWag7WcWOKQsY",
         authDomain: "chat-nswer.firebaseapp.com",
         databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com",
         projectId: "chat-nswer",
         storageBucket: "chat-nswer.firebasestorage.app",
         messagingSenderId: "267108137321",
         appId: "1:267108137321:web:c884165584762703bc65f8",
-        measurementId: "G-2B1RXHCBXYY"
+        measurementId: "G-2B1RXHCBXY"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -192,7 +192,6 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "" };
 
     const biasColors = {
@@ -204,7 +203,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== GUARDAR Y CARGAR DATOS DEL USUARIO ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -225,7 +224,6 @@
             currentUser.level = data.level || 1;
             currentUser.bias = data.bias || "Lily";
         } else {
-            // Primer inicio: pedir nombre y bias
             await showProfileSetupModal();
         }
         updateUI();
@@ -264,10 +262,8 @@
                     currentUser.level = 1;
                     saveUserDataToFirebase();
                     updateUI();
-                    resolve();
-                } else {
-                    resolve();
                 }
+                resolve();
             });
         });
     }
@@ -295,7 +291,6 @@
         }
         saveUserDataToFirebase();
     }
-
     function addXP(points=1) { 
         currentUser.xp += points; 
         recalcLevel(); 
@@ -566,13 +561,11 @@
         }
     });
 
-    // Cerrar sesión
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         await auth.signOut();
         window.location.reload();
     });
 
-    // Verificar sesión actual
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             const snapshot = await database.ref(`users/${user.uid}`).once('value');
