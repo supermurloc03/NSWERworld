@@ -1,17 +1,22 @@
 [
   {
-    "fecha": "20 Mayo 2026",
-    "texto": "NMIXX anuncia su nuevo comeback 'Fe3O4: STICK OUT' para el 15 de junio!",
-    "id": 1
+    "fecha": "19 Mayo 2026",
+    "texto": "🔥 ¡NMIXX se corona en Hanteo! El grupo domina los charts mundiales y de álbumes de Hanteo en la segunda semana de mayo con su nuevo EP 'Heavy Serenade', vendiendo más de 345,000 copias en su primera semana.",
+    "id": 4
   },
   {
     "fecha": "15 Mayo 2026",
-    "texto": "NMIXX gana 'Mejor Performance' en los K-Vibe Awards 2026.",
-    "id": 2
+    "texto": "🖋️ ¡Talento sin límites! Las miembros Lily y Bae han participado en la composición del nuevo álbum 'Heavy Serenade', contribuyendo en temas como 'Crescendo' y demostrando una vez más su talento como artistas.",
+    "id": 5
   },
   {
-    "fecha": "10 Mayo 2026",
-    "texto": "Lily y Haewon realizarán un live especial este viernes en YouTube.",
-    "id": 3
+    "fecha": "11 Mayo 2026",
+    "texto": "🎵 NMIXX regresa con 'Heavy Serenade'. El grupo lanza su quinto EP, liderado por el tema principal del mismo nombre, marcando un nuevo capítulo en su carrera musical.",
+    "id": 6
+  },
+  {
+    "fecha": "Próximamente",
+    "texto": "✈️ ¡Prepárate NSWER! La gira mundial 'Episode 1: Zero Frontier' anuncia sus próximas paradas en Asia: Singapur (20 de junio), Kaohsiung (11 de julio) y Hong Kong (25-26 de julio). ¿Listo para ver a NMIXX en vivo?",
+    "id": 7
   }
 ]
