@@ -25,7 +25,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        console.log("✅ Firebase conectado");
     </script>
     
     <style>
@@ -35,7 +34,6 @@
             box-sizing: border-box;
             font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
         }
-
         body {
             background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a);
             color: #f0f0f0;
@@ -62,8 +60,6 @@
             margin: 0 auto;
             padding: 0 20px;
         }
-
-        /* Barra navegación */
         .navbar {
             position: fixed;
             top: 0;
@@ -88,7 +84,6 @@
             height: 30px;
             width: auto;
             object-fit: contain;
-            display: block;
         }
         .logo-text {
             font-size: 1.1rem;
@@ -118,8 +113,6 @@
             color: white;
             box-shadow: 0 0 6px #a855f7;
         }
-
-        /* Perfil */
         .profile-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -130,7 +123,6 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            border: 1px solid rgba(255,126,179,0.5);
         }
         .user-info {
             display: flex;
@@ -178,8 +170,6 @@
             border-radius: 40px;
             font-size: 0.85rem;
         }
-
-        /* Secciones */
         .section {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -191,7 +181,6 @@
             from { opacity: 0; transform: translateY(10px);}
             to { opacity: 1; transform: translateY(0);}
         }
-
         .hero {
             text-align: center;
             background: rgba(0,0,0,0.5);
@@ -246,8 +235,6 @@
             color: #ffb3e0;
             font-size: 0.9rem;
         }
-
-        /* Novedades */
         .news-grid {
             display: flex;
             flex-direction: column;
@@ -265,9 +252,6 @@
             padding: 15px;
             margin-bottom: 15px;
             transition: transform 0.2s;
-        }
-        .news-item:hover {
-            transform: translateX(5px);
         }
         .news-date {
             font-size: 0.7rem;
@@ -292,16 +276,10 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
         }
         .like-btn.liked {
             background: #ff7eb3;
             color: #1e1a2f;
-        }
-        .like-btn:hover {
-            background: rgba(255,126,179,0.5);
         }
         .curio-item {
             background: rgba(0,0,0,0.3);
@@ -309,8 +287,6 @@
             padding: 10px 15px;
             margin-bottom: 12px;
         }
-
-        /* Chat */
         .chat-container {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -541,7 +517,6 @@
 </div>
 
 <script>
-    // ---------- DATOS LOCALES ----------
     const curiosidadesList = [
         "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
         "Haewon fue aprendiz por 7 años antes de debutar.",
@@ -591,31 +566,18 @@
         }
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
-            Swal.fire({
-                title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`,
-                text: `Has subido al NIVEL ${currentUser.level}`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            Swal.fire({ title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`, text: `Has subido al NIVEL ${currentUser.level}`, icon: 'success', timer: 2000, showConfirmButton: false });
             saveUserData(); updateUI();
         }
         saveUserData();
     }
     function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
 
-    // Firebase Chat
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
         if (!text) return;
-        database.ref('chatMessages').push({
-            username: currentUser.username,
-            text: text,
-            bias: currentUser.bias,
-            level: currentUser.level,
-            timestamp: Date.now()
-        });
+        database.ref('chatMessages').push({ username: currentUser.username, text, bias: currentUser.bias, level: currentUser.level, timestamp: Date.now() });
         input.value = "";
         addXP(1);
     }
@@ -626,139 +588,99 @@
             messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
             const container = document.getElementById("chatMessages");
             container.innerHTML = "";
-            if (messages.length === 0) {
-                container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>';
-                return;
-            }
+            if (messages.length === 0) { container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>'; return; }
             messages.forEach(msg => {
                 const isOwn = msg.username === currentUser.username;
                 const div = document.createElement("div");
                 div.className = `message ${isOwn ? 'own' : ''}`;
                 const usernameColor = biasColors[msg.bias] || "#ffb3e0";
                 const levelTag = msg.level ? `<span class="level-tag">⚡ Nvl ${msg.level}</span>` : '';
-                div.innerHTML = `
-                    <div class="msg-header">
-                        <span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span>
-                        <span class="username" style="color: ${usernameColor};">${escapeHtml(msg.username)}</span>
-                        ${levelTag}
-                    </div>
-                    <div>${escapeHtml(msg.text)}</div>
-                `;
+                div.innerHTML = `<div class="msg-header"><span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span><span class="username" style="color: ${usernameColor};">${escapeHtml(msg.username)}</span>${levelTag}</div><div>${escapeHtml(msg.text)}</div>`;
                 container.appendChild(div);
             });
             container.scrollTop = container.scrollHeight;
         });
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
-
     function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
-        if (!curioDiv) return;
         curioDiv.innerHTML = "";
         const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
-        shuffled.slice(0, 6).forEach(c => {
-            curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`;
-        });
+        shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
-    // ---------- NOTICIAS DESDE GOOGLE SHEETS (CON "ME GUSTA") ----------
-    // ✅ URL CORRECTA CON EL ID QUE ME DISTE
-    const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1EjDK4NBm5a_EQnKPl3RZEI4c4mDnToCLfOexl2B_TqY/gviz/tq?tqx=out:json&range=A:C&gid=0';
-
+    // ========== NOTICIAS DESDE GOOGLE SHEETS - URL CORREGIDA ==========
     async function loadNewsFromSheets() {
+        const newsContainer = document.getElementById('newsContainer');
+        newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
         try {
-            console.log("Cargando noticias desde:", GOOGLE_SHEETS_URL);
-            const response = await fetch(GOOGLE_SHEETS_URL);
+            // ✅ URL CORRECTA (la que sacaste de Publicar en la web)
+            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnjaYN7FBugzxgI02zh6Sx_va1_oc39NgDleqR-_swwhQ1ZsnMwNOBFPUWfbFao4mUEllVtFXynyne/gviz/tq?tqx=out:json&range=A:C&gid=0';
+            console.log("Cargando desde:", url);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const text = await response.text();
-            console.log("Respuesta recibida (primeros 100 chars):", text.substring(0, 100));
-            // Limpiar respuesta
-            const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-            const data = JSON.parse(jsonString);
+            const jsonStart = text.indexOf('{');
+            const jsonEnd = text.lastIndexOf('}');
+            const jsonStr = text.substring(jsonStart, jsonEnd + 1);
+            const data = JSON.parse(jsonStr);
             const rows = data.table.rows;
-            const newsContainer = document.getElementById('newsContainer');
-            if (!newsContainer) return;
+            if (!rows || rows.length === 0) {
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias. Añade datos en tu hoja (fecha, texto, id).</div>';
+                return;
+            }
             newsContainer.innerHTML = '';
-
             for (let i = 0; i < rows.length; i++) {
                 const cells = rows[i].c;
                 if (!cells[0] || !cells[1] || !cells[2]) continue;
                 const fecha = cells[0].v;
                 const texto = cells[1].v;
                 const id = cells[2].v.toString();
-
-                const newsItem = document.createElement('div');
-                newsItem.className = 'news-item';
-                newsItem.innerHTML = `
-                    <div class="news-date">📅 ${escapeHtml(fecha)}</div>
-                    <div class="news-text">${escapeHtml(texto)}</div>
-                    <div class="like-controls">
-                        <button class="like-btn" data-id="${id}">
-                            ${localStorage.getItem(`liked_${id}`) === 'true' ? '❤️' : '🤍'} Me gusta
-                        </button>
-                    </div>
-                `;
-                newsContainer.appendChild(newsItem);
+                const item = document.createElement('div');
+                item.className = 'news-item';
+                item.innerHTML = `<div class="news-date">📅 ${escapeHtml(fecha)}</div><div class="news-text">${escapeHtml(texto)}</div><div class="like-controls"><button class="like-btn" data-id="${id}">${localStorage.getItem(`liked_${id}`) === 'true' ? '❤️' : '🤍'} Me gusta</button></div>`;
+                newsContainer.appendChild(item);
             }
             attachLikeEvents();
-            if (rows.length === 0) {
-                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias aún. ¡Añade algunas en Google Sheets!</div>';
-            }
         } catch (error) {
-            console.error('Error cargando noticias:', error);
-            const newsContainer = document.getElementById('newsContainer');
-            if (newsContainer) newsContainer.innerHTML = '<div class="news-item">⚠️ Error al cargar noticias. Verifica que la hoja esté publicada correctamente.</div>';
+            console.error("Error detallado:", error);
+            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias. Verifica que la hoja esté publicada y que tenga datos.<br><br><button onclick="loadNewsFromSheets()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;">Reintentar</button></div>`;
         }
     }
 
     function attachLikeEvents() {
-        const likeButtons = document.querySelectorAll('.like-btn');
-        likeButtons.forEach(button => {
-            button.removeEventListener('click', handleLike);
-            button.addEventListener('click', handleLike);
-            const newsId = button.dataset.id;
-            if (localStorage.getItem(`liked_${newsId}`) === 'true') {
-                button.innerHTML = '❤️ Me gusta';
-                button.classList.add('liked');
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.removeEventListener('click', handleLike);
+            btn.addEventListener('click', handleLike);
+            const id = btn.dataset.id;
+            if (localStorage.getItem(`liked_${id}`) === 'true') {
+                btn.innerHTML = '❤️ Me gusta';
+                btn.classList.add('liked');
             } else {
-                button.innerHTML = '🤍 Me gusta';
-                button.classList.remove('liked');
+                btn.innerHTML = '🤍 Me gusta';
+                btn.classList.remove('liked');
             }
         });
     }
-
-    function handleLike(event) {
-        const button = event.currentTarget;
-        const newsId = button.dataset.id;
-        const isLiked = localStorage.getItem(`liked_${newsId}`) === 'true';
-
-        if (!isLiked) {
-            localStorage.setItem(`liked_${newsId}`, 'true');
-            button.innerHTML = '❤️ Me gusta';
-            button.classList.add('liked');
-            Swal.fire({
-                title: '¡Gracias!',
-                text: 'Has apoyado esta noticia.',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            });
+    function handleLike(e) {
+        const btn = e.currentTarget;
+        const id = btn.dataset.id;
+        const liked = localStorage.getItem(`liked_${id}`) === 'true';
+        if (!liked) {
+            localStorage.setItem(`liked_${id}`, 'true');
+            btn.innerHTML = '❤️ Me gusta';
+            btn.classList.add('liked');
+            Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false });
         } else {
-            localStorage.removeItem(`liked_${newsId}`);
-            button.innerHTML = '🤍 Me gusta';
-            button.classList.remove('liked');
-            Swal.fire({
-                title: 'Me gusta eliminado',
-                text: 'Has retirado tu apoyo.',
-                icon: 'info',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            localStorage.removeItem(`liked_${id}`);
+            btn.innerHTML = '🤍 Me gusta';
+            btn.classList.remove('liked');
+            Swal.fire({ title: 'Me gusta eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
         }
     }
 
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
-        if (!container) return;
         container.innerHTML = "";
         members.forEach(member => {
             const card = document.createElement("div");
@@ -778,11 +700,7 @@
 
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
-        const sections = {
-            home: document.getElementById('homeSection'),
-            news: document.getElementById('newsSection'),
-            chat: document.getElementById('chatSection')
-        };
+        const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection') };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
             btns.forEach(b => b.classList.remove('active'));
@@ -803,11 +721,7 @@
             const btn = document.createElement("button");
             btn.innerText = m;
             btn.classList.add("bias-option");
-            btn.onclick = () => {
-                document.querySelectorAll(".bias-option").forEach(b=>b.classList.remove("selected"));
-                btn.classList.add("selected");
-                currentUser.bias = m;
-            };
+            btn.onclick = () => { document.querySelectorAll(".bias-option").forEach(b=>b.classList.remove("selected")); btn.classList.add("selected"); currentUser.bias = m; };
             container.appendChild(btn);
         });
         document.querySelector(".bias-option")?.classList.add("selected");
@@ -816,10 +730,7 @@
 
     function finalizeWelcome() {
         const username = document.getElementById("newUsername").value.trim();
-        if (!username || username.length<3) {
-            Swal.fire('Error', 'Nombre válido (mínimo 3 caracteres)', 'error');
-            return;
-        }
+        if (!username || username.length<3) { Swal.fire('Error', 'Nombre válido (mínimo 3 caracteres)', 'error'); return; }
         currentUser.username = username;
         currentUser.xp = 0; currentUser.level = 1;
         saveUserData();
