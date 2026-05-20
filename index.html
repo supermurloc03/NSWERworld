@@ -13,24 +13,7 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCDFKC1MS8PccR6335d_9KMg7WcMOQyY",
-            authDomain: "chat-news.firebaseapp.com",
-            databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com/",
-            projectId: "chat-news",
-            storageBucket: "chat-news.firebasestorage.app",
-            messagingSenderId: "267108137321",
-            appId: "1:267108137321:web:c884165584762703bc65f8",
-            measurementId: "G-2B1RXHCBXH"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-    </script>
-    
     <style>
-        /* ========== ESTILOS (igual que antes, pero añadimos estilos para login) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 70px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -81,49 +64,24 @@
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .chat-input button { background: #7c3aed; padding: 0 20px; border-radius: 60px; border: none; color: white; cursor: pointer; }
         @media (max-width: 750px) { .navbar { flex-direction: column; gap: 6px; padding: 6px 15px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .hero-logo { max-width: 300px; } body { padding-top: 90px; } }
-        
-        /* Estilos para los modales de login y registro */
-        .auth-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-        .auth-card {
-            background: linear-gradient(145deg, #1e1b4b, #0f0c2c);
-            border-radius: 40px;
-            padding: 35px;
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            border: 2px solid #ff7eb3;
-        }
+        .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .auth-card h2 { margin-bottom: 10px; }
-        .auth-card p { margin-bottom: 20px; color: #b9c3ff; }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; margin-bottom: 5px; color: #ffb3e0; }
         .input-group input { width: 100%; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
         .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
-        .nickname-group { margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<!-- MODAL DE LOGIN/REGISTRO -->
+<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
         <p id="authSubtitle">Accede con tu cuenta NSWER</p>
-        
         <div class="input-group">
             <label>📧 Correo electrónico</label>
             <input type="email" id="authEmail" placeholder="tu@email.com">
@@ -132,14 +90,11 @@
             <label>🔒 Contraseña</label>
             <input type="password" id="authPassword" placeholder="••••••">
         </div>
-        
-        <div id="nicknameGroup" class="input-group nickname-group" style="display: none;">
+        <div id="nicknameGroup" class="input-group" style="display: none;">
             <label>🎤 Nombre de NSWER (visible en el chat)</label>
             <input type="text" id="authNickname" placeholder="Ej: NSWER_Lover">
         </div>
-        
         <button id="authActionBtn" class="auth-btn">Ingresar</button>
-        
         <div class="toggle-auth">
             ¿No tienes cuenta? <span id="toggleAuthLink">Regístrate aquí</span>
         </div>
@@ -208,6 +163,21 @@
 </div>
 
 <script>
+    // ========== CONFIGURACIÓN CORRECTA DE FIREBASE ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyCDFKc1Ws8PccR633Sd_9KWag7WcwOKQsY",
+        authDomain: "chat-nswer.firebaseapp.com",
+        databaseURL: "https://chat-nswer-default-rtdb.firebaseio.com",
+        projectId: "chat-nswer",
+        storageBucket: "chat-nswer.firebasestorage.app",
+        messagingSenderId: "267108137321",
+        appId: "1:267108137321:web:c884165584762703bc65f8",
+        measurementId: "G-2B1RXHCBXYY"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
     // ========== DATOS ESTÁTICOS ==========
     const curiosidadesList = [
         "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
@@ -223,11 +193,8 @@
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
 
-    // Estado global del usuario autenticado
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "" };
-    let isAuthReady = false;
 
-    // Colores
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
         "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9"
@@ -237,11 +204,10 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== GUARDAR Y CARGAR DATOS DEL USUARIO EN FIREBASE ==========
+    // ========== GUARDAR Y CARGAR DATOS DEL USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
-        const userRef = database.ref(`users/${currentUser.uid}`);
-        userRef.update({
+        database.ref(`users/${currentUser.uid}`).update({
             username: currentUser.username,
             xp: currentUser.xp,
             level: currentUser.level,
@@ -260,15 +226,10 @@
             currentUser.bias = data.bias || "Lily";
         } else {
             // Primer inicio: pedir nombre y bias
-            currentUser.username = "NSWER_Fan";
-            currentUser.xp = 0;
-            currentUser.level = 1;
-            currentUser.bias = "Lily";
-            // Mostrar modal para elegir nombre y bias
             await showProfileSetupModal();
         }
         updateUI();
-        saveUserDataToFirebase(); // guardar por si acaso
+        saveUserDataToFirebase();
     }
 
     async function showProfileSetupModal() {
@@ -305,7 +266,6 @@
                     updateUI();
                     resolve();
                 } else {
-                    // Por si cierra, recargamos valores por defecto
                     resolve();
                 }
             });
@@ -335,6 +295,7 @@
         }
         saveUserDataToFirebase();
     }
+
     function addXP(points=1) { 
         currentUser.xp += points; 
         recalcLevel(); 
@@ -358,6 +319,7 @@
         input.value = "";
         addXP(1);
     }
+
     function loadMessages() {
         database.ref('chatMessages').on('value', snapshot => {
             const data = snapshot.val();
@@ -378,7 +340,9 @@
             container.scrollTop = container.scrollHeight;
         });
     }
+
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+
     function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
         curioDiv.innerHTML = "";
@@ -386,9 +350,7 @@
         shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
     }
 
-    // ========== NOTICIAS CON LIKES GLOBALES (FIREBASE) ==========
-    let noticiasActuales = [];
-
+    // ========== NOTICIAS CON LIKES GLOBALES ==========
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
@@ -400,7 +362,6 @@
                 newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>';
                 return;
             }
-            noticiasActuales = noticias;
             newsContainer.innerHTML = '';
             noticias.forEach(noticia => {
                 const item = document.createElement('div');
@@ -417,7 +378,6 @@
                 `;
                 newsContainer.appendChild(item);
             });
-            // Escuchar contadores
             noticias.forEach(noticia => {
                 const likeRef = database.ref(`likes/${noticia.id}`);
                 likeRef.child('count').on('value', (snapshot) => {
@@ -447,7 +407,7 @@
             attachLikeEventsFirebase();
         } catch (error) {
             console.error(error);
-            document.getElementById('newsContainer').innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
+            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
         }
     }
 
@@ -477,7 +437,7 @@
         }
     }
 
-    // ========== GENERAR TARJETAS DE MIEMBROS ==========
+    // ========== GENERAR TARJETAS ==========
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         container.innerHTML = "";
@@ -497,7 +457,6 @@
         });
     }
 
-    // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection') };
@@ -520,44 +479,32 @@
     const nicknameGroup = document.getElementById('nicknameGroup');
     const authActionBtn = document.getElementById('authActionBtn');
     const toggleLink = document.getElementById('toggleAuthLink');
-    const authEmail = document.getElementById('authEmail');
-    const authPassword = document.getElementById('authPassword');
-    const authNickname = document.getElementById('authNickname');
 
     toggleLink.addEventListener('click', () => {
         isLoginMode = !isLoginMode;
-        if (isLoginMode) {
-            authTitle.innerText = '✨ Iniciar Sesión ✨';
-            authSubtitle.innerText = 'Accede con tu cuenta NSWER';
-            authActionBtn.innerText = 'Ingresar';
-            nicknameGroup.style.display = 'none';
-            toggleLink.innerText = 'Regístrate aquí';
-        } else {
-            authTitle.innerText = '✨ Registro NSWER ✨';
-            authSubtitle.innerText = 'Crea tu cuenta para unirte';
-            authActionBtn.innerText = 'Registrarse';
-            nicknameGroup.style.display = 'block';
-            toggleLink.innerText = 'Iniciar sesión';
-        }
+        authTitle.innerText = isLoginMode ? '✨ Iniciar Sesión ✨' : '✨ Registro NSWER ✨';
+        authSubtitle.innerText = isLoginMode ? 'Accede con tu cuenta NSWER' : 'Crea tu cuenta para unirte';
+        authActionBtn.innerText = isLoginMode ? 'Ingresar' : 'Registrarse';
+        nicknameGroup.style.display = isLoginMode ? 'none' : 'block';
+        toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
     });
 
     authActionBtn.addEventListener('click', async () => {
-        const email = authEmail.value.trim();
-        const password = authPassword.value.trim();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value.trim();
         if (!email || !password) {
             Swal.fire('Error', 'Completa todos los campos', 'error');
             return;
         }
         if (!isLoginMode) {
-            const nickname = authNickname.value.trim();
+            const nickname = document.getElementById('authNickname').value.trim();
             if (!nickname || nickname.length < 3) {
-                Swal.fire('Error', 'El nombre de NSWER debe tener al menos 3 caracteres', 'error');
+                Swal.fire('Error', 'El nombre debe tener al menos 3 caracteres', 'error');
                 return;
             }
             try {
                 const userCred = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCred.user;
-                // Guardar nickname y datos iniciales en Realtime Database
                 await database.ref(`users/${user.uid}`).set({
                     username: nickname,
                     xp: 0,
@@ -578,10 +525,14 @@
                 document.getElementById("sendBtn").onclick = sendMessage;
                 document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
             } catch (error) {
-                Swal.fire('Error', error.message, 'error');
+                console.error(error);
+                let msg = error.message;
+                if (msg.includes('auth/email-already-in-use')) msg = 'Este correo ya está registrado.';
+                else if (msg.includes('auth/invalid-email')) msg = 'Correo electrónico inválido.';
+                else if (msg.includes('auth/weak-password')) msg = 'Contraseña demasiado débil (mínimo 6 caracteres).';
+                Swal.fire('Error', msg, 'error');
             }
         } else {
-            // Login
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
@@ -610,7 +561,7 @@
                 document.getElementById("sendBtn").onclick = sendMessage;
                 document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
             } catch (error) {
-                Swal.fire('Error', error.message, 'error');
+                Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
             }
         }
     });
@@ -621,10 +572,9 @@
         window.location.reload();
     });
 
-    // Verificar si ya hay sesión activa al cargar
+    // Verificar sesión actual
     auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // Ya hay sesión, cargar datos y mostrar página
             const snapshot = await database.ref(`users/${user.uid}`).once('value');
             const data = snapshot.val();
             if (data) {
@@ -650,7 +600,6 @@
             document.getElementById("sendBtn").onclick = sendMessage;
             document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         } else {
-            // No hay sesión, mostrar modal de login
             authModal.style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
         }
