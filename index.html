@@ -36,7 +36,7 @@
             background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a);
             color: #f0f0f0;
             min-height: 100vh;
-            padding-top: 72px; /* Ajustado para la barra más pequeña */
+            padding-top: 70px;
             position: relative;
         }
         body::before {
@@ -59,16 +59,16 @@
             padding: 0 20px;
         }
 
-        /* Barra navegación - logo más pequeño */
+        /* Barra navegación - logo más pequeño y sin solapamiento */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(10, 15, 42, 0.9);
+            background: rgba(10, 15, 42, 0.95);
             backdrop-filter: blur(15px);
             border-bottom: 2px solid #ff7eb3;
-            padding: 8px 30px;
+            padding: 6px 25px;
             z-index: 100;
             display: flex;
             justify-content: space-between;
@@ -78,16 +78,16 @@
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .logo-img {
-            width: 28px;    /* Reducido de 35px a 28px */
-            height: 28px;
+            width: 24px;    /* Más pequeño para que no se tape */
+            height: 24px;
             border-radius: 50%;
             object-fit: cover;
         }
         .logo-text {
-            font-size: 1.2rem;  /* Texto más pequeño */
+            font-size: 1.1rem;
             font-weight: bold;
             background: linear-gradient(45deg, #ff7eb3, #a855f7);
             -webkit-background-clip: text;
@@ -96,15 +96,15 @@
         }
         .nav-links {
             display: flex;
-            gap: 12px;
+            gap: 8px;
         }
         .nav-btn {
             background: transparent;
             border: none;
             color: #ddd;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            padding: 5px 16px;
+            padding: 4px 14px;
             border-radius: 40px;
             cursor: pointer;
             transition: 0.2s;
@@ -112,7 +112,7 @@
         .nav-btn.active, .nav-btn:hover {
             background: #7c3aed;
             color: white;
-            box-shadow: 0 0 8px #a855f7;
+            box-shadow: 0 0 6px #a855f7;
         }
 
         /* Perfil (sin nivel) */
@@ -120,7 +120,7 @@
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
             border-radius: 32px;
-            padding: 10px 22px;
+            padding: 8px 20px;
             margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
@@ -133,6 +133,7 @@
             gap: 20px;
             align-items: center;
             flex-wrap: wrap;
+            font-size: 0.9rem;
         }
         .bias-fixed {
             background: #2d2a55;
@@ -140,13 +141,13 @@
             border-radius: 40px;
             display: flex;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .level-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
             border-radius: 32px;
-            padding: 12px 22px;
+            padding: 10px 22px;
             margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
@@ -161,17 +162,17 @@
         }
         .level-badge {
             background: linear-gradient(135deg, #ffb347, #ff7e05);
-            padding: 5px 14px;
+            padding: 4px 14px;
             border-radius: 40px;
             font-weight: bold;
             color: #1e1a2f;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .points {
             background: #2a2a5a;
-            padding: 5px 14px;
+            padding: 4px 14px;
             border-radius: 40px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         /* Secciones */
@@ -197,7 +198,7 @@
             margin-bottom: 30px;
         }
         .hero-logo {
-            max-width: 280px;   /* Aumentado de 220px a 280px */
+            max-width: 320px;   /* Aumentado a 320px */
             width: 85%;
             margin: 0 auto 20px;
             display: block;
@@ -333,20 +334,13 @@
             color: white;
             cursor: pointer;
         }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #aaa;
-            font-size: 0.8rem;
-        }
         @media (max-width: 750px) {
-            .navbar { flex-direction: column; gap: 8px; padding: 8px 20px; }
+            .navbar { flex-direction: column; gap: 6px; padding: 6px 15px; }
             .member-card { width: 95px; }
             .avatar { width: 65px; height: 65px; font-size: 1.8rem; }
             .news-grid { grid-template-columns: 1fr; }
-            .hero-logo { max-width: 200px; }
-            body { padding-top: 95px; }
+            .hero-logo { max-width: 250px; }
+            body { padding-top: 90px; }
         }
         .welcome-modal {
             position: fixed;
@@ -440,8 +434,7 @@
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="logo-area">
-            <!-- Logo pequeño en barra (28px) -->
-            <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER" onerror="this.src='https://via.placeholder.com/28?text=N'">
+            <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER" onerror="this.src='https://via.placeholder.com/24?text=N'">
             <span class="logo-text">NSWER WORLD</span>
         </div>
         <div class="nav-links">
@@ -469,8 +462,7 @@
             </div>
         </div>
         <div class="hero">
-            <!-- Logo central más grande (280px) -->
-            <img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="NSWER WORLD Logo" onerror="this.src='https://via.placeholder.com/280?text=NSWER'">
+            <img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="NSWER WORLD Logo" onerror="this.src='https://via.placeholder.com/320?text=NSWER'">
             <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </div>
         <div class="member-grid" id="memberGrid"></div>
@@ -496,8 +488,6 @@
             </div>
         </div>
     </div>
-
-    <footer>💖 Hecho con mucho 💖 para NSWERs | NMIXX cambio💿</footer>
 </div>
 
 <script>
