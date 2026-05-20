@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
-    <!-- SweetAlert2 para alertas bonitas -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
@@ -63,7 +63,7 @@
             padding: 0 20px;
         }
 
-        /* Barra navegación - logo rectangular */
+        /* Barra navegación */
         .navbar {
             position: fixed;
             top: 0;
@@ -119,7 +119,7 @@
             box-shadow: 0 0 6px #a855f7;
         }
 
-        /* Perfil usuario */
+        /* Perfil */
         .profile-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -192,7 +192,6 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Hero - logo central */
         .hero {
             text-align: center;
             background: rgba(0,0,0,0.5);
@@ -248,7 +247,7 @@
             font-size: 0.9rem;
         }
 
-        /* Sección Novedades: tarjetas modernas */
+        /* Novedades */
         .news-grid {
             display: flex;
             flex-direction: column;
@@ -388,7 +387,6 @@
             .hero-logo { max-width: 300px; }
             body { padding-top: 90px; }
         }
-        /* Modal bienvenida */
         .welcome-modal {
             position: fixed;
             top: 0;
@@ -461,7 +459,6 @@
 </head>
 <body>
 
-<!-- MODAL BIENVENIDA -->
 <div id="welcomeModal" class="welcome-modal">
     <div class="welcome-card">
         <h2>✨ NSWER WORLD ✨</h2>
@@ -577,7 +574,6 @@
         "Kyujin": "#B7E4FF"
     };
 
-    // Funciones usuario
     function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
@@ -655,7 +651,6 @@
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
 
-    // Cargar curiosidades (aleatorio)
     function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
         if (!curioDiv) return;
@@ -667,14 +662,16 @@
     }
 
     // ---------- NOTICIAS DESDE GOOGLE SHEETS (CON "ME GUSTA") ----------
-    // URL correcta de Google Sheets (ya con tu código único)
-    const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnjaYN7FBugzxgl02zh6Sx_va1_oc39NgDIeqR-_swwhQ1ZsnMwN0BFPUWfbFao4mUEllVtFXynyne/gviz/tq?tqx=out:json&range=A:C&gid=0';
+    // ✅ URL CORRECTA CON EL ID QUE ME DISTE
+    const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1EjDK4NBm5a_EQnKPl3RZEI4c4mDnToCLfOexl2B_TqY/gviz/tq?tqx=out:json&range=A:C&gid=0';
 
     async function loadNewsFromSheets() {
         try {
+            console.log("Cargando noticias desde:", GOOGLE_SHEETS_URL);
             const response = await fetch(GOOGLE_SHEETS_URL);
             const text = await response.text();
-            // Limpiar respuesta de Google
+            console.log("Respuesta recibida (primeros 100 chars):", text.substring(0, 100));
+            // Limpiar respuesta
             const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
             const data = JSON.parse(jsonString);
             const rows = data.table.rows;
@@ -703,10 +700,13 @@
                 newsContainer.appendChild(newsItem);
             }
             attachLikeEvents();
+            if (rows.length === 0) {
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias aún. ¡Añade algunas en Google Sheets!</div>';
+            }
         } catch (error) {
             console.error('Error cargando noticias:', error);
             const newsContainer = document.getElementById('newsContainer');
-            if (newsContainer) newsContainer.innerHTML = '<div class="news-item">⚠️ Error al cargar noticias. Por favor, verifica la conexión o la hoja de cálculo.</div>';
+            if (newsContainer) newsContainer.innerHTML = '<div class="news-item">⚠️ Error al cargar noticias. Verifica que la hoja esté publicada correctamente.</div>';
         }
     }
 
@@ -756,7 +756,6 @@
         }
     }
 
-    // Generar tarjetas de miembros
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         if (!container) return;
@@ -777,7 +776,6 @@
         });
     }
 
-    // Navegación pestañas
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -796,7 +794,6 @@
         }));
     }
 
-    // Modal de bienvenida
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
@@ -832,7 +829,7 @@
         generateMemberCards();
         loadMessages();
         loadCuriosities();
-        loadNewsFromSheets();   // Cargar noticias desde Google Sheets
+        loadNewsFromSheets();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         initNavigation();
