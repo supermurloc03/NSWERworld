@@ -64,40 +64,21 @@
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .chat-input button { background: #7c3aed; padding: 0 20px; border-radius: 60px; border: none; color: white; cursor: pointer; }
         @media (max-width: 750px) { .navbar { flex-direction: column; gap: 6px; padding: 6px 15px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .hero-logo { max-width: 300px; } body { padding-top: 90px; } }
-        .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
-        .auth-card h2 { margin-bottom: 10px; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; margin-bottom: 5px; color: #ffb3e0; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
-        .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-        .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
-        .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
+        .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .login-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
+        .login-card h2 { margin-bottom: 10px; }
+        .login-card p { margin-bottom: 20px; color: #b9c3ff; }
+        .login-btn { background: #7c3aed; border: none; padding: 14px; border-radius: 60px; color: white; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO -->
-<div id="authModal" class="auth-modal">
-    <div class="auth-card">
-        <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
-        <p id="authSubtitle">Accede con tu cuenta NSWER</p>
-        <div class="input-group">
-            <label>📧 Correo electrónico</label>
-            <input type="email" id="authEmail" placeholder="tu@email.com">
-        </div>
-        <div class="input-group">
-            <label>🔒 Contraseña</label>
-            <input type="password" id="authPassword" placeholder="••••••">
-        </div>
-        <div id="nicknameGroup" class="input-group" style="display: none;">
-            <label>🎤 Nombre de NSWER (visible en el chat)</label>
-            <input type="text" id="authNickname" placeholder="Ej: NSWER_Lover">
-        </div>
-        <button id="authActionBtn" class="auth-btn">Ingresar</button>
-        <div class="toggle-auth">
-            ¿No tienes cuenta? <span id="toggleAuthLink">Regístrate aquí</span>
-        </div>
+<!-- MODAL DE INICIO DE SESIÓN ANÓNIMO -->
+<div id="loginModal" class="login-modal">
+    <div class="login-card">
+        <h2>✨ NSWER WORLD ✨</h2>
+        <p>Haz clic para entrar a la comunidad NSWER</p>
+        <button id="anonymousLoginBtn" class="login-btn">🌟 Entrar como invitado 🌟</button>
     </div>
 </div>
 
@@ -113,7 +94,7 @@
             <button class="nav-btn" data-section="news">📢 Novedades</button>
             <button class="nav-btn" data-section="chat">💬 Chat</button>
         </div>
-        <button id="logoutBtn" style="background:#ff4757; border:none; padding:4px 12px; border-radius:40px; color:white; cursor:pointer;">Cerrar sesión</button>
+        <button id="logoutBtn" style="background:#ff4757; border:none; padding:4px 12px; border-radius:40px; color:white; cursor:pointer;">Salir</button>
     </div>
 
     <div class="profile-area">
@@ -163,7 +144,7 @@
 </div>
 
 <script>
-    // ========== CONFIGURACIÓN DEFINITIVA DE FIREBASE ==========
+    // Configuración de Firebase (la misma que ya tienes)
     const firebaseConfig = {
         apiKey: "AIzaSyCDFKC1WS8PccR633Sd_9KWag7WcWOKQsY",
         authDomain: "chat-nswer.firebaseapp.com",
@@ -192,7 +173,7 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "" };
+    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily" };
 
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
@@ -203,15 +184,14 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== FUNCIONES USUARIO ==========
+    // Funciones usuario (guardar en Firebase)
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
             username: currentUser.username,
             xp: currentUser.xp,
             level: currentUser.level,
-            bias: currentUser.bias,
-            email: currentUser.email
+            bias: currentUser.bias
         });
     }
 
@@ -230,373 +210,4 @@
         saveUserDataToFirebase();
     }
 
-    async function showProfileSetupModal() {
-        return new Promise((resolve) => {
-            Swal.fire({
-                title: '¡Bienvenido NSWER!',
-                html: `
-                    <div style="text-align:left">
-                        <label>🎤 Tu nombre de usuario:</label>
-                        <input id="swal-nickname" class="swal2-input" placeholder="Ej: NSWER_Lover" value="NSWER_${Math.floor(Math.random()*1000)}">
-                        <label style="margin-top:10px">💖 Elige tu bias (no podrás cambiarlo después):</label>
-                        <select id="swal-bias" class="swal2-select">
-                            ${members.map(m => `<option value="${m}">${m}</option>`).join('')}
-                        </select>
-                    </div>
-                `,
-                focusConfirm: false,
-                preConfirm: () => {
-                    const nickname = document.getElementById('swal-nickname').value.trim();
-                    const bias = document.getElementById('swal-bias').value;
-                    if (!nickname || nickname.length < 3) {
-                        Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
-                        return false;
-                    }
-                    return { nickname, bias };
-                }
-            }).then(result => {
-                if (result.isConfirmed) {
-                    currentUser.username = result.value.nickname;
-                    currentUser.bias = result.value.bias;
-                    currentUser.xp = 0;
-                    currentUser.level = 1;
-                    saveUserDataToFirebase();
-                    updateUI();
-                }
-                resolve();
-            });
-        });
-    }
-
-    function updateUI() {
-        document.getElementById("usernameDisplay").innerText = currentUser.username;
-        document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
-        document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
-        document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
-        document.getElementById("homeUsername").innerText = currentUser.username;
-        const biasFixedSpan = document.getElementById("biasFixedDisplay");
-        if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
-    }
-
-    function recalcLevel() {
-        let newLevel = 1;
-        for (let i=levelThresholds.length-1; i>=0; i--) {
-            if (currentUser.xp >= levelThresholds[i]) { newLevel = i+1; break; }
-        }
-        if (newLevel !== currentUser.level) {
-            currentUser.level = newLevel;
-            Swal.fire({ title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`, text: `Has subido al NIVEL ${currentUser.level}`, icon: 'success', timer: 2000, showConfirmButton: false });
-            saveUserDataToFirebase();
-            updateUI();
-        }
-        saveUserDataToFirebase();
-    }
-    function addXP(points=1) { 
-        currentUser.xp += points; 
-        recalcLevel(); 
-        updateUI(); 
-        saveUserDataToFirebase(); 
-    }
-
-    // ========== CHAT ==========
-    function sendMessage() {
-        const input = document.getElementById("messageInput");
-        const text = input.value.trim();
-        if (!text) return;
-        database.ref('chatMessages').push({
-            username: currentUser.username,
-            text: text,
-            bias: currentUser.bias,
-            level: currentUser.level,
-            timestamp: Date.now(),
-            uid: currentUser.uid
-        });
-        input.value = "";
-        addXP(1);
-    }
-
-    function loadMessages() {
-        database.ref('chatMessages').on('value', snapshot => {
-            const data = snapshot.val();
-            const messages = data ? Object.values(data) : [];
-            messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
-            const container = document.getElementById("chatMessages");
-            container.innerHTML = "";
-            if (messages.length === 0) { container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>'; return; }
-            messages.forEach(msg => {
-                const isOwn = msg.uid === currentUser.uid;
-                const div = document.createElement("div");
-                div.className = `message ${isOwn ? 'own' : ''}`;
-                const usernameColor = biasColors[msg.bias] || "#ffb3e0";
-                const levelTag = msg.level ? `<span class="level-tag">⚡ Nvl ${msg.level}</span>` : '';
-                div.innerHTML = `<div class="msg-header"><span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span><span class="username" style="color: ${usernameColor};">${escapeHtml(msg.username)}</span>${levelTag}</div><div>${escapeHtml(msg.text)}</div>`;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-        });
-    }
-
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
-
-    function loadCuriosities() {
-        const curioDiv = document.getElementById("curiositiesContainer");
-        curioDiv.innerHTML = "";
-        const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
-        shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
-    }
-
-    // ========== NOTICIAS CON LIKES GLOBALES ==========
-    async function loadNewsFromJSON() {
-        const newsContainer = document.getElementById('newsContainer');
-        newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
-        try {
-            const response = await fetch('noticias.json?t=' + Date.now());
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const noticias = await response.json();
-            if (!noticias.length) {
-                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>';
-                return;
-            }
-            newsContainer.innerHTML = '';
-            noticias.forEach(noticia => {
-                const item = document.createElement('div');
-                item.className = 'news-item';
-                item.id = `news-${noticia.id}`;
-                item.innerHTML = `
-                    <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
-                    <div class="news-text">${escapeHtml(noticia.texto)}</div>
-                    <div class="like-controls">
-                        <button class="like-btn" data-id="${noticia.id}">
-                            ❤️ <span class="like-count">0</span>
-                        </button>
-                    </div>
-                `;
-                newsContainer.appendChild(item);
-            });
-            noticias.forEach(noticia => {
-                const likeRef = database.ref(`likes/${noticia.id}`);
-                likeRef.child('count').on('value', (snapshot) => {
-                    const count = snapshot.val() || 0;
-                    const span = document.querySelector(`#news-${noticia.id} .like-count`);
-                    if (span) span.innerText = count;
-                });
-                if (currentUser.uid) {
-                    const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
-                    userLikeRef.on('value', (snapshot) => {
-                        const liked = snapshot.val() === true;
-                        const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
-                        if (btn) {
-                            if (liked) {
-                                btn.classList.add('liked');
-                                btn.style.background = "#ff7eb3";
-                                btn.style.color = "#1e1a2f";
-                            } else {
-                                btn.classList.remove('liked');
-                                btn.style.background = "rgba(255,255,255,0.1)";
-                                btn.style.color = "white";
-                            }
-                        }
-                    });
-                }
-            });
-            attachLikeEventsFirebase();
-        } catch (error) {
-            console.error(error);
-            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
-        }
-    }
-
-    function attachLikeEventsFirebase() {
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.removeEventListener('click', handleLikeFirebase);
-            btn.addEventListener('click', handleLikeFirebase);
-        });
-    }
-
-    async function handleLikeFirebase(event) {
-        if (!currentUser.uid) return;
-        const btn = event.currentTarget;
-        const newsId = btn.dataset.id;
-        const likeRef = database.ref(`likes/${newsId}`);
-        const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
-        const snapshot = await userLikeRef.once('value');
-        const alreadyLiked = snapshot.val() === true;
-        if (!alreadyLiked) {
-            likeRef.child('count').transaction(current => (current || 0) + 1);
-            userLikeRef.set(true);
-            Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false });
-        } else {
-            likeRef.child('count').transaction(current => (current || 1) - 1);
-            userLikeRef.remove();
-            Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
-        }
-    }
-
-    // ========== GENERAR TARJETAS ==========
-    function generateMemberCards() {
-        const container = document.getElementById("memberGrid");
-        container.innerHTML = "";
-        members.forEach(member => {
-            const card = document.createElement("div");
-            card.className = "member-card";
-            const avatar = document.createElement("div");
-            avatar.className = "avatar";
-            avatar.style.backgroundColor = avatarColors[member];
-            avatar.innerText = member.charAt(0);
-            const nameSpan = document.createElement("div");
-            nameSpan.className = "member-name";
-            nameSpan.innerText = member;
-            card.appendChild(avatar);
-            card.appendChild(nameSpan);
-            container.appendChild(card);
-        });
-    }
-
-    function initNavigation() {
-        const btns = document.querySelectorAll('.nav-btn');
-        const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection') };
-        btns.forEach(btn => btn.addEventListener('click', () => {
-            const sec = btn.dataset.section;
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            Object.values(sections).forEach(s => s.classList.remove('active-section'));
-            if (sec === 'home') sections.home.classList.add('active-section');
-            if (sec === 'news') sections.news.classList.add('active-section');
-            if (sec === 'chat') sections.chat.classList.add('active-section');
-        }));
-    }
-
-    // ========== LOGIN / REGISTRO ==========
-    let isLoginMode = true;
-    const authModal = document.getElementById('authModal');
-    const authTitle = document.getElementById('authTitle');
-    const authSubtitle = document.getElementById('authSubtitle');
-    const nicknameGroup = document.getElementById('nicknameGroup');
-    const authActionBtn = document.getElementById('authActionBtn');
-    const toggleLink = document.getElementById('toggleAuthLink');
-
-    toggleLink.addEventListener('click', () => {
-        isLoginMode = !isLoginMode;
-        authTitle.innerText = isLoginMode ? '✨ Iniciar Sesión ✨' : '✨ Registro NSWER ✨';
-        authSubtitle.innerText = isLoginMode ? 'Accede con tu cuenta NSWER' : 'Crea tu cuenta para unirte';
-        authActionBtn.innerText = isLoginMode ? 'Ingresar' : 'Registrarse';
-        nicknameGroup.style.display = isLoginMode ? 'none' : 'block';
-        toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
-    });
-
-    authActionBtn.addEventListener('click', async () => {
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value.trim();
-        if (!email || !password) {
-            Swal.fire('Error', 'Completa todos los campos', 'error');
-            return;
-        }
-        if (!isLoginMode) {
-            const nickname = document.getElementById('authNickname').value.trim();
-            if (!nickname || nickname.length < 3) {
-                Swal.fire('Error', 'El nombre debe tener al menos 3 caracteres', 'error');
-                return;
-            }
-            try {
-                const userCred = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCred.user;
-                await database.ref(`users/${user.uid}`).set({
-                    username: nickname,
-                    xp: 0,
-                    level: 1,
-                    bias: "Lily",
-                    email: email
-                });
-                Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
-                authModal.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: "Lily", email: email };
-                updateUI();
-                generateMemberCards();
-                loadMessages();
-                loadCuriosities();
-                loadNewsFromJSON();
-                initNavigation();
-                document.getElementById("sendBtn").onclick = sendMessage;
-                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-            } catch (error) {
-                console.error(error);
-                let msg = error.message;
-                if (msg.includes('auth/email-already-in-use')) msg = 'Este correo ya está registrado.';
-                else if (msg.includes('auth/invalid-email')) msg = 'Correo electrónico inválido.';
-                else if (msg.includes('auth/weak-password')) msg = 'Contraseña demasiado débil (mínimo 6 caracteres).';
-                Swal.fire('Error', msg, 'error');
-            }
-        } else {
-            try {
-                const userCred = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCred.user;
-                const snapshot = await database.ref(`users/${user.uid}`).once('value');
-                const data = snapshot.val();
-                if (data) {
-                    currentUser = {
-                        uid: user.uid,
-                        username: data.username || "NSWER_Fan",
-                        xp: data.xp || 0,
-                        level: data.level || 1,
-                        bias: data.bias || "Lily",
-                        email: email
-                    };
-                } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email };
-                }
-                authModal.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                updateUI();
-                generateMemberCards();
-                loadMessages();
-                loadCuriosities();
-                loadNewsFromJSON();
-                initNavigation();
-                document.getElementById("sendBtn").onclick = sendMessage;
-                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-            } catch (error) {
-                Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
-            }
-        }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await auth.signOut();
-        window.location.reload();
-    });
-
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            const snapshot = await database.ref(`users/${user.uid}`).once('value');
-            const data = snapshot.val();
-            if (data) {
-                currentUser = {
-                    uid: user.uid,
-                    username: data.username || "NSWER_Fan",
-                    xp: data.xp || 0,
-                    level: data.level || 1,
-                    bias: data.bias || "Lily",
-                    email: user.email
-                };
-            } else {
-                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email };
-            }
-            authModal.style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            updateUI();
-            generateMemberCards();
-            loadMessages();
-            loadCuriosities();
-            loadNewsFromJSON();
-            initNavigation();
-            document.getElementById("sendBtn").onclick = sendMessage;
-            document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-        } else {
-            authModal.style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-    });
-</script>
-</body>
-</html>
+    async function showProfile
