@@ -9,6 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
+    <!-- SweetAlert2 para alertas bonitas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCDFKC1MS8PccR6335d_9KMg7WcMOQyY",
@@ -22,6 +25,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        console.log("✅ Firebase conectado");
     </script>
     
     <style>
@@ -59,7 +63,7 @@
             padding: 0 20px;
         }
 
-        /* Barra navegación - logo rectangular sin círculo */
+        /* Barra navegación - logo rectangular */
         .navbar {
             position: fixed;
             top: 0;
@@ -81,10 +85,9 @@
             gap: 10px;
         }
         .logo-img {
-            height: 30px;      /* Altura fija, ancho automático */
+            height: 30px;
             width: auto;
             object-fit: contain;
-            /* Sin border-radius, sin círculo */
             display: block;
         }
         .logo-text {
@@ -116,7 +119,7 @@
             box-shadow: 0 0 6px #a855f7;
         }
 
-        /* Perfil (sin nivel) */
+        /* Perfil usuario */
         .profile-area {
             background: rgba(30, 27, 75, 0.7);
             backdrop-filter: blur(12px);
@@ -189,7 +192,7 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Hero - logo central más grande */
+        /* Hero - logo central */
         .hero {
             text-align: center;
             background: rgba(0,0,0,0.5);
@@ -199,7 +202,7 @@
             margin-bottom: 30px;
         }
         .hero-logo {
-            max-width: 450px;   /* Aumentado a 450px */
+            max-width: 450px;
             width: 90%;
             margin: 0 auto 20px;
             display: block;
@@ -244,9 +247,11 @@
             color: #ffb3e0;
             font-size: 0.9rem;
         }
+
+        /* Sección Novedades: tarjetas modernas */
         .news-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 25px;
         }
         .news-card, .curiosities-card {
@@ -255,16 +260,58 @@
             border-radius: 28px;
             padding: 20px;
         }
-        .news-item, .curio-item {
+        .news-item {
             background: rgba(0,0,0,0.3);
             border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
         }
-        .date {
+        .news-item:hover {
+            transform: translateX(5px);
+        }
+        .news-date {
             font-size: 0.7rem;
             color: #9ca3ff;
+            margin-bottom: 8px;
         }
+        .news-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .like-controls {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .like-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .like-btn.liked {
+            background: #ff7eb3;
+            color: #1e1a2f;
+        }
+        .like-btn:hover {
+            background: rgba(255,126,179,0.5);
+        }
+        .curio-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 10px 15px;
+            margin-bottom: 12px;
+        }
+
+        /* Chat */
         .chat-container {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -338,10 +385,10 @@
             .navbar { flex-direction: column; gap: 6px; padding: 6px 15px; }
             .member-card { width: 95px; }
             .avatar { width: 65px; height: 65px; font-size: 1.8rem; }
-            .news-grid { grid-template-columns: 1fr; }
             .hero-logo { max-width: 300px; }
             body { padding-top: 90px; }
         }
+        /* Modal bienvenida */
         .welcome-modal {
             position: fixed;
             top: 0;
@@ -434,7 +481,6 @@
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="logo-area">
-            <!-- Logo rectangular, sin círculo -->
             <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER">
             <span class="logo-text">NSWER WORLD</span>
         </div>
@@ -463,7 +509,6 @@
             </div>
         </div>
         <div class="hero">
-            <!-- Logo central más grande -->
             <img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="NSWER WORLD Logo">
             <p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p>
         </div>
@@ -476,8 +521,14 @@
 
     <div id="newsSection" class="section">
         <div class="news-grid">
-            <div class="news-card"><h3>📰 Últimas noticias</h3><div id="newsContainer"></div></div>
-            <div class="curiosities-card"><h3>🤯 Curiosidades</h3><div id="curiositiesContainer"></div></div>
+            <div class="news-card">
+                <h3>📰 Últimas noticias</h3>
+                <div id="newsContainer"></div>
+            </div>
+            <div class="curiosities-card">
+                <h3>🤯 Curiosidades de NMIXX</h3>
+                <div id="curiositiesContainer"></div>
+            </div>
         </div>
     </div>
 
@@ -493,19 +544,17 @@
 </div>
 
 <script>
-    const novedades = [
-        { fecha: "19 Mayo 2026", texto: "¡Nuevo comeback 'Fe3O4: STICK OUT' anunciado para junio!" },
-        { fecha: "15 Mayo 2026", texto: "NMIXX gana 'Mejor Performance' en K-Vibe Awards." },
-        { fecha: "10 Mayo 2026", texto: "Lily y Haewon harán un live especial este viernes." }
-    ];
+    // ---------- DATOS LOCALES ----------
     const curiosidadesList = [
-        "Lily tiene nacionalidad australiana y coreana.",
-        "Haewon fue aprendiz por 7 años.",
-        "Sullyoon fue modelo infantil.",
-        "BAE toca la batería.",
-        "Jiwoo es la más joven.",
-        "Kyujin imita a todos.",
-        "Fandom: NSWER (Answer)."
+        "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
+        "Haewon fue aprendiz por 7 años antes de debutar.",
+        "Sullyoon fue modelo infantil y le encanta dibujar.",
+        "BAE toca la batería y practicó artes marciales.",
+        "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.",
+        "Kyujin puede imitar a todos los miembros a la perfección.",
+        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.",
+        "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.",
+        "El nombre NMIXX combina 'N' (now) y 'MIX' (combinación), simbolizando diversidad."
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
@@ -528,6 +577,7 @@
         "Kyujin": "#B7E4FF"
     };
 
+    // Funciones usuario
     function saveUserData() { localStorage.setItem("nmixx_fan_user", JSON.stringify(currentUser)); }
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
@@ -545,13 +595,20 @@
         }
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
-            alert(`🎉 ¡Felicidades! Has subido al NIVEL ${currentUser.level}`);
+            Swal.fire({
+                title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`,
+                text: `Has subido al NIVEL ${currentUser.level}`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
             saveUserData(); updateUI();
         }
         saveUserData();
     }
     function addXP(p=1) { currentUser.xp += p; recalcLevel(); updateUI(); saveUserData(); }
 
+    // Firebase Chat
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
@@ -598,17 +655,111 @@
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
 
-    function loadNewsAndCuriosities() {
-        const newsDiv = document.getElementById("newsContainer");
-        newsDiv.innerHTML = "";
-        novedades.forEach(n => newsDiv.innerHTML += `<div class="news-item"><span class="date">📅 ${n.fecha}</span><br>${escapeHtml(n.texto)}</div>`);
+    // Cargar curiosidades (aleatorio)
+    function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
+        if (!curioDiv) return;
         curioDiv.innerHTML = "";
-        [...curiosidadesList].sort(()=>0.5-Math.random()).slice(0,5).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
+        const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
+        shuffled.slice(0, 6).forEach(c => {
+            curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`;
+        });
     }
 
+    // ---------- NOTICIAS DESDE GOOGLE SHEETS (CON "ME GUSTA") ----------
+    // URL correcta de Google Sheets (ya con tu código único)
+    const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnjaYN7FBugzxgl02zh6Sx_va1_oc39NgDIeqR-_swwhQ1ZsnMwN0BFPUWfbFao4mUEllVtFXynyne/gviz/tq?tqx=out:json&range=A:C&gid=0';
+
+    async function loadNewsFromSheets() {
+        try {
+            const response = await fetch(GOOGLE_SHEETS_URL);
+            const text = await response.text();
+            // Limpiar respuesta de Google
+            const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+            const data = JSON.parse(jsonString);
+            const rows = data.table.rows;
+            const newsContainer = document.getElementById('newsContainer');
+            if (!newsContainer) return;
+            newsContainer.innerHTML = '';
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].c;
+                if (!cells[0] || !cells[1] || !cells[2]) continue;
+                const fecha = cells[0].v;
+                const texto = cells[1].v;
+                const id = cells[2].v.toString();
+
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+                newsItem.innerHTML = `
+                    <div class="news-date">📅 ${escapeHtml(fecha)}</div>
+                    <div class="news-text">${escapeHtml(texto)}</div>
+                    <div class="like-controls">
+                        <button class="like-btn" data-id="${id}">
+                            ${localStorage.getItem(`liked_${id}`) === 'true' ? '❤️' : '🤍'} Me gusta
+                        </button>
+                    </div>
+                `;
+                newsContainer.appendChild(newsItem);
+            }
+            attachLikeEvents();
+        } catch (error) {
+            console.error('Error cargando noticias:', error);
+            const newsContainer = document.getElementById('newsContainer');
+            if (newsContainer) newsContainer.innerHTML = '<div class="news-item">⚠️ Error al cargar noticias. Por favor, verifica la conexión o la hoja de cálculo.</div>';
+        }
+    }
+
+    function attachLikeEvents() {
+        const likeButtons = document.querySelectorAll('.like-btn');
+        likeButtons.forEach(button => {
+            button.removeEventListener('click', handleLike);
+            button.addEventListener('click', handleLike);
+            const newsId = button.dataset.id;
+            if (localStorage.getItem(`liked_${newsId}`) === 'true') {
+                button.innerHTML = '❤️ Me gusta';
+                button.classList.add('liked');
+            } else {
+                button.innerHTML = '🤍 Me gusta';
+                button.classList.remove('liked');
+            }
+        });
+    }
+
+    function handleLike(event) {
+        const button = event.currentTarget;
+        const newsId = button.dataset.id;
+        const isLiked = localStorage.getItem(`liked_${newsId}`) === 'true';
+
+        if (!isLiked) {
+            localStorage.setItem(`liked_${newsId}`, 'true');
+            button.innerHTML = '❤️ Me gusta';
+            button.classList.add('liked');
+            Swal.fire({
+                title: '¡Gracias!',
+                text: 'Has apoyado esta noticia.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } else {
+            localStorage.removeItem(`liked_${newsId}`);
+            button.innerHTML = '🤍 Me gusta';
+            button.classList.remove('liked');
+            Swal.fire({
+                title: 'Me gusta eliminado',
+                text: 'Has retirado tu apoyo.',
+                icon: 'info',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    }
+
+    // Generar tarjetas de miembros
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
+        if (!container) return;
         container.innerHTML = "";
         members.forEach(member => {
             const card = document.createElement("div");
@@ -626,6 +777,7 @@
         });
     }
 
+    // Navegación pestañas
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -644,6 +796,7 @@
         }));
     }
 
+    // Modal de bienvenida
     function showWelcomeModal() {
         document.getElementById("welcomeModal").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
@@ -666,7 +819,10 @@
 
     function finalizeWelcome() {
         const username = document.getElementById("newUsername").value.trim();
-        if (!username || username.length<3) { alert("Nombre válido (mínimo 3 caracteres)"); return; }
+        if (!username || username.length<3) {
+            Swal.fire('Error', 'Nombre válido (mínimo 3 caracteres)', 'error');
+            return;
+        }
         currentUser.username = username;
         currentUser.xp = 0; currentUser.level = 1;
         saveUserData();
@@ -675,7 +831,8 @@
         updateUI();
         generateMemberCards();
         loadMessages();
-        loadNewsAndCuriosities();
+        loadCuriosities();
+        loadNewsFromSheets();   // Cargar noticias desde Google Sheets
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         initNavigation();
@@ -690,7 +847,8 @@
             updateUI();
             generateMemberCards();
             loadMessages();
-            loadNewsAndCuriosities();
+            loadCuriosities();
+            loadNewsFromSheets();
             document.getElementById("sendBtn").onclick = sendMessage;
             document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
             initNavigation();
