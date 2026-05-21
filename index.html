@@ -240,7 +240,6 @@
 <!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
-        <!-- PRIMERA FILA: TÍTULO Y BOTONES -->
         <div class="navbar-top">
             <div class="logo-area">
                 <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER">
@@ -253,13 +252,11 @@
                 <button id="logoutBtn">Cerrar sesión</button>
             </div>
         </div>
-        <!-- SEGUNDA FILA: MENÚ (solo el icono) -->
         <div class="navbar-bottom">
             <div class="menu-container">
                 <button id="menuBtn" class="menu-btn">☰</button>
                 <div id="dropdownMenu" class="dropdown-menu">
                     <button class="dropdown-item" data-section="friends">👥 Amigos</button>
-                    <!-- Más opciones aquí -->
                 </div>
             </div>
         </div>
@@ -310,7 +307,6 @@
         </div>
     </div>
 
-    <!-- SECCIÓN AMIGOS -->
     <div id="friendsSection" class="section">
         <div class="friends-tabs">
             <button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button>
@@ -337,7 +333,7 @@
     const auth = firebase.auth();
     const database = firebase.database();
 
-    // ========== DATOS ESTÁTICOS (sin cambios) ==========
+    // ========== DATOS ESTÁTICOS ==========
     const curiosidadesList = [
         "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
         "Haewon fue aprendiz por 7 años antes de debutar.",
@@ -362,7 +358,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== FUNCIONES USUARIO (iguales, no las repito por espacio, pero están completas) ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -457,20 +453,623 @@
         saveUserDataToFirebase(); 
     }
 
-    // ========== SISTEMA DE AMIGOS, CHAT, NOTICIAS, PERFILES (sin cambios, los mismos de antes) ==========
-    // Para no alargar el mensaje, asumo que mantienes todas esas funciones que ya funcionaban.
-    // Como son muy largas, las incluiré tal cual las tenías en el último código funcional.
-    // En tu editor, reemplázalas por las que ya te funcionaban. Por brevedad, pondré aquí las funciones clave abreviadas,
-    // pero al final te doy el código completo en un solo bloque que puedes copiar directamente.
+    // ========== SISTEMA DE AMIGOS ==========
+    async function sendFriendRequest(targetUid) {
+        if (targetUid === currentUser.uid) {
+            Swal.fire('Info', 'No puedes enviarte solicitud a ti mismo', 'info');
+            return;
+        }
+        const friendCheck = await database.ref(`friends/${currentUser.uid}/${targetUid}`).once('value');
+        if (friendCheck.exists()) {
+            Swal.fire('Info', 'Ya son amigos', 'info');
+            return;
+        }
+        const existingReq = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+        let already = false;
+        existingReq.forEach(req => {
+            if (req.val().to === targetUid && req.val().status === 'pending') already = true;
+        });
+        if (already) {
+            Swal.fire('Info', 'Ya enviaste una solicitud a este usuario', 'info');
+            return;
+        }
+        const reqId = database.ref('friendRequests').push().key;
+        await database.ref(`friendRequests/${reqId}`).set({
+            from: currentUser.uid,
+            to: targetUid,
+            status: 'pending',
+            timestamp: Date.now()
+        });
+        Swal.fire('Solicitud enviada', 'Se ha enviado la solicitud de amistad', 'success');
+    }
 
-    // [NOTA: Por razones de longitud, te voy a dar el código completo en el siguiente mensaje, porque este ya es muy largo.
-    // Pero la estructura del HTML ya está corregida: la línea rosa está entre el título y el menú.]
+    async function acceptFriendRequest(requestId, fromUid) {
+        await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
+        await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
+        await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
+        Swal.fire('Aceptada', 'Ahora son amigos', 'success');
+        loadFriendsTab();
+    }
 
-    // Continúa con las funciones sendFriendRequest, acceptFriendRequest, loadMessages, etc. (copia las que ya tenías funcionando)
-    
-    // Por ahora, finalizo aquí. En el próximo mensaje te daré el HTML entero con todas las funciones completas.
-    
-    // Pero para que no esperes, te aseguro que con esta estructura de dos filas, la línea rosa queda exactamente donde quieres.
+    async function declineFriendRequest(requestId) {
+        await database.ref(`friendRequests/${requestId}`).update({ status: 'declined' });
+        Swal.fire('Rechazada', 'Has rechazado la solicitud', 'info');
+        loadFriendsTab();
+    }
+
+    async function removeFriend(friendUid) {
+        const confirm = await Swal.fire({ title: '¿Eliminar amigo?', text: 'Dejarán de ser amigos', icon: 'warning', showCancelButton: true });
+        if (confirm.isConfirmed) {
+            await database.ref(`friends/${currentUser.uid}/${friendUid}`).remove();
+            await database.ref(`friends/${friendUid}/${currentUser.uid}`).remove();
+            Swal.fire('Eliminado', 'Amigo eliminado', 'success');
+            loadFriendsTab();
+        }
+    }
+
+    let currentFriendTab = 'friends';
+    function loadFriendsTab() {
+        if (currentFriendTab === 'friends') loadFriendsList();
+        else if (currentFriendTab === 'sent') loadSentRequests();
+        else if (currentFriendTab === 'received') loadReceivedRequests();
+    }
+
+    async function loadFriendsList() {
+        const container = document.getElementById('friendsContainer');
+        container.innerHTML = '<div class="empty-message">Cargando...</div>';
+        const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
+        const friendsObj = snapshot.val() || {};
+        const friendIds = Object.keys(friendsObj);
+        if (friendIds.length === 0) {
+            container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const fid of friendIds) {
+            const userSnap = await database.ref(`users/${fid}`).once('value');
+            const userData = userSnap.val();
+            if (userData) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div class="friend-info">
+                        <span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span>
+                        <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
+                    </div>
+                    <div class="friend-actions">
+                        <button class="remove-friend" data-uid="${fid}">❌ Eliminar</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+        document.querySelectorAll('.friend-name').forEach(el => {
+            el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
+        });
+        document.querySelectorAll('.remove-friend').forEach(btn => {
+            btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); });
+        });
+    }
+
+    async function loadSentRequests() {
+        const container = document.getElementById('friendsContainer');
+        container.innerHTML = '<div class="empty-message">Cargando...</div>';
+        const snapshot = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+        const requests = [];
+        snapshot.forEach(req => {
+            if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
+        });
+        if (requests.length === 0) {
+            container.innerHTML = '<div class="empty-message">No tienes solicitudes enviadas pendientes.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const req of requests) {
+            const userSnap = await database.ref(`users/${req.to}`).once('value');
+            const userData = userSnap.val();
+            if (userData) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div class="friend-info">
+                        <span class="friend-name" data-uid="${req.to}">${escapeHtml(userData.username)}</span>
+                        <span class="friend-bias">Bias: ${userData.bias || 'N/A'}</span>
+                    </div>
+                    <div class="friend-actions">
+                        <span style="color:#ffb347;">⏳ Pendiente</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+        document.querySelectorAll('.friend-name').forEach(el => {
+            el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
+        });
+    }
+
+    async function loadReceivedRequests() {
+        const container = document.getElementById('friendsContainer');
+        container.innerHTML = '<div class="empty-message">Cargando...</div>';
+        const snapshot = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
+        const requests = [];
+        snapshot.forEach(req => {
+            if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
+        });
+        if (requests.length === 0) {
+            container.innerHTML = '<div class="empty-message">No tienes solicitudes recibidas.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const req of requests) {
+            const userSnap = await database.ref(`users/${req.from}`).once('value');
+            const userData = userSnap.val();
+            if (userData) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div class="friend-info">
+                        <span class="friend-name" data-uid="${req.from}">${escapeHtml(userData.username)}</span>
+                        <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
+                    </div>
+                    <div class="friend-actions">
+                        <button class="accept-req" data-id="${req.id}" data-from="${req.from}">✅ Aceptar</button>
+                        <button class="decline-req" data-id="${req.id}">❌ Rechazar</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+        document.querySelectorAll('.accept-req').forEach(btn => {
+            btn.addEventListener('click', (e) => { acceptFriendRequest(btn.dataset.id, btn.dataset.from); });
+        });
+        document.querySelectorAll('.decline-req').forEach(btn => {
+            btn.addEventListener('click', (e) => { declineFriendRequest(btn.dataset.id); });
+        });
+        document.querySelectorAll('.friend-name').forEach(el => {
+            el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
+        });
+    }
+
+    // ========== MOSTRAR PERFIL ==========
+    async function showUserProfile(uid) {
+        if (!uid) {
+            Swal.fire('Info', 'Usuario no identificado', 'info');
+            return;
+        }
+        try {
+            const snapshot = await database.ref(`users/${uid}`).once('value');
+            const data = snapshot.val();
+            if (!data) {
+                Swal.fire('Error', 'Usuario no encontrado', 'error');
+                return;
+            }
+            const isFriendSnap = await database.ref(`friends/${currentUser.uid}/${uid}`).once('value');
+            const isFriend = isFriendSnap.exists();
+            let requestPending = false;
+            const reqSnap = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+            reqSnap.forEach(req => {
+                if (req.val().to === uid && req.val().status === 'pending') requestPending = true;
+            });
+            if (!requestPending) {
+                const reqSnap2 = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
+                reqSnap2.forEach(req => {
+                    if (req.val().from === uid && req.val().status === 'pending') requestPending = true;
+                });
+            }
+            const buttonHtml = !isFriend && !requestPending && uid !== currentUser.uid ?
+                `<button id="addFriendBtn" style="background:#7c3aed; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:15px;">➕ Agregar amigo</button>` :
+                (isFriend ? `<p style="color:#4CAF7A;">✓ Amigos</p>` :
+                (requestPending ? `<p style="color:#ffb347;">⏳ Solicitud pendiente</p>` : ''));
+            Swal.fire({
+                title: `🌟 ${data.username || 'Usuario'} 🌟`,
+                html: `
+                    <div class="profile-stats">
+                        <div class="profile-stat">🎀 Bias: ${data.bias || 'No definido'}</div>
+                        <div class="profile-stat">🏆 Nivel ${data.level || 1}</div>
+                        <div class="profile-stat">⭐ ${data.xp || 0} XP</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <p>👥 Se unió: ${data.joined ? new Date(data.joined).toLocaleDateString() : 'desconocida'}</p>
+                        ${buttonHtml}
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonColor: '#7c3aed',
+                confirmButtonText: 'Cerrar',
+                showConfirmButton: true,
+                didOpen: () => {
+                    const btnAdd = document.getElementById('addFriendBtn');
+                    if (btnAdd) btnAdd.onclick = () => { sendFriendRequest(uid); Swal.close(); };
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'No se pudo cargar el perfil', 'error');
+        }
+    }
+
+    // ========== CHAT ==========
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const text = input.value.trim();
+        if (!text) return;
+        database.ref('chatMessages').push({
+            username: currentUser.username,
+            text: text,
+            bias: currentUser.bias,
+            level: currentUser.level,
+            timestamp: Date.now(),
+            uid: currentUser.uid
+        });
+        input.value = "";
+        addXP(1);
+    }
+
+    function loadMessages() {
+        database.ref('chatMessages').on('value', snapshot => {
+            const data = snapshot.val();
+            const messages = data ? Object.values(data) : [];
+            messages.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+            const container = document.getElementById("chatMessages");
+            container.innerHTML = "";
+            if (messages.length === 0) { container.innerHTML = '<div class="message">¡Escribe el primer mensaje!</div>'; return; }
+            messages.forEach(msg => {
+                const isOwn = msg.uid === currentUser.uid;
+                const div = document.createElement("div");
+                div.className = `message ${isOwn ? 'own' : ''}`;
+                const usernameColor = biasColors[msg.bias] || "#ffb3e0";
+                const levelTag = msg.level ? `<span class="level-tag">⚡ Nvl ${msg.level}</span>` : '';
+                const uidAttr = msg.uid ? `data-uid="${msg.uid}"` : '';
+                div.innerHTML = `
+                    <div class="msg-header">
+                        <span class="bias-icon">✨ ${escapeHtml(msg.bias || "NMIXX")}</span>
+                        <span class="username" style="color: ${usernameColor};" ${uidAttr}>${escapeHtml(msg.username)}</span>
+                        ${levelTag}
+                    </div>
+                    <div>${escapeHtml(msg.text)}</div>
+                `;
+                container.appendChild(div);
+            });
+            document.querySelectorAll('.username').forEach(el => {
+                el.removeEventListener('click', handleUsernameClick);
+                el.addEventListener('click', handleUsernameClick);
+            });
+            container.scrollTop = container.scrollHeight;
+        });
+    }
+
+    function handleUsernameClick(event) {
+        const target = event.currentTarget;
+        const uid = target.getAttribute('data-uid');
+        if (!uid) {
+            Swal.fire('Info', 'Este mensaje es de una versión anterior. El usuario no tiene perfil asociado.', 'info');
+            return;
+        }
+        if (uid === currentUser.uid) {
+            Swal.fire('Tu perfil', '¡Eres tú! Puedes ver tu información en el panel superior.', 'info');
+            return;
+        }
+        showUserProfile(uid);
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+
+    function loadCuriosities() {
+        const curioDiv = document.getElementById("curiositiesContainer");
+        curioDiv.innerHTML = "";
+        const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
+        shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
+    }
+
+    // ========== NOTICIAS ==========
+    async function loadNewsFromJSON() {
+        const newsContainer = document.getElementById('newsContainer');
+        newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
+        try {
+            const response = await fetch('noticias.json?t=' + Date.now());
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const noticias = await response.json();
+            if (!noticias.length) {
+                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>';
+                return;
+            }
+            newsContainer.innerHTML = '';
+            noticias.forEach(noticia => {
+                const item = document.createElement('div');
+                item.className = 'news-item';
+                item.id = `news-${noticia.id}`;
+                item.innerHTML = `
+                    <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
+                    <div class="news-text">${escapeHtml(noticia.texto)}</div>
+                    <div class="like-controls">
+                        <button class="like-btn" data-id="${noticia.id}">
+                            ❤️ <span class="like-count">0</span>
+                        </button>
+                    </div>
+                `;
+                newsContainer.appendChild(item);
+            });
+            noticias.forEach(noticia => {
+                const likeRef = database.ref(`likes/${noticia.id}`);
+                likeRef.child('count').on('value', (snapshot) => {
+                    const count = snapshot.val() || 0;
+                    const span = document.querySelector(`#news-${noticia.id} .like-count`);
+                    if (span) span.innerText = count;
+                });
+                if (currentUser.uid) {
+                    const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
+                    userLikeRef.on('value', (snapshot) => {
+                        const liked = snapshot.val() === true;
+                        const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
+                        if (btn) {
+                            if (liked) {
+                                btn.classList.add('liked');
+                                btn.style.background = "#ff7eb3";
+                                btn.style.color = "#1e1a2f";
+                            } else {
+                                btn.classList.remove('liked');
+                                btn.style.background = "rgba(255,255,255,0.1)";
+                                btn.style.color = "white";
+                            }
+                        }
+                    });
+                }
+            });
+            attachLikeEventsFirebase();
+        } catch (error) {
+            console.error(error);
+            newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
+        }
+    }
+
+    function attachLikeEventsFirebase() {
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.removeEventListener('click', handleLikeFirebase);
+            btn.addEventListener('click', handleLikeFirebase);
+        });
+    }
+
+    async function handleLikeFirebase(event) {
+        if (!currentUser.uid) return;
+        const btn = event.currentTarget;
+        const newsId = btn.dataset.id;
+        const likeRef = database.ref(`likes/${newsId}`);
+        const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
+        const snapshot = await userLikeRef.once('value');
+        const alreadyLiked = snapshot.val() === true;
+        if (!alreadyLiked) {
+            likeRef.child('count').transaction(current => (current || 0) + 1);
+            userLikeRef.set(true);
+            Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false });
+        } else {
+            likeRef.child('count').transaction(current => (current || 1) - 1);
+            userLikeRef.remove();
+            Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false });
+        }
+    }
+
+    // ========== GENERAR TARJETAS ==========
+    function generateMemberCards() {
+        const container = document.getElementById("memberGrid");
+        container.innerHTML = "";
+        members.forEach(member => {
+            const card = document.createElement("div");
+            card.className = "member-card";
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.style.backgroundColor = avatarColors[member];
+            avatar.innerText = member.charAt(0);
+            const nameSpan = document.createElement("div");
+            nameSpan.className = "member-name";
+            nameSpan.innerText = member;
+            card.appendChild(avatar);
+            card.appendChild(nameSpan);
+            container.appendChild(card);
+        });
+    }
+
+    // ========== NAVEGACIÓN ==========
+    function initNavigation() {
+        const btns = document.querySelectorAll('.nav-btn');
+        const sections = {
+            home: document.getElementById('homeSection'),
+            news: document.getElementById('newsSection'),
+            chat: document.getElementById('chatSection'),
+            friends: document.getElementById('friendsSection')
+        };
+        btns.forEach(btn => btn.addEventListener('click', () => {
+            const sec = btn.dataset.section;
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            Object.values(sections).forEach(s => s.classList.remove('active-section'));
+            if (sec === 'home') sections.home.classList.add('active-section');
+            if (sec === 'news') sections.news.classList.add('active-section');
+            if (sec === 'chat') sections.chat.classList.add('active-section');
+            if (sec === 'friends') {
+                sections.friends.classList.add('active-section');
+                loadFriendsTab();
+            }
+            document.getElementById('dropdownMenu').classList.remove('show');
+        }));
+    }
+
+    function initDropdown() {
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdown = document.getElementById('dropdownMenu');
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                if (section === 'friends') {
+                    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+                    document.getElementById('friendsSection').classList.add('active-section');
+                    loadFriendsTab();
+                }
+                dropdown.classList.remove('show');
+            });
+        });
+    }
+
+    function initFriendsTabs() {
+        const tabs = document.querySelectorAll('.friends-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFriendTab = tab.dataset.friendTab;
+                loadFriendsTab();
+            });
+        });
+    }
+
+    // ========== LOGIN / REGISTRO ==========
+    let isLoginMode = true;
+    const authModal = document.getElementById('authModal');
+    const authTitle = document.getElementById('authTitle');
+    const authSubtitle = document.getElementById('authSubtitle');
+    const nicknameGroup = document.getElementById('nicknameGroup');
+    const authActionBtn = document.getElementById('authActionBtn');
+    const toggleLink = document.getElementById('toggleAuthLink');
+
+    toggleLink.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        authTitle.innerText = isLoginMode ? '✨ Iniciar Sesión ✨' : '✨ Registro NSWER ✨';
+        authSubtitle.innerText = isLoginMode ? 'Accede con tu cuenta NSWER' : 'Crea tu cuenta para unirte';
+        authActionBtn.innerText = isLoginMode ? 'Ingresar' : 'Registrarse';
+        nicknameGroup.style.display = isLoginMode ? 'none' : 'block';
+        toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
+    });
+
+    authActionBtn.addEventListener('click', async () => {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value.trim();
+        if (!email || !password) {
+            Swal.fire('Error', 'Completa todos los campos', 'error');
+            return;
+        }
+        if (!isLoginMode) {
+            const nickname = document.getElementById('authNickname').value.trim();
+            if (!nickname || nickname.length < 3) {
+                Swal.fire('Error', 'El nombre debe tener al menos 3 caracteres', 'error');
+                return;
+            }
+            try {
+                const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCred.user;
+                await database.ref(`users/${user.uid}`).set({
+                    username: nickname,
+                    xp: 0,
+                    level: 1,
+                    bias: "Lily",
+                    email: email,
+                    joined: Date.now()
+                });
+                Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
+                authModal.style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: "Lily", email: email };
+                updateUI();
+                generateMemberCards();
+                loadMessages();
+                loadCuriosities();
+                loadNewsFromJSON();
+                initNavigation();
+                initDropdown();
+                initFriendsTabs();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            } catch (error) {
+                console.error(error);
+                let msg = error.message;
+                if (msg.includes('auth/email-already-in-use')) msg = 'Este correo ya está registrado.';
+                else if (msg.includes('auth/invalid-email')) msg = 'Correo electrónico inválido.';
+                else if (msg.includes('auth/weak-password')) msg = 'Contraseña demasiado débil (mínimo 6 caracteres).';
+                Swal.fire('Error', msg, 'error');
+            }
+        } else {
+            try {
+                const userCred = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCred.user;
+                const snapshot = await database.ref(`users/${user.uid}`).once('value');
+                const data = snapshot.val();
+                if (data) {
+                    currentUser = {
+                        uid: user.uid,
+                        username: data.username || "NSWER_Fan",
+                        xp: data.xp || 0,
+                        level: data.level || 1,
+                        bias: data.bias || "Lily",
+                        email: email
+                    };
+                } else {
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email };
+                }
+                authModal.style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                updateUI();
+                generateMemberCards();
+                loadMessages();
+                loadCuriosities();
+                loadNewsFromJSON();
+                initNavigation();
+                initDropdown();
+                initFriendsTabs();
+                document.getElementById("sendBtn").onclick = sendMessage;
+                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            } catch (error) {
+                Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
+            }
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await auth.signOut();
+        window.location.reload();
+    });
+
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const snapshot = await database.ref(`users/${user.uid}`).once('value');
+            const data = snapshot.val();
+            if (data) {
+                currentUser = {
+                    uid: user.uid,
+                    username: data.username || "NSWER_Fan",
+                    xp: data.xp || 0,
+                    level: data.level || 1,
+                    bias: data.bias || "Lily",
+                    email: user.email
+                };
+            } else {
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email };
+            }
+            authModal.style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            updateUI();
+            generateMemberCards();
+            loadMessages();
+            loadCuriosities();
+            loadNewsFromJSON();
+            initNavigation();
+            initDropdown();
+            initFriendsTabs();
+            document.getElementById("sendBtn").onclick = sendMessage;
+            document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+        } else {
+            authModal.style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+    });
 </script>
 </body>
 </html>
