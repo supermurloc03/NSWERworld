@@ -17,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS (igual que antes, se mantienen) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -119,7 +118,7 @@
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO (igual) -->
+<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -163,7 +162,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL (se oculta hasta aceptar normas) -->
+<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -369,7 +368,7 @@
                     currentUser.xp = 0;
                     currentUser.level = 1;
                     currentUser.lastUsernameChange = Date.now();
-                    currentUser.rulesAccepted = false; // aún no ha aceptado normas
+                    currentUser.rulesAccepted = false;
                     saveUserDataToFirebase();
                     updateUI();
                 }
@@ -386,7 +385,6 @@
         document.getElementById("homeUsername").innerText = currentUser.username;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
-        // Pronombre
         const pronounDiv = document.getElementById("pronounDisplay");
         if (currentUser.pronoun && currentUser.pronoun !== "No especificado") {
             pronounDiv.style.display = "inline-block";
@@ -945,7 +943,7 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD ==========
+    // ========== NORMAS DE LA COMUNIDAD (sin norma del idioma) ==========
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
             Swal.fire({
@@ -956,9 +954,8 @@
                         <p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p>
                         <p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p>
                         <p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p>
-                        <p><strong>5. Idioma</strong><br>El chat está en español para mantener la cohesión de la comunidad.</p>
-                        <p><strong>6. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
-                        <p><strong>7. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
+                        <p><strong>5. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
+                        <p><strong>6. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
                     </div>
                 `,
                 icon: 'info',
@@ -984,23 +981,18 @@
             if (accepted) {
                 currentUser.rulesAccepted = true;
                 saveUserDataToFirebase();
-                // Mostrar la página normal
                 document.getElementById('mainContent').style.display = 'block';
-                // Inicializar todo después de aceptar
                 initializeAfterLogin();
             } else {
-                // Si no acepta, cerrar sesión y recargar
                 await auth.signOut();
                 window.location.reload();
             }
         } else {
-            // Ya aceptó, mostrar página normal
             document.getElementById('mainContent').style.display = 'block';
             initializeAfterLogin();
         }
     }
     
-    // ========== INICIALIZACIÓN DESPUÉS DE LOGIN ==========
     function initializeAfterLogin() {
         updateUI();
         generateMemberCards();
@@ -1162,7 +1154,6 @@
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
                 authModal.style.display = 'none';
                 currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
-                // Forzar normas
                 enforceRules();
             } catch (error) {
                 console.error(error);
