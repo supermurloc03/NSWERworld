@@ -17,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS COMPLETOS ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -94,15 +93,10 @@
         .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
         .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
-        
-        /* Forzar SweetAlert2 a estar por encima del modal de login */
-        .swal2-container {
-            z-index: 20000 !important;
-        }
-        .swal2-popup {
-            z-index: 20001 !important;
-        }
-        
+        .forgot-pw { margin-top: 10px; font-size: 0.8rem; color: #9ca3ff; cursor: pointer; display: inline-block; }
+        .forgot-pw:hover { text-decoration: underline; }
+        .swal2-container { z-index: 20000 !important; }
+        .swal2-popup { z-index: 20001 !important; }
         .custom-swal { background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important; border-radius: 32px !important; border: 2px solid #ff7eb3 !important; color: white !important; font-family: 'Poppins', sans-serif !important; }
         .custom-swal .swal2-title { color: #ffb3e0 !important; font-size: 1.6rem !important; }
         .custom-swal .swal2-html-container { color: #f0f0f0 !important; }
@@ -140,6 +134,9 @@
         <div class="input-group">
             <label>🔒 Contraseña</label>
             <input type="password" id="authPassword" placeholder="••••••">
+        </div>
+        <div class="input-group" style="text-align:center;">
+            <span id="forgotPasswordLink" class="forgot-pw">¿Olvidaste tu contraseña?</span>
         </div>
         <div id="nicknameGroup" class="input-group" style="display: none;">
             <label>🎤 Nombre de NSWER (visible en el chat)</label>
@@ -302,7 +299,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
     
-    // ========== FUNCIONES USUARIO (idénticas a la versión funcional) ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -1110,7 +1107,7 @@
         });
     }
     
-    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR VISIBLES ==========
+    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR Y RESTABLECER CONTRASEÑA ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1120,6 +1117,7 @@
     const pronounGroup = document.getElementById('pronounGroup');
     const authActionBtn = document.getElementById('authActionBtn');
     const toggleLink = document.getElementById('toggleAuthLink');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     
     toggleLink.addEventListener('click', () => {
         isLoginMode = !isLoginMode;
@@ -1130,6 +1128,22 @@
         biasGroup.style.display = isLoginMode ? 'none' : 'block';
         pronounGroup.style.display = isLoginMode ? 'none' : 'block';
         toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
+        forgotPasswordLink.style.display = isLoginMode ? 'inline-block' : 'none';
+    });
+    
+    forgotPasswordLink.addEventListener('click', async () => {
+        const email = prompt('Introduce tu correo electrónico para restablecer la contraseña:');
+        if (email && email.includes('@')) {
+            try {
+                await auth.sendPasswordResetEmail(email);
+                Swal.fire('Correo enviado', 'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.', 'success');
+            } catch (error) {
+                let msg = error.code === 'auth/user-not-found' ? 'No existe una cuenta con ese correo.' : 'Error al enviar el correo. Inténtalo de nuevo.';
+                Swal.fire('Error', msg, 'error');
+            }
+        } else if (email) {
+            Swal.fire('Error', 'Ingresa un correo válido.', 'error');
+        }
     });
     
     function getFriendlyErrorMessage(error) {
@@ -1139,6 +1153,7 @@
             case 'auth/user-disabled': return 'Esta cuenta ha sido deshabilitada.';
             case 'auth/user-not-found': return 'No hay ningún usuario con este correo.';
             case 'auth/wrong-password': return 'Contraseña incorrecta. Inténtalo de nuevo.';
+            case 'auth/invalid-credential': return 'Credenciales incorrectas. Verifica tu correo y contraseña.';
             case 'auth/email-already-in-use': return 'Este correo ya está registrado. Inicia sesión o usa otro.';
             case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
             case 'auth/too-many-requests': return 'Demasiados intentos fallidos. Intenta más tarde.';
