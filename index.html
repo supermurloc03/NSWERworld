@@ -19,7 +19,7 @@
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
         .main-content { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
         
-        /* Barra de navegación original (una sola fila) */
+        /* Barra de navegación */
         .navbar {
             position: fixed;
             top: 0;
@@ -35,12 +35,12 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        /* Contenedor del logo y título, y ahora también del menú debajo */
+        /* Logo y título en columna, y el menú debajo */
         .logo-area {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 5px;
+            gap: 6px; /* separación entre título y menú */
         }
         .logo-title {
             display: flex;
@@ -60,19 +60,16 @@
             background-clip: text;
             color: transparent;
         }
-        /* Botón de menú debajo del título */
+        /* Botón menú solo el icono, sin texto */
         .menu-container {
             position: relative;
         }
         .menu-btn {
             background: transparent;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             cursor: pointer;
             color: #ff7eb3;
-            display: flex;
-            align-items: center;
-            gap: 5px;
             padding: 2px 5px;
             border-radius: 20px;
             transition: 0.2s;
@@ -111,7 +108,7 @@
             background: #7c3aed;
         }
         
-        /* Botones de navegación principales (sin cambios) */
+        /* Botones de navegación principales */
         .nav-links {
             display: flex;
             gap: 8px;
@@ -183,7 +180,13 @@
         .chat-input { display: flex; gap: 12px; margin-top: 15px; }
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .chat-input button { background: #7c3aed; padding: 0 20px; border-radius: 60px; border: none; color: white; cursor: pointer; }
-        @media (max-width: 750px) { .navbar { flex-direction: column; align-items: center; gap: 8px; } .logo-area { align-items: center; } .menu-container { align-self: center; } body { padding-top: 110px; } .hero-logo { max-width: 300px; } }
+        @media (max-width: 750px) { 
+            .navbar { flex-direction: column; align-items: center; gap: 8px; } 
+            .logo-area { align-items: center; } 
+            .menu-container { align-self: center; } 
+            body { padding-top: 110px; } 
+            .hero-logo { max-width: 300px; } 
+        }
         .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .auth-card h2 { margin-bottom: 10px; }
@@ -237,18 +240,18 @@
 <!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
-        <!-- Logo, título y menú en columna a la izquierda -->
+        <!-- Logo, título y menú debajo -->
         <div class="logo-area">
             <div class="logo-title">
                 <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER">
                 <span class="logo-text">NSWER WORLD</span>
             </div>
-            <!-- Botón menú debajo del título -->
+            <!-- Botón menú solo el icono, sin texto -->
             <div class="menu-container">
-                <button id="menuBtn" class="menu-btn">☰ Menú</button>
+                <button id="menuBtn" class="menu-btn">☰</button>
                 <div id="dropdownMenu" class="dropdown-menu">
                     <button class="dropdown-item" data-section="friends">👥 Amigos</button>
-                    <!-- Más opciones aquí en el futuro -->
+                    <!-- Aquí puedes añadir más opciones -->
                 </div>
             </div>
         </div>
@@ -888,7 +891,7 @@
                 sections.friends.classList.add('active-section');
                 loadFriendsTab();
             }
-            // Cerrar menú desplegable si está abierto
+            // Cerrar menú
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
     }
