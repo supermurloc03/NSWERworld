@@ -94,6 +94,15 @@
         .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
         .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
+        
+        /* Forzar SweetAlert2 a estar por encima del modal de login */
+        .swal2-container {
+            z-index: 20000 !important;
+        }
+        .swal2-popup {
+            z-index: 20001 !important;
+        }
+        
         .custom-swal { background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important; border-radius: 32px !important; border: 2px solid #ff7eb3 !important; color: white !important; font-family: 'Poppins', sans-serif !important; }
         .custom-swal .swal2-title { color: #ffb3e0 !important; font-size: 1.6rem !important; }
         .custom-swal .swal2-html-container { color: #f0f0f0 !important; }
@@ -293,7 +302,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
     
-    // ========== FUNCIONES USUARIO ==========
+    // ========== FUNCIONES USUARIO (idénticas a la versión funcional) ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -1101,7 +1110,7 @@
         });
     }
     
-    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR DETALLADOS ==========
+    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR VISIBLES ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1123,7 +1132,6 @@
         toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
     });
     
-    // Función para mostrar errores amigables
     function getFriendlyErrorMessage(error) {
         const code = error.code;
         switch (code) {
@@ -1146,7 +1154,6 @@
             return;
         }
         if (!isLoginMode) {
-            // Registro
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
@@ -1178,7 +1185,6 @@
                 console.error(error);
             }
         } else {
-            // Login
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
