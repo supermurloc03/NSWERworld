@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* (estilos completos, igual que antes) */
+        /* ========== ESTILOS COMPLETOS (igual que antes, no cambian) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -509,7 +509,7 @@
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
     // ========== SISTEMA DE AMIGOS CON LISTENER EN TIEMPO REAL ==========
-    let friendsUnsubscribe = null; // para cancelar listener cuando cambie de usuario
+    let friendsUnsubscribe = null;
     
     async function sendFriendRequest(targetUid) {
         if (targetUid === currentUser.uid) {
@@ -542,19 +542,15 @@
     
     async function acceptFriendRequest(requestId, fromUid) {
         await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
-        // Escribir en ambas direcciones para simetría
         await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
         await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
         Swal.fire('Aceptada', 'Ahora son amigos', 'success');
-        // No es necesario recargar manualmente porque el listener se encargará
     }
     
     async function declineFriendRequest(requestId) {
         await database.ref(`friendRequests/${requestId}`).update({ status: 'declined' });
         Swal.fire('Rechazada', 'Has rechazado la solicitud', 'info');
-        // La lista de recibidas se actualizará automáticamente (si usamos listener)
-        // Pero para simplificar, recargamos la pestaña actual
-        loadCurrentFriendTab();
+        loadReceivedRequests(); // refrescar recibidas
     }
     
     async function removeFriend(friendUid) {
@@ -567,9 +563,7 @@
     }
     
     let currentFriendTab = 'friends';
-    let friendsListenerActive = false;
     
-    // Función para cargar solicitudes enviadas y recibidas (no en tiempo real por simplicidad, pero se recargan al cambiar de pestaña)
     async function loadSentRequests() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
@@ -651,13 +645,11 @@
         });
     }
     
-    // Listener en tiempo real para la lista de amigos
     function startFriendsListener() {
         if (friendsUnsubscribe) friendsUnsubscribe();
         if (!currentUser.uid) return;
         const friendsRef = database.ref(`friends/${currentUser.uid}`);
         friendsUnsubscribe = friendsRef.on('value', async (snapshot) => {
-            // Solo actualizar si la pestaña activa es "friends"
             if (currentFriendTab === 'friends') {
                 await renderFriendsList(snapshot.val());
             }
@@ -699,22 +691,11 @@
         });
     }
     
-    async function loadFriendsList() {
-        // Esta función ya no es necesaria porque el listener llama a renderFriendsList directamente.
-        // Pero la mantenemos por compatibilidad con la pestaña.
-        const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
-        await renderFriendsList(snapshot.val());
-    }
-    
-    function loadCurrentFriendTab() {
-        if (currentFriendTab === 'friends') {
-            // El listener ya actualiza, pero forzamos una carga inicial
-            loadFriendsList();
-        } else if (currentFriendTab === 'sent') {
-            loadSentRequests();
-        } else if (currentFriendTab === 'received') {
-            loadReceivedRequests();
-        }
+    function loadFriendsList() {
+        // ya no es necesaria porque el listener la actualiza, pero la dejamos para carga inicial
+        database.ref(`friends/${currentUser.uid}`).once('value', (snapshot) => {
+            renderFriendsList(snapshot.val());
+        });
     }
     
     function initFriendsTabs() {
@@ -725,13 +706,13 @@
                 tab.classList.add('active');
                 currentFriendTab = tab.dataset.friendTab;
                 if (currentFriendTab === 'friends') {
-                    // Asegurar que el listener está activo y cargar datos
+                    startFriendsListener();
                     loadFriendsList();
                 } else if (currentFriendTab === 'sent') {
-                    if (friendsUnsubscribe) friendsUnsubscribe(); // pausar listener
+                    if (friendsUnsubscribe) friendsUnsubscribe();
                     loadSentRequests();
                 } else if (currentFriendTab === 'received') {
-                    if (friendsUnsubscribe) friendsUnsubscribe(); // pausar listener
+                    if (friendsUnsubscribe) friendsUnsubscribe();
                     loadReceivedRequests();
                 }
             });
@@ -1007,8 +988,12 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD ==========
+    // ========== NORMAS (NO BLOQUEANTES) ==========
+    // Mostrar normas solo informativas la primera vez, sin obligar a aceptar para entrar.
+    let rulesShown = false; // evitar mostrarlas múltiples veces en la misma sesión
+    
     async function showRulesModal(requireAcceptance = false) {
+        // Este modal ya no es obligatorio para navegar. Solo informativo.
         return new Promise((resolve) => {
             Swal.fire({
                 title: '📜 Normas de la comunidad NSWER',
@@ -1023,38 +1008,31 @@
                     </div>
                 `,
                 icon: 'info',
-                confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
-                showCancelButton: requireAcceptance ? false : true,
-                cancelButtonText: 'Cerrar',
-                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                allowOutsideClick: !requireAcceptance,
-                allowEscapeKey: !requireAcceptance
-            }).then(result => {
-                if (requireAcceptance && result.isConfirmed) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
+                confirmButtonText: 'Entendido',
+                showCancelButton: false,
+                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm' }
+            }).then(() => {
+                resolve(true);
             });
         });
     }
     
     async function enforceRules() {
-        if (!currentUser.rulesAccepted) {
-            const accepted = await showRulesModal(true);
-            if (accepted) {
+        // Mostrar normas solo la primera vez que el usuario inicia sesión y no las ha visto aún en esta sesión.
+        if (!rulesShown) {
+            rulesShown = true;
+            // Si el usuario nunca ha "aceptado" simbólicamente (campo rulesAccepted), mostramos las normas informativas.
+            // Pero no bloqueamos el acceso.
+            if (!currentUser.rulesAccepted) {
+                await showRulesModal(false);
+                // Opcional: marcar como vista para no volver a mostrarlas a la fuerza en cada login.
                 currentUser.rulesAccepted = true;
                 saveUserDataToFirebase();
-                document.getElementById('mainContent').style.display = 'block';
-                initializeAfterLogin();
-            } else {
-                await auth.signOut();
-                window.location.reload();
             }
-        } else {
-            document.getElementById('mainContent').style.display = 'block';
-            initializeAfterLogin();
         }
+        // Siempre mostrar la página principal.
+        document.getElementById('mainContent').style.display = 'block';
+        initializeAfterLogin();
     }
     
     function initializeAfterLogin() {
@@ -1067,7 +1045,7 @@
         initDropdown();
         initFriendsTabs();
         initEmojiPicker();
-        startFriendsListener(); // Iniciar listener de amigos
+        startFriendsListener();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
@@ -1091,12 +1069,11 @@
             if (sec === 'chat') sections.chat.classList.add('active-section');
             if (sec === 'friends') {
                 sections.friends.classList.add('active-section');
-                // Asegurar que la pestaña activa de amigos es la correcta
                 currentFriendTab = 'friends';
                 document.querySelector('.friends-tab.active').classList.remove('active');
                 document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
+                startFriendsListener();
                 loadFriendsList();
-                startFriendsListener(); // reactivar listener
             }
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
@@ -1125,8 +1102,8 @@
                     currentFriendTab = 'friends';
                     document.querySelector('.friends-tab.active').classList.remove('active');
                     document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                    loadFriendsList();
                     startFriendsListener();
+                    loadFriendsList();
                 }
                 dropdown.classList.remove('show');
             });
@@ -1238,6 +1215,7 @@
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido!', 'success');
                 authModal.style.display = 'none';
                 currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias, email, pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
+                rulesShown = false;
                 enforceRules();
             } catch (error) {
                 Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
@@ -1266,6 +1244,7 @@
                     currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
                 }
                 authModal.style.display = 'none';
+                rulesShown = false;
                 enforceRules();
             } catch (error) {
                 Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
@@ -1299,6 +1278,7 @@
                 currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
             }
             authModal.style.display = 'none';
+            rulesShown = false;
             enforceRules();
         } else {
             authModal.style.display = 'flex';
