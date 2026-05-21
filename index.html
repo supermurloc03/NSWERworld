@@ -169,7 +169,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL (se oculta hasta aceptar normas) -->
+<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -1107,7 +1107,7 @@
         });
     }
     
-    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR Y RESTABLECER CONTRASEÑA ==========
+    // ========== LOGIN/REGISTRO (CORREGIDO Y CON DEPURACIÓN) ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1136,9 +1136,9 @@
         if (email && email.includes('@')) {
             try {
                 await auth.sendPasswordResetEmail(email);
-                Swal.fire('Correo enviado', 'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.', 'success');
+                Swal.fire('Correo enviado', 'Revisa tu bandeja de entrada y sigue las instrucciones.', 'success');
             } catch (error) {
-                let msg = error.code === 'auth/user-not-found' ? 'No existe una cuenta con ese correo.' : 'Error al enviar el correo. Inténtalo de nuevo.';
+                let msg = error.code === 'auth/user-not-found' ? 'No existe una cuenta con ese correo.' : 'Error al enviar el correo.';
                 Swal.fire('Error', msg, 'error');
             }
         } else if (email) {
@@ -1168,7 +1168,9 @@
             Swal.fire('Error', 'Por favor, completa todos los campos.', 'error');
             return;
         }
+        
         if (!isLoginMode) {
+            // REGISTRO
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
@@ -1200,6 +1202,7 @@
                 console.error(error);
             }
         } else {
+            // LOGIN
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
@@ -1225,7 +1228,7 @@
             } catch (error) {
                 const msg = getFriendlyErrorMessage(error);
                 Swal.fire('Error al iniciar sesión', msg, 'error');
-                console.error(error);
+                console.error("Login error details:", error);
             }
         }
     });
