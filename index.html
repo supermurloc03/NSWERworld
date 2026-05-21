@@ -13,7 +13,7 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- Emoji Picker (ligero) -->
+    <!-- Emoji Picker -->
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
@@ -22,7 +22,7 @@
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
         .main-content { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
         
-        /* Barra de navegación */
+        /* Barra navegación */
         .navbar {
             position: fixed;
             top: 0;
@@ -94,6 +94,7 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            gap: 15px;
         }
         .menu-container {
             position: relative;
@@ -142,16 +143,78 @@
             background: #7c3aed;
         }
         
-        /* Perfil, niveles */
-        .profile-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 8px 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .user-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; font-size: 0.9rem; }
-        .bias-fixed { background: #2d2a55; padding: 4px 14px; border-radius: 40px; display: flex; gap: 8px; font-size: 0.85rem; }
-        .level-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 10px 22px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border: 1px solid #ffb347; }
-        .level-stats { display: flex; gap: 20px; align-items: center; }
-        .level-badge { background: linear-gradient(135deg, #ffb347, #ff7e05); padding: 4px 14px; border-radius: 40px; font-weight: bold; color: #1e1a2f; font-size: 0.85rem; }
-        .points { background: #2a2a5a; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; }
-        .section { display: none; animation: fadeIn 0.3s ease; }
-        .section.active-section { display: block; }
+        /* Perfil */
+        .profile-area {
+            background: rgba(30, 27, 75, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 8px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+        .bias-fixed {
+            background: #2d2a55;
+            padding: 4px 14px;
+            border-radius: 40px;
+            display: flex;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .pronoun-badge {
+            background: #2d2a55;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #ffb3e0;
+        }
+        .level-area {
+            background: rgba(30, 27, 75, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 10px 22px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #ffb347;
+        }
+        .level-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .level-badge {
+            background: linear-gradient(135deg, #ffb347, #ff7e05);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e1a2f;
+            font-size: 0.85rem;
+        }
+        .points {
+            background: #2a2a5a;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .section.active-section {
+            display: block;
+        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
         .hero { text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 48px; padding: 30px 20px; margin-bottom: 30px; }
         .hero-logo { max-width: 450px; width: 90%; margin: 0 auto 20px; display: block; }
@@ -171,7 +234,7 @@
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
         .curio-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 10px 15px; margin-bottom: 12px; }
         
-        /* ========== NUEVOS ESTILOS DEL CHAT ========== */
+        /* Chat */
         .chat-container {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -312,7 +375,7 @@
         .auth-card h2 { margin-bottom: 10px; }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; margin-bottom: 5px; color: #ffb3e0; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
         .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
@@ -350,6 +413,26 @@
             <label>🎤 Nombre de NSWER (visible en el chat)</label>
             <input type="text" id="authNickname" placeholder="Ej: NSWER_Lover">
         </div>
+        <div id="biasGroup" class="input-group" style="display: none;">
+            <label>💖 Tu bias favorita:</label>
+            <select id="authBias">
+                <option value="Lily">Lily</option>
+                <option value="Haewon">Haewon</option>
+                <option value="Sullyoon">Sullyoon</option>
+                <option value="BAE">BAE</option>
+                <option value="Jiwoo">Jiwoo</option>
+                <option value="Kyujin">Kyujin</option>
+            </select>
+        </div>
+        <div id="pronounGroup" class="input-group" style="display: none;">
+            <label>🏳️‍🌈 Pronombre (opcional):</label>
+            <select id="authPronoun">
+                <option value="Ella">Ella</option>
+                <option value="Él">Él</option>
+                <option value="Elle">Elle</option>
+                <option value="No especificado">No especificado</option>
+            </select>
+        </div>
         <button id="authActionBtn" class="auth-btn">Ingresar</button>
         <div class="toggle-auth">
             ¿No tienes cuenta? <span id="toggleAuthLink">Regístrate aquí</span>
@@ -377,6 +460,7 @@
                 <button id="menuBtn" class="menu-btn">☰</button>
                 <div id="dropdownMenu" class="dropdown-menu">
                     <button class="dropdown-item" data-section="friends">👥 Amigos</button>
+                    <button class="dropdown-item" id="editProfileBtn">✏️ Editar perfil</button>
                 </div>
             </div>
         </div>
@@ -385,6 +469,7 @@
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
+            <div id="pronounDisplay" class="pronoun-badge" style="display: none;"></div>
         </div>
         <div class="bias-fixed">
             <span>🎀 Mi bias:</span>
@@ -417,7 +502,6 @@
         </div>
     </div>
 
-    <!-- CHAT MEJORADO -->
     <div id="chatSection" class="section">
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages"></div>
@@ -474,7 +558,7 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "" };
+    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado" };
     
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
@@ -493,6 +577,7 @@
             xp: currentUser.xp,
             level: currentUser.level,
             bias: currentUser.bias,
+            pronoun: currentUser.pronoun,
             email: currentUser.email
         });
     }
@@ -505,6 +590,7 @@
             currentUser.xp = data.xp || 0;
             currentUser.level = data.level || 1;
             currentUser.bias = data.bias || "Lily";
+            currentUser.pronoun = data.pronoun || "No especificado";
         } else {
             await showProfileSetupModal();
         }
@@ -515,14 +601,21 @@
     async function showProfileSetupModal() {
         return new Promise((resolve) => {
             Swal.fire({
-                title: '¡Bienvenido NSWER!',
+                title: 'Completa tu perfil NSWER',
                 html: `
                     <div style="text-align:left">
                         <label>🎤 Tu nombre de usuario:</label>
                         <input id="swal-nickname" class="swal2-input" placeholder="Ej: NSWER_Lover" value="NSWER_${Math.floor(Math.random()*1000)}">
-                        <label style="margin-top:10px">💖 Elige tu bias (no podrás cambiarlo después):</label>
+                        <label style="margin-top:10px">💖 Elige tu bias:</label>
                         <select id="swal-bias" class="swal2-select">
                             ${members.map(m => `<option value="${m}">${m}</option>`).join('')}
+                        </select>
+                        <label style="margin-top:10px">🏳️‍🌈 Pronombre (opcional):</label>
+                        <select id="swal-pronoun" class="swal2-select">
+                            <option value="Ella">Ella</option>
+                            <option value="Él">Él</option>
+                            <option value="Elle">Elle</option>
+                            <option value="No especificado">No especificado</option>
                         </select>
                     </div>
                 `,
@@ -530,16 +623,18 @@
                 preConfirm: () => {
                     const nickname = document.getElementById('swal-nickname').value.trim();
                     const bias = document.getElementById('swal-bias').value;
+                    const pronoun = document.getElementById('swal-pronoun').value;
                     if (!nickname || nickname.length < 3) {
                         Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
                         return false;
                     }
-                    return { nickname, bias };
+                    return { nickname, bias, pronoun };
                 }
             }).then(result => {
                 if (result.isConfirmed) {
                     currentUser.username = result.value.nickname;
                     currentUser.bias = result.value.bias;
+                    currentUser.pronoun = result.value.pronoun;
                     currentUser.xp = 0;
                     currentUser.level = 1;
                     saveUserDataToFirebase();
@@ -558,6 +653,14 @@
         document.getElementById("homeUsername").innerText = currentUser.username;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
+        // Pronombre
+        const pronounDiv = document.getElementById("pronounDisplay");
+        if (currentUser.pronoun && currentUser.pronoun !== "No especificado") {
+            pronounDiv.style.display = "inline-block";
+            pronounDiv.innerText = `🏳️‍🌈 ${currentUser.pronoun}`;
+        } else {
+            pronounDiv.style.display = "none";
+        }
     }
     
     function recalcLevel() {
@@ -658,7 +761,7 @@
         const uid = event.currentTarget.getAttribute('data-uid');
         if (!uid) return;
         if (uid === currentUser.uid) {
-            Swal.fire('Tu perfil', '¡Eres tú! Puedes ver tu información en el panel superior.', 'info');
+            Swal.fire('Tu perfil', `👤 ${currentUser.username}\n🎀 Bias: ${currentUser.bias}\n🏆 Nivel ${currentUser.level}\n⭐ ${currentUser.xp} XP\n🏳️‍🌈 Pronombre: ${currentUser.pronoun}`, 'info');
             return;
         }
         showUserProfile(uid);
@@ -882,6 +985,7 @@
                         <div class="profile-stat">⭐ ${data.xp || 0} XP</div>
                     </div>
                     <div style="margin-top:10px;">
+                        <p>🏳️‍🌈 Pronombre: ${data.pronoun || 'No especificado'}</p>
                         <p>👥 Se unió: ${data.joined ? new Date(data.joined).toLocaleDateString() : 'desconocida'}</p>
                         ${buttonHtml}
                     </div>
@@ -1014,7 +1118,7 @@
         });
     }
     
-    // ========== NAVEGACIÓN ==========
+    // ========== NAVEGACIÓN Y EDICIÓN DE PERFIL ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -1064,6 +1168,51 @@
                 dropdown.classList.remove('show');
             });
         });
+        // Botón editar perfil
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            editProfileModal();
+            dropdown.classList.remove('show');
+        });
+    }
+    
+    async function editProfileModal() {
+        const { value: formValues } = await Swal.fire({
+            title: 'Editar perfil',
+            html: `
+                <div style="text-align:left">
+                    <label>🎤 Nombre de usuario:</label>
+                    <input id="edit-nickname" class="swal2-input" value="${currentUser.username}">
+                    <label style="margin-top:10px">💖 Bias:</label>
+                    <select id="edit-bias" class="swal2-select">
+                        ${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                    <label style="margin-top:10px">🏳️‍🌈 Pronombre:</label>
+                    <select id="edit-pronoun" class="swal2-select">
+                        <option value="Ella" ${currentUser.pronoun === 'Ella' ? 'selected' : ''}>Ella</option>
+                        <option value="Él" ${currentUser.pronoun === 'Él' ? 'selected' : ''}>Él</option>
+                        <option value="Elle" ${currentUser.pronoun === 'Elle' ? 'selected' : ''}>Elle</option>
+                        <option value="No especificado" ${currentUser.pronoun === 'No especificado' ? 'selected' : ''}>No especificado</option>
+                    </select>
+                </div>
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+                const newName = document.getElementById('edit-nickname').value.trim();
+                if (!newName || newName.length < 3) {
+                    Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
+                    return false;
+                }
+                return { newName, newBias: document.getElementById('edit-bias').value, newPronoun: document.getElementById('edit-pronoun').value };
+            }
+        });
+        if (formValues) {
+            currentUser.username = formValues.newName;
+            currentUser.bias = formValues.newBias;
+            currentUser.pronoun = formValues.newPronoun;
+            saveUserDataToFirebase();
+            updateUI();
+            Swal.fire('Perfil actualizado', 'Tus cambios se han guardado', 'success');
+        }
     }
     
     function initFriendsTabs() {
@@ -1105,6 +1254,8 @@
     const authTitle = document.getElementById('authTitle');
     const authSubtitle = document.getElementById('authSubtitle');
     const nicknameGroup = document.getElementById('nicknameGroup');
+    const biasGroup = document.getElementById('biasGroup');
+    const pronounGroup = document.getElementById('pronounGroup');
     const authActionBtn = document.getElementById('authActionBtn');
     const toggleLink = document.getElementById('toggleAuthLink');
     
@@ -1114,6 +1265,8 @@
         authSubtitle.innerText = isLoginMode ? 'Accede con tu cuenta NSWER' : 'Crea tu cuenta para unirte';
         authActionBtn.innerText = isLoginMode ? 'Ingresar' : 'Registrarse';
         nicknameGroup.style.display = isLoginMode ? 'none' : 'block';
+        biasGroup.style.display = isLoginMode ? 'none' : 'block';
+        pronounGroup.style.display = isLoginMode ? 'none' : 'block';
         toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
     });
     
@@ -1126,6 +1279,8 @@
         }
         if (!isLoginMode) {
             const nickname = document.getElementById('authNickname').value.trim();
+            const bias = document.getElementById('authBias').value;
+            const pronoun = document.getElementById('authPronoun').value;
             if (!nickname || nickname.length < 3) {
                 Swal.fire('Error', 'El nombre debe tener al menos 3 caracteres', 'error');
                 return;
@@ -1137,14 +1292,15 @@
                     username: nickname,
                     xp: 0,
                     level: 1,
-                    bias: "Lily",
+                    bias: bias,
+                    pronoun: pronoun,
                     email: email,
                     joined: Date.now()
                 });
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
                 authModal.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: "Lily", email: email };
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun };
                 updateUI();
                 generateMemberCards();
                 loadMessages();
@@ -1177,10 +1333,11 @@
                         xp: data.xp || 0,
                         level: data.level || 1,
                         bias: data.bias || "Lily",
+                        pronoun: data.pronoun || "No especificado",
                         email: email
                     };
                 } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email };
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado" };
                 }
                 authModal.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
@@ -1217,10 +1374,11 @@
                     xp: data.xp || 0,
                     level: data.level || 1,
                     bias: data.bias || "Lily",
+                    pronoun: data.pronoun || "No especificado",
                     email: user.email
                 };
             } else {
-                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email };
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado" };
             }
             authModal.style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
