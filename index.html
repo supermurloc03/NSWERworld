@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
+        /* ========== ESTILOS COMPLETOS ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -943,7 +944,7 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD (sin norma del idioma) ==========
+    // ========== NORMAS DE LA COMUNIDAD ==========
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
             Swal.fire({
@@ -1100,7 +1101,7 @@
         });
     }
     
-    // ========== LOGIN/REGISTRO ==========
+    // ========== LOGIN/REGISTRO CON MENSAJES DE ERROR DETALLADOS ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1122,11 +1123,26 @@
         toggleLink.innerText = isLoginMode ? 'Regístrate aquí' : 'Iniciar sesión';
     });
     
+    // Función para mostrar errores amigables
+    function getFriendlyErrorMessage(error) {
+        const code = error.code;
+        switch (code) {
+            case 'auth/invalid-email': return 'El correo electrónico no es válido.';
+            case 'auth/user-disabled': return 'Esta cuenta ha sido deshabilitada.';
+            case 'auth/user-not-found': return 'No hay ningún usuario con este correo.';
+            case 'auth/wrong-password': return 'Contraseña incorrecta. Inténtalo de nuevo.';
+            case 'auth/email-already-in-use': return 'Este correo ya está registrado. Inicia sesión o usa otro.';
+            case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
+            case 'auth/too-many-requests': return 'Demasiados intentos fallidos. Intenta más tarde.';
+            default: return error.message || 'Ocurrió un error inesperado.';
+        }
+    }
+    
     authActionBtn.addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
         if (!email || !password) {
-            Swal.fire('Error', 'Completa todos los campos', 'error');
+            Swal.fire('Error', 'Por favor, completa todos los campos.', 'error');
             return;
         }
         if (!isLoginMode) {
@@ -1135,7 +1151,7 @@
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
             if (!nickname || nickname.length < 3) {
-                Swal.fire('Error', 'El nombre debe tener al menos 3 caracteres', 'error');
+                Swal.fire('Error', 'El nombre de usuario debe tener al menos 3 caracteres.', 'error');
                 return;
             }
             try {
@@ -1152,17 +1168,14 @@
                     lastUsernameChange: Date.now(),
                     rulesAccepted: false
                 });
-                Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
+                Swal.fire('¡Éxito!', 'Cuenta creada correctamente. ¡Bienvenido NSWER!', 'success');
                 authModal.style.display = 'none';
                 currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
                 enforceRules();
             } catch (error) {
-                console.error("Registro error:", error);
-                let msg = error.message;
-                if (msg.includes('auth/email-already-in-use')) msg = 'Este correo ya está registrado.';
-                else if (msg.includes('auth/invalid-email')) msg = 'Correo electrónico inválido.';
-                else if (msg.includes('auth/weak-password')) msg = 'Contraseña demasiado débil (mínimo 6 caracteres).';
-                Swal.fire('Error', msg, 'error');
+                const msg = getFriendlyErrorMessage(error);
+                Swal.fire('Error al registrarse', msg, 'error');
+                console.error(error);
             }
         } else {
             // Login
@@ -1189,8 +1202,9 @@
                 authModal.style.display = 'none';
                 enforceRules();
             } catch (error) {
-                console.error("Login error:", error);
-                Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
+                const msg = getFriendlyErrorMessage(error);
+                Swal.fire('Error al iniciar sesión', msg, 'error');
+                console.error(error);
             }
         }
     });
