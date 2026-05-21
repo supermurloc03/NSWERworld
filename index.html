@@ -162,7 +162,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL -->
+<!-- CONTENIDO PRINCIPAL (se oculta hasta aceptar normas) -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -1130,6 +1130,7 @@
             return;
         }
         if (!isLoginMode) {
+            // Registro
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
@@ -1156,7 +1157,7 @@
                 currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
                 enforceRules();
             } catch (error) {
-                console.error(error);
+                console.error("Registro error:", error);
                 let msg = error.message;
                 if (msg.includes('auth/email-already-in-use')) msg = 'Este correo ya está registrado.';
                 else if (msg.includes('auth/invalid-email')) msg = 'Correo electrónico inválido.';
@@ -1164,6 +1165,7 @@
                 Swal.fire('Error', msg, 'error');
             }
         } else {
+            // Login
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
@@ -1187,6 +1189,7 @@
                 authModal.style.display = 'none';
                 enforceRules();
             } catch (error) {
+                console.error("Login error:", error);
                 Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
             }
         }
