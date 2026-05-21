@@ -950,54 +950,16 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD ==========
+    // ========== NORMAS (DESACTIVADAS TEMPORALMENTE PARA QUE EL LOGIN FUNCIONE) ==========
     async function showRulesModal(requireAcceptance = false) {
-        return new Promise((resolve) => {
-            Swal.fire({
-                title: '📜 Normas de la comunidad NSWER',
-                html: `
-                    <div style="text-align:left; max-height: 400px; overflow-y: auto; padding-right: 10px;">
-                        <p><strong>1. Respeto ante todo</strong><br>Trata a los demás con amabilidad. No se tolerarán insultos, acoso, discriminación ni lenguaje ofensivo.</p>
-                        <p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p>
-                        <p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p>
-                        <p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p>
-                        <p><strong>5. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
-                        <p><strong>6. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
-                showCancelButton: requireAcceptance ? false : true,
-                cancelButtonText: 'Cerrar',
-                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                allowOutsideClick: !requireAcceptance,
-                allowEscapeKey: !requireAcceptance
-            }).then(result => {
-                if (requireAcceptance && result.isConfirmed) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
-            });
-        });
+        // Simplemente cerramos sin hacer nada
+        return Promise.resolve(false);
     }
     
     async function enforceRules() {
-        if (!currentUser.rulesAccepted) {
-            const accepted = await showRulesModal(true);
-            if (accepted) {
-                currentUser.rulesAccepted = true;
-                saveUserDataToFirebase();
-                document.getElementById('mainContent').style.display = 'block';
-                initializeAfterLogin();
-            } else {
-                await auth.signOut();
-                window.location.reload();
-            }
-        } else {
-            document.getElementById('mainContent').style.display = 'block';
-            initializeAfterLogin();
-        }
+        console.log("Mostrando contenido principal (normas omitidas temporalmente)");
+        document.getElementById('mainContent').style.display = 'block';
+        initializeAfterLogin();
     }
     
     function initializeAfterLogin() {
@@ -1107,7 +1069,7 @@
         });
     }
     
-    // ========== LOGIN/REGISTRO (CORREGIDO Y CON DEPURACIÓN) ==========
+    // ========== LOGIN/REGISTRO ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1136,28 +1098,25 @@
         if (email && email.includes('@')) {
             try {
                 await auth.sendPasswordResetEmail(email);
-                Swal.fire('Correo enviado', 'Revisa tu bandeja de entrada y sigue las instrucciones.', 'success');
+                Swal.fire('Correo enviado', 'Revisa tu bandeja de entrada.', 'success');
             } catch (error) {
-                let msg = error.code === 'auth/user-not-found' ? 'No existe una cuenta con ese correo.' : 'Error al enviar el correo.';
-                Swal.fire('Error', msg, 'error');
+                Swal.fire('Error', error.code === 'auth/user-not-found' ? 'No existe esa cuenta.' : 'Error al enviar.', 'error');
             }
         } else if (email) {
-            Swal.fire('Error', 'Ingresa un correo válido.', 'error');
+            Swal.fire('Error', 'Correo inválido.', 'error');
         }
     });
     
     function getFriendlyErrorMessage(error) {
         const code = error.code;
         switch (code) {
-            case 'auth/invalid-email': return 'El correo electrónico no es válido.';
-            case 'auth/user-disabled': return 'Esta cuenta ha sido deshabilitada.';
-            case 'auth/user-not-found': return 'No hay ningún usuario con este correo.';
-            case 'auth/wrong-password': return 'Contraseña incorrecta. Inténtalo de nuevo.';
-            case 'auth/invalid-credential': return 'Credenciales incorrectas. Verifica tu correo y contraseña.';
-            case 'auth/email-already-in-use': return 'Este correo ya está registrado. Inicia sesión o usa otro.';
-            case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
-            case 'auth/too-many-requests': return 'Demasiados intentos fallidos. Intenta más tarde.';
-            default: return error.message || 'Ocurrió un error inesperado.';
+            case 'auth/invalid-email': return 'Correo inválido.';
+            case 'auth/user-not-found': return 'No existe usuario con ese correo.';
+            case 'auth/wrong-password': return 'Contraseña incorrecta.';
+            case 'auth/invalid-credential': return 'Credenciales incorrectas.';
+            case 'auth/email-already-in-use': return 'Correo ya registrado.';
+            case 'auth/weak-password': return 'Contraseña débil (mínimo 6 caracteres).';
+            default: return error.message;
         }
     }
     
@@ -1165,44 +1124,34 @@
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
         if (!email || !password) {
-            Swal.fire('Error', 'Por favor, completa todos los campos.', 'error');
+            Swal.fire('Error', 'Completa todos los campos.', 'error');
             return;
         }
-        
         if (!isLoginMode) {
-            // REGISTRO
+            // Registro
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
             if (!nickname || nickname.length < 3) {
-                Swal.fire('Error', 'El nombre de usuario debe tener al menos 3 caracteres.', 'error');
+                Swal.fire('Error', 'Nombre mínimo 3 caracteres.', 'error');
                 return;
             }
             try {
                 const userCred = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCred.user;
                 await database.ref(`users/${user.uid}`).set({
-                    username: nickname,
-                    xp: 0,
-                    level: 1,
-                    bias: bias,
-                    pronoun: pronoun,
-                    email: email,
-                    joined: Date.now(),
-                    lastUsernameChange: Date.now(),
-                    rulesAccepted: false
+                    username: nickname, xp: 0, level: 1, bias, pronoun, email, joined: Date.now(), lastUsernameChange: Date.now(), rulesAccepted: false
                 });
-                Swal.fire('¡Éxito!', 'Cuenta creada correctamente. ¡Bienvenido NSWER!', 'success');
+                Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido!', 'success');
                 authModal.style.display = 'none';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias, email, pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
                 enforceRules();
             } catch (error) {
-                const msg = getFriendlyErrorMessage(error);
-                Swal.fire('Error al registrarse', msg, 'error');
+                Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
                 console.error(error);
             }
         } else {
-            // LOGIN
+            // Login
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
@@ -1211,24 +1160,23 @@
                 if (data) {
                     currentUser = {
                         uid: user.uid,
-                        username: data.username || "NSWER_Fan",
-                        xp: data.xp || 0,
-                        level: data.level || 1,
-                        bias: data.bias || "Lily",
-                        pronoun: data.pronoun || "No especificado",
+                        username: data.username,
+                        xp: data.xp,
+                        level: data.level,
+                        bias: data.bias,
+                        pronoun: data.pronoun,
                         email: email,
-                        lastUsernameChange: data.lastUsernameChange || null,
-                        rulesAccepted: data.rulesAccepted || false
+                        lastUsernameChange: data.lastUsernameChange,
+                        rulesAccepted: data.rulesAccepted
                     };
                 } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
                 }
                 authModal.style.display = 'none';
                 enforceRules();
             } catch (error) {
-                const msg = getFriendlyErrorMessage(error);
-                Swal.fire('Error al iniciar sesión', msg, 'error');
-                console.error("Login error details:", error);
+                Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+                console.error(error);
             }
         }
     });
@@ -1245,14 +1193,14 @@
             if (data) {
                 currentUser = {
                     uid: user.uid,
-                    username: data.username || "NSWER_Fan",
-                    xp: data.xp || 0,
-                    level: data.level || 1,
-                    bias: data.bias || "Lily",
-                    pronoun: data.pronoun || "No especificado",
+                    username: data.username,
+                    xp: data.xp,
+                    level: data.level,
+                    bias: data.bias,
+                    pronoun: data.pronoun,
                     email: user.email,
-                    lastUsernameChange: data.lastUsernameChange || null,
-                    rulesAccepted: data.rulesAccepted || false
+                    lastUsernameChange: data.lastUsernameChange,
+                    rulesAccepted: data.rulesAccepted
                 };
             } else {
                 currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
