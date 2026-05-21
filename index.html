@@ -21,200 +21,33 @@
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
         .main-content { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Barra navegación */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(10, 15, 42, 0.95);
-            backdrop-filter: blur(15px);
-            z-index: 100;
-            padding: 6px 25px;
-        }
-        .navbar-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #ff7eb3;
-        }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .logo-img {
-            height: 30px;
-            width: auto;
-            object-fit: contain;
-        }
-        .logo-text {
-            font-size: 1.1rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff7eb3, #a855f7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .nav-links {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: #ddd;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 4px 14px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .nav-btn.active, .nav-btn:hover {
-            background: #7c3aed;
-            color: white;
-            box-shadow: 0 0 6px #a855f7;
-        }
-        #logoutBtn {
-            background: #ff4757;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 40px;
-            color: white;
-            cursor: pointer;
-        }
-        .navbar-bottom {
-            padding-top: 8px;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 15px;
-        }
-        .menu-container {
-            position: relative;
-        }
-        .menu-btn {
-            background: transparent;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #ff7eb3;
-            padding: 2px 5px;
-            border-radius: 20px;
-            transition: 0.2s;
-        }
-        .menu-btn:hover {
-            background: rgba(255,126,179,0.2);
-        }
-        .dropdown-menu {
-            position: absolute;
-            top: 30px;
-            left: 0;
-            background: rgba(20, 25, 55, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid #ff7eb3;
-            min-width: 160px;
-            display: none;
-            flex-direction: column;
-            z-index: 200;
-            overflow: hidden;
-        }
-        .dropdown-menu.show {
-            display: flex;
-        }
-        .dropdown-item {
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 10px 18px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .dropdown-item:hover {
-            background: #7c3aed;
-        }
-        
-        /* Perfil */
-        .profile-area {
-            background: rgba(30, 27, 75, 0.7);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 8px 20px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .user-info {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-            font-size: 0.9rem;
-        }
-        .bias-fixed {
-            background: #2d2a55;
-            padding: 4px 14px;
-            border-radius: 40px;
-            display: flex;
-            gap: 8px;
-            font-size: 0.85rem;
-        }
-        .pronoun-badge {
-            background: #2d2a55;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            color: #ffb3e0;
-        }
-        .level-area {
-            background: rgba(30, 27, 75, 0.7);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 10px 22px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            border: 1px solid #ffb347;
-        }
-        .level-stats {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .level-badge {
-            background: linear-gradient(135deg, #ffb347, #ff7e05);
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-weight: bold;
-            color: #1e1a2f;
-            font-size: 0.85rem;
-        }
-        .points {
-            background: #2a2a5a;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-        }
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .section.active-section {
-            display: block;
-        }
+        .navbar { position: fixed; top: 0; left: 0; width: 100%; background: rgba(10, 15, 42, 0.95); backdrop-filter: blur(15px); z-index: 100; padding: 6px 25px; }
+        .navbar-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding-bottom: 6px; border-bottom: 2px solid #ff7eb3; }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 30px; width: auto; object-fit: contain; }
+        .logo-text { font-size: 1.1rem; font-weight: bold; background: linear-gradient(45deg, #ff7eb3, #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: none; color: #ddd; font-size: 0.9rem; font-weight: 600; padding: 4px 14px; border-radius: 40px; cursor: pointer; transition: 0.2s; }
+        .nav-btn.active, .nav-btn:hover { background: #7c3aed; color: white; box-shadow: 0 0 6px #a855f7; }
+        #logoutBtn { background: #ff4757; border: none; padding: 4px 12px; border-radius: 40px; color: white; cursor: pointer; }
+        .navbar-bottom { padding-top: 8px; display: flex; justify-content: flex-start; align-items: center; gap: 15px; }
+        .menu-container { position: relative; }
+        .menu-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: #ff7eb3; padding: 2px 5px; border-radius: 20px; transition: 0.2s; }
+        .menu-btn:hover { background: rgba(255,126,179,0.2); }
+        .dropdown-menu { position: absolute; top: 30px; left: 0; background: rgba(20, 25, 55, 0.95); backdrop-filter: blur(12px); border-radius: 20px; border: 1px solid #ff7eb3; min-width: 160px; display: none; flex-direction: column; z-index: 200; overflow: hidden; }
+        .dropdown-menu.show { display: flex; }
+        .dropdown-item { background: transparent; border: none; color: white; padding: 10px 18px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .dropdown-item:hover { background: #7c3aed; }
+        .profile-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 8px 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .user-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; font-size: 0.9rem; }
+        .bias-fixed { background: #2d2a55; padding: 4px 14px; border-radius: 40px; display: flex; gap: 8px; font-size: 0.85rem; }
+        .pronoun-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffb3e0; }
+        .level-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 10px 22px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border: 1px solid #ffb347; }
+        .level-stats { display: flex; gap: 20px; align-items: center; }
+        .level-badge { background: linear-gradient(135deg, #ffb347, #ff7e05); padding: 4px 14px; border-radius: 40px; font-weight: bold; color: #1e1a2f; font-size: 0.85rem; }
+        .points { background: #2a2a5a; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
         .hero { text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 48px; padding: 30px 20px; margin-bottom: 30px; }
         .hero-logo { max-width: 450px; width: 90%; margin: 0 auto 20px; display: block; }
@@ -233,143 +66,24 @@
         .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
         .curio-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 10px 15px; margin-bottom: 12px; }
-        
-        /* Chat */
-        .chat-container {
-            background: rgba(20, 25, 55, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 28px;
-            padding: 20px;
-        }
-        .chat-messages {
-            background: #0a0c1a;
-            border-radius: 24px;
-            height: 440px;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            display: flex;
-            flex-direction: column;
-            max-width: 80%;
-            border-radius: 20px;
-            padding: 8px 14px;
-            position: relative;
-            word-wrap: break-word;
-        }
-        .message.own {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #ff7eb3, #c084fc);
-            color: #1a0f2a;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .message.other {
-            align-self: flex-start;
-            background: rgba(30, 35, 70, 0.9);
-            border-left: 3px solid #ff7eb3;
-            color: #f0f0f0;
-            border-bottom-left-radius: 4px;
-        }
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
-            font-size: 0.7rem;
-            flex-wrap: wrap;
-        }
-        .msg-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-            background: #ffb3c6;
-            color: #1e1a2f;
-        }
-        .msg-username {
-            font-weight: bold;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        .msg-timestamp {
-            font-size: 0.6rem;
-            opacity: 0.7;
-            margin-left: 6px;
-        }
-        .message-text {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin: 4px 0 2px;
-            word-break: break-word;
-        }
-        .chat-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            align-items: center;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 60px;
-            border: none;
-            background: #141829;
-            color: white;
-            font-size: 0.9rem;
-        }
-        .chat-input button {
-            background: #7c3aed;
-            border: none;
-            padding: 0 20px;
-            border-radius: 60px;
-            color: white;
-            cursor: pointer;
-        }
-        .emoji-btn {
-            background: #2d2a55;
-            border: none;
-            font-size: 1.4rem;
-            padding: 8px 12px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .emoji-btn:hover {
-            background: #ff7eb3;
-        }
-        .emoji-picker-container {
-            position: relative;
-            display: inline-block;
-        }
-        emoji-picker {
-            position: absolute;
-            bottom: 50px;
-            right: 0;
-            z-index: 300;
-            --emoji-picker-font-family: 'Poppins', sans-serif;
-            --emoji-picker-background: #1e1b4b;
-            --emoji-picker-border-radius: 20px;
-            width: 280px;
-            height: 350px;
-        }
-        @media (max-width: 750px) { 
-            .navbar-top { flex-direction: column; align-items: center; gap: 8px; } 
-            .navbar-bottom { justify-content: center; }
-            body { padding-top: 130px; } 
-            .hero-logo { max-width: 300px; } 
-            .message { max-width: 90%; }
-            emoji-picker { width: 260px; height: 320px; right: -20px; }
-        }
-        
-        /* Autenticación y amigos */
+        .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
+        .chat-messages { background: #0a0c1a; border-radius: 24px; height: 440px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .message { display: flex; flex-direction: column; max-width: 80%; border-radius: 20px; padding: 8px 14px; position: relative; word-wrap: break-word; }
+        .message.own { align-self: flex-end; background: linear-gradient(135deg, #ff7eb3, #c084fc); color: #1a0f2a; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .message.other { align-self: flex-start; background: rgba(30, 35, 70, 0.9); border-left: 3px solid #ff7eb3; color: #f0f0f0; border-bottom-left-radius: 4px; }
+        .message-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 0.7rem; flex-wrap: wrap; }
+        .msg-avatar { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; background: #ffb3c6; color: #1e1a2f; }
+        .msg-username { font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+        .msg-timestamp { font-size: 0.6rem; opacity: 0.7; margin-left: 6px; }
+        .message-text { font-size: 0.9rem; line-height: 1.4; margin: 4px 0 2px; word-break: break-word; }
+        .chat-input { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
+        .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; font-size: 0.9rem; }
+        .chat-input button { background: #7c3aed; border: none; padding: 0 20px; border-radius: 60px; color: white; cursor: pointer; }
+        .emoji-btn { background: #2d2a55; border: none; font-size: 1.4rem; padding: 8px 12px; border-radius: 40px; cursor: pointer; transition: 0.2s; }
+        .emoji-btn:hover { background: #ff7eb3; }
+        .emoji-picker-container { position: relative; display: inline-block; }
+        emoji-picker { position: absolute; bottom: 50px; right: 0; z-index: 300; --emoji-picker-font-family: 'Poppins', sans-serif; --emoji-picker-background: #1e1b4b; --emoji-picker-border-radius: 20px; width: 280px; height: 350px; }
+        @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } }
         .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .auth-card h2 { margin-bottom: 10px; }
@@ -379,56 +93,14 @@
         .auth-btn { background: #7c3aed; border: none; padding: 12px; border-radius: 60px; color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         .toggle-auth { margin-top: 15px; font-size: 0.9rem; }
         .toggle-auth span { color: #ff7eb3; cursor: pointer; text-decoration: underline; }
-        
-        /* Estilos para modales de SweetAlert2 personalizados */
-        .custom-swal {
-            background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important;
-            border-radius: 32px !important;
-            border: 2px solid #ff7eb3 !important;
-            color: white !important;
-            font-family: 'Poppins', sans-serif !important;
-        }
-        .custom-swal .swal2-title {
-            color: #ffb3e0 !important;
-            font-size: 1.6rem !important;
-        }
-        .custom-swal .swal2-html-container {
-            color: #f0f0f0 !important;
-        }
-        .custom-swal .swal2-input, .custom-swal .swal2-select {
-            background: #141829 !important;
-            border: 1px solid #ff7eb3 !important;
-            border-radius: 60px !important;
-            color: white !important;
-            padding: 12px 16px !important;
-            margin: 8px 0 !important;
-            width: 100% !important;
-        }
-        .custom-swal .swal2-select {
-            padding: 12px !important;
-        }
-        .custom-swal .swal2-label {
-            color: #ffb3e0 !important;
-            text-align: left !important;
-            display: block !important;
-            margin-top: 8px !important;
-            font-weight: 500 !important;
-        }
-        .custom-swal .swal2-confirm {
-            background: #7c3aed !important;
-            border-radius: 60px !important;
-            padding: 10px 24px !important;
-            font-weight: bold !important;
-        }
-        .custom-swal .swal2-cancel {
-            background: #ff4757 !important;
-            border-radius: 60px !important;
-        }
-        .custom-swal .swal2-styled {
-            margin: 0 8px !important;
-        }
-        
-        /* Amigos */
+        .custom-swal { background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important; border-radius: 32px !important; border: 2px solid #ff7eb3 !important; color: white !important; font-family: 'Poppins', sans-serif !important; }
+        .custom-swal .swal2-title { color: #ffb3e0 !important; font-size: 1.6rem !important; }
+        .custom-swal .swal2-html-container { color: #f0f0f0 !important; }
+        .custom-swal .swal2-input, .custom-swal .swal2-select { background: #141829 !important; border: 1px solid #ff7eb3 !important; border-radius: 60px !important; color: white !important; padding: 12px 16px !important; margin: 8px 0 !important; width: 100% !important; }
+        .custom-swal .swal2-select { padding: 12px !important; }
+        .custom-swal .swal2-label { color: #ffb3e0 !important; text-align: left !important; display: block !important; margin-top: 8px !important; font-weight: 500 !important; }
+        .custom-swal .swal2-confirm { background: #7c3aed !important; border-radius: 60px !important; padding: 10px 24px !important; font-weight: bold !important; }
+        .custom-swal .swal2-cancel { background: #ff4757 !important; border-radius: 60px !important; }
         .profile-stats { display: flex; justify-content: center; gap: 20px; margin: 15px 0; flex-wrap: wrap; }
         .profile-stat { background: #2d2a55; padding: 6px 14px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; }
         .friends-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
@@ -608,7 +280,7 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado" };
+    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null };
     
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
@@ -628,7 +300,8 @@
             level: currentUser.level,
             bias: currentUser.bias,
             pronoun: currentUser.pronoun,
-            email: currentUser.email
+            email: currentUser.email,
+            lastUsernameChange: currentUser.lastUsernameChange
         });
     }
     
@@ -641,6 +314,7 @@
             currentUser.level = data.level || 1;
             currentUser.bias = data.bias || "Lily";
             currentUser.pronoun = data.pronoun || "No especificado";
+            currentUser.lastUsernameChange = data.lastUsernameChange || null;
         } else {
             await showProfileSetupModal();
         }
@@ -690,6 +364,7 @@
                     currentUser.pronoun = result.value.pronoun;
                     currentUser.xp = 0;
                     currentUser.level = 1;
+                    currentUser.lastUsernameChange = Date.now();
                     saveUserDataToFirebase();
                     updateUI();
                 }
@@ -736,7 +411,7 @@
         saveUserDataToFirebase(); 
     }
     
-    // ========== CHAT MEJORADO ==========
+    // ========== CHAT ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const now = Date.now();
@@ -1173,14 +848,39 @@
         });
     }
     
-    // ========== EDICIÓN DE PERFIL (estilo elegante) ==========
+    // ========== EDICIÓN DE PERFIL CON COOLDOWN ==========
+    function canChangeUsername() {
+        if (!currentUser.lastUsernameChange) return true;
+        const daysPassed = (Date.now() - currentUser.lastUsernameChange) / (1000 * 60 * 60 * 24);
+        return daysPassed >= 30;
+    }
+    
+    function getRemainingDays() {
+        if (!currentUser.lastUsernameChange) return 0;
+        const daysPassed = (Date.now() - currentUser.lastUsernameChange) / (1000 * 60 * 60 * 24);
+        if (daysPassed >= 30) return 0;
+        return Math.ceil(30 - daysPassed);
+    }
+    
     async function editProfileModal() {
+        const canChange = canChangeUsername();
+        const remaining = getRemainingDays();
+        let usernameInputHtml = '';
+        let usernameWarning = '';
+        if (!canChange) {
+            usernameInputHtml = `<input id="edit-nickname" class="swal2-input" value="${currentUser.username}" disabled style="opacity:0.6;">`;
+            usernameWarning = `<p style="color:#ffb347; margin-top:5px; font-size:0.8rem;">⚠️ Solo puedes cambiar tu nombre de usuario una vez cada 30 días. Próximo cambio disponible en ${remaining} día(s).</p>`;
+        } else {
+            usernameInputHtml = `<input id="edit-nickname" class="swal2-input" value="${currentUser.username}" placeholder="Ej: NSWER_Lover">`;
+        }
+        
         const { value: formValues } = await Swal.fire({
             title: '✏️ Editar perfil',
             html: `
                 <div style="text-align:left">
                     <label class="swal2-label">🎤 Nombre de usuario</label>
-                    <input id="edit-nickname" class="swal2-input" value="${currentUser.username}" placeholder="Ej: NSWER_Lover">
+                    ${usernameInputHtml}
+                    ${usernameWarning}
                     <label class="swal2-label">💖 Bias favorita</label>
                     <select id="edit-bias" class="swal2-select">
                         ${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}
@@ -1205,17 +905,28 @@
             confirmButtonText: 'Guardar cambios',
             preConfirm: () => {
                 const newName = document.getElementById('edit-nickname').value.trim();
-                if (!newName || newName.length < 3) {
+                const newBias = document.getElementById('edit-bias').value;
+                const newPronoun = document.getElementById('edit-pronoun').value;
+                // Si no puede cambiar el nombre, verificar que no lo haya intentado modificar (el input está disabled)
+                if (!canChange && newName !== currentUser.username) {
+                    Swal.showValidationMessage(`No puedes cambiar el nombre de usuario hasta dentro de ${remaining} día(s).`);
+                    return false;
+                }
+                if (canChange && (!newName || newName.length < 3)) {
                     Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
                     return false;
                 }
-                return { newName, newBias: document.getElementById('edit-bias').value, newPronoun: document.getElementById('edit-pronoun').value };
+                return { newName: (canChange ? newName : currentUser.username), newBias, newPronoun };
             }
         });
         if (formValues) {
+            const oldName = currentUser.username;
             currentUser.username = formValues.newName;
             currentUser.bias = formValues.newBias;
             currentUser.pronoun = formValues.newPronoun;
+            if (canChange && formValues.newName !== oldName) {
+                currentUser.lastUsernameChange = Date.now();
+            }
             saveUserDataToFirebase();
             updateUI();
             Swal.fire({
@@ -1366,12 +1077,13 @@
                     bias: bias,
                     pronoun: pronoun,
                     email: email,
-                    joined: Date.now()
+                    joined: Date.now(),
+                    lastUsernameChange: Date.now()
                 });
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
                 authModal.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun };
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now() };
                 updateUI();
                 generateMemberCards();
                 loadMessages();
@@ -1405,10 +1117,11 @@
                         level: data.level || 1,
                         bias: data.bias || "Lily",
                         pronoun: data.pronoun || "No especificado",
-                        email: email
+                        email: email,
+                        lastUsernameChange: data.lastUsernameChange || null
                     };
                 } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado" };
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado", lastUsernameChange: null };
                 }
                 authModal.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
@@ -1446,10 +1159,11 @@
                     level: data.level || 1,
                     bias: data.bias || "Lily",
                     pronoun: data.pronoun || "No especificado",
-                    email: user.email
+                    email: user.email,
+                    lastUsernameChange: data.lastUsernameChange || null
                 };
             } else {
-                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado" };
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null };
             }
             authModal.style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
