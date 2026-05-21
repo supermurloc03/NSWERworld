@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
+        /* ========== ESTILOS (igual que antes, se mantienen) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -118,7 +119,7 @@
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO -->
+<!-- MODAL LOGIN/REGISTRO (igual) -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -151,6 +152,7 @@
             <select id="authPronoun">
                 <option value="Ella">Ella</option>
                 <option value="Él">Él</option>
+                <option value="Elle">Elle</option>
                 <option value="No especificado">No especificado</option>
             </select>
         </div>
@@ -161,7 +163,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL -->
+<!-- CONTENIDO PRINCIPAL (se oculta hasta aceptar normas) -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -182,6 +184,7 @@
                 <div id="dropdownMenu" class="dropdown-menu">
                     <button class="dropdown-item" data-section="friends">👥 Amigos</button>
                     <button class="dropdown-item" id="editProfileBtn">✏️ Editar perfil</button>
+                    <button class="dropdown-item" id="viewRulesBtn">📜 Ver normas</button>
                 </div>
             </div>
         </div>
@@ -279,7 +282,7 @@
     ];
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
-    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null };
+    let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
     
     const biasColors = {
         "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
@@ -300,7 +303,8 @@
             bias: currentUser.bias,
             pronoun: currentUser.pronoun,
             email: currentUser.email,
-            lastUsernameChange: currentUser.lastUsernameChange
+            lastUsernameChange: currentUser.lastUsernameChange,
+            rulesAccepted: currentUser.rulesAccepted
         });
     }
     
@@ -314,6 +318,7 @@
             currentUser.bias = data.bias || "Lily";
             currentUser.pronoun = data.pronoun || "No especificado";
             currentUser.lastUsernameChange = data.lastUsernameChange || null;
+            currentUser.rulesAccepted = data.rulesAccepted || false;
         } else {
             await showProfileSetupModal();
         }
@@ -364,6 +369,7 @@
                     currentUser.xp = 0;
                     currentUser.level = 1;
                     currentUser.lastUsernameChange = Date.now();
+                    currentUser.rulesAccepted = false; // aún no ha aceptado normas
                     saveUserDataToFirebase();
                     updateUI();
                 }
@@ -906,7 +912,6 @@
                 const newName = document.getElementById('edit-nickname').value.trim();
                 const newBias = document.getElementById('edit-bias').value;
                 const newPronoun = document.getElementById('edit-pronoun').value;
-                // Si no puede cambiar el nombre, verificar que no lo haya intentado modificar (el input está disabled)
                 if (!canChange && newName !== currentUser.username) {
                     Swal.showValidationMessage(`No puedes cambiar el nombre de usuario hasta dentro de ${remaining} día(s).`);
                     return false;
@@ -938,6 +943,76 @@
                 color: 'white'
             });
         }
+    }
+    
+    // ========== NORMAS DE LA COMUNIDAD ==========
+    async function showRulesModal(requireAcceptance = false) {
+        return new Promise((resolve) => {
+            Swal.fire({
+                title: '📜 Normas de la comunidad NSWER',
+                html: `
+                    <div style="text-align:left; max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                        <p><strong>1. Respeto ante todo</strong><br>Trata a los demás con amabilidad. No se tolerarán insultos, acoso, discriminación ni lenguaje ofensivo.</p>
+                        <p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p>
+                        <p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p>
+                        <p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p>
+                        <p><strong>5. Idioma</strong><br>El chat está en español para mantener la cohesión de la comunidad.</p>
+                        <p><strong>6. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
+                        <p><strong>7. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
+                showCancelButton: requireAcceptance ? false : true,
+                cancelButtonText: 'Cerrar',
+                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
+                allowOutsideClick: !requireAcceptance,
+                allowEscapeKey: !requireAcceptance
+            }).then(result => {
+                if (requireAcceptance && result.isConfirmed) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
+    }
+    
+    async function enforceRules() {
+        if (!currentUser.rulesAccepted) {
+            const accepted = await showRulesModal(true);
+            if (accepted) {
+                currentUser.rulesAccepted = true;
+                saveUserDataToFirebase();
+                // Mostrar la página normal
+                document.getElementById('mainContent').style.display = 'block';
+                // Inicializar todo después de aceptar
+                initializeAfterLogin();
+            } else {
+                // Si no acepta, cerrar sesión y recargar
+                await auth.signOut();
+                window.location.reload();
+            }
+        } else {
+            // Ya aceptó, mostrar página normal
+            document.getElementById('mainContent').style.display = 'block';
+            initializeAfterLogin();
+        }
+    }
+    
+    // ========== INICIALIZACIÓN DESPUÉS DE LOGIN ==========
+    function initializeAfterLogin() {
+        updateUI();
+        generateMemberCards();
+        loadMessages();
+        loadCuriosities();
+        loadNewsFromJSON();
+        initNavigation();
+        initDropdown();
+        initFriendsTabs();
+        initEmojiPicker();
+        document.getElementById("sendBtn").onclick = sendMessage;
+        document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
     
     // ========== NAVEGACIÓN ==========
@@ -992,6 +1067,10 @@
         });
         document.getElementById('editProfileBtn').addEventListener('click', () => {
             editProfileModal();
+            dropdown.classList.remove('show');
+        });
+        document.getElementById('viewRulesBtn').addEventListener('click', () => {
+            showRulesModal(false);
             dropdown.classList.remove('show');
         });
     }
@@ -1077,23 +1156,14 @@
                     pronoun: pronoun,
                     email: email,
                     joined: Date.now(),
-                    lastUsernameChange: Date.now()
+                    lastUsernameChange: Date.now(),
+                    rulesAccepted: false
                 });
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido NSWER!', 'success');
                 authModal.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now() };
-                updateUI();
-                generateMemberCards();
-                loadMessages();
-                loadCuriosities();
-                loadNewsFromJSON();
-                initNavigation();
-                initDropdown();
-                initFriendsTabs();
-                initEmojiPicker();
-                document.getElementById("sendBtn").onclick = sendMessage;
-                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias: bias, email: email, pronoun: pronoun, lastUsernameChange: Date.now(), rulesAccepted: false };
+                // Forzar normas
+                enforceRules();
             } catch (error) {
                 console.error(error);
                 let msg = error.message;
@@ -1117,24 +1187,14 @@
                         bias: data.bias || "Lily",
                         pronoun: data.pronoun || "No especificado",
                         email: email,
-                        lastUsernameChange: data.lastUsernameChange || null
+                        lastUsernameChange: data.lastUsernameChange || null,
+                        rulesAccepted: data.rulesAccepted || false
                     };
                 } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado", lastUsernameChange: null };
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
                 }
                 authModal.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                updateUI();
-                generateMemberCards();
-                loadMessages();
-                loadCuriosities();
-                loadNewsFromJSON();
-                initNavigation();
-                initDropdown();
-                initFriendsTabs();
-                initEmojiPicker();
-                document.getElementById("sendBtn").onclick = sendMessage;
-                document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+                enforceRules();
             } catch (error) {
                 Swal.fire('Error', 'Correo o contraseña incorrectos', 'error');
             }
@@ -1159,24 +1219,14 @@
                     bias: data.bias || "Lily",
                     pronoun: data.pronoun || "No especificado",
                     email: user.email,
-                    lastUsernameChange: data.lastUsernameChange || null
+                    lastUsernameChange: data.lastUsernameChange || null,
+                    rulesAccepted: data.rulesAccepted || false
                 };
             } else {
-                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null };
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
             }
             authModal.style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            updateUI();
-            generateMemberCards();
-            loadMessages();
-            loadCuriosities();
-            loadNewsFromJSON();
-            initNavigation();
-            initDropdown();
-            initFriendsTabs();
-            initEmojiPicker();
-            document.getElementById("sendBtn").onclick = sendMessage;
-            document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+            enforceRules();
         } else {
             authModal.style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
