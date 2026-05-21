@@ -15,11 +15,11 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
-        body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 90px; position: relative; }
+        body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 80px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
         .main-content { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
         
-        /* Nueva barra de navegación con dos filas */
+        /* Barra de navegación original (una sola fila) */
         .navbar {
             position: fixed;
             top: 0;
@@ -28,38 +28,90 @@
             background: rgba(10, 15, 42, 0.95);
             backdrop-filter: blur(15px);
             border-bottom: 2px solid #ff7eb3;
-            padding: 8px 25px;
+            padding: 6px 25px;
             z-index: 100;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        /* Primera fila: logo + título */
-        .top-row {
-            display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
         }
+        /* Contenedor del logo y título, y ahora también del menú debajo */
         .logo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        .logo-title {
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .logo-img {
-            height: 35px;
+            height: 30px;
             width: auto;
             object-fit: contain;
         }
         .logo-text {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: bold;
             background: linear-gradient(45deg, #ff7eb3, #a855f7);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        /* Botones de navegación principales y logout */
+        /* Botón de menú debajo del título */
+        .menu-container {
+            position: relative;
+        }
+        .menu-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #ff7eb3;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 5px;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+        .menu-btn:hover {
+            background: rgba(255,126,179,0.2);
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            background: rgba(20, 25, 55, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid #ff7eb3;
+            min-width: 160px;
+            display: none;
+            flex-direction: column;
+            z-index: 200;
+            overflow: hidden;
+        }
+        .dropdown-menu.show {
+            display: flex;
+        }
+        .dropdown-item {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background: #7c3aed;
+        }
+        
+        /* Botones de navegación principales (sin cambios) */
         .nav-links {
             display: flex;
             gap: 8px;
@@ -89,62 +141,6 @@
             border-radius: 40px;
             color: white;
             cursor: pointer;
-        }
-        /* Segunda fila: menú desplegable debajo del título */
-        .menu-row {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 4px;
-        }
-        .menu-container {
-            position: relative;
-        }
-        .menu-btn {
-            background: transparent;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #ff7eb3;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 40px;
-            transition: 0.2s;
-        }
-        .menu-btn:hover {
-            background: rgba(255,126,179,0.2);
-        }
-        .dropdown-menu {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            background: rgba(20, 25, 55, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid #ff7eb3;
-            min-width: 160px;
-            display: none;
-            flex-direction: column;
-            z-index: 200;
-            overflow: hidden;
-        }
-        .dropdown-menu.show {
-            display: flex;
-        }
-        .dropdown-item {
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .dropdown-item:hover {
-            background: #7c3aed;
         }
         
         /* Perfil, niveles, etc. (sin cambios) */
@@ -187,12 +183,7 @@
         .chat-input { display: flex; gap: 12px; margin-top: 15px; }
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; }
         .chat-input button { background: #7c3aed; padding: 0 20px; border-radius: 60px; border: none; color: white; cursor: pointer; }
-        @media (max-width: 750px) { 
-            .top-row { flex-direction: column; align-items: center; gap: 8px; }
-            .nav-links { justify-content: center; }
-            body { padding-top: 130px; }
-            .hero-logo { max-width: 300px; }
-        }
+        @media (max-width: 750px) { .navbar { flex-direction: column; align-items: center; gap: 8px; } .logo-area { align-items: center; } .menu-container { align-self: center; } body { padding-top: 110px; } .hero-logo { max-width: 300px; } }
         .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .auth-card h2 { margin-bottom: 10px; }
@@ -246,28 +237,26 @@
 <!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
-        <!-- Primera fila: logo, título y botones de navegación principales -->
-        <div class="top-row">
-            <div class="logo-area">
+        <!-- Logo, título y menú en columna a la izquierda -->
+        <div class="logo-area">
+            <div class="logo-title">
                 <img class="logo-img" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo NSWER">
                 <span class="logo-text">NSWER WORLD</span>
             </div>
-            <div class="nav-links">
-                <button class="nav-btn active" data-section="home">🏠 Inicio</button>
-                <button class="nav-btn" data-section="news">📢 Novedades</button>
-                <button class="nav-btn" data-section="chat">💬 Chat</button>
-                <button id="logoutBtn">Cerrar sesión</button>
-            </div>
-        </div>
-        <!-- Segunda fila: menú desplegable debajo del título -->
-        <div class="menu-row">
+            <!-- Botón menú debajo del título -->
             <div class="menu-container">
                 <button id="menuBtn" class="menu-btn">☰ Menú</button>
                 <div id="dropdownMenu" class="dropdown-menu">
                     <button class="dropdown-item" data-section="friends">👥 Amigos</button>
-                    <!-- Aquí añadir más opciones en el futuro -->
+                    <!-- Más opciones aquí en el futuro -->
                 </div>
             </div>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" data-section="home">🏠 Inicio</button>
+            <button class="nav-btn" data-section="news">📢 Novedades</button>
+            <button class="nav-btn" data-section="chat">💬 Chat</button>
+            <button id="logoutBtn">Cerrar sesión</button>
         </div>
     </div>
 
@@ -316,7 +305,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN AMIGOS (accesible solo desde el menú) -->
+    <!-- SECCIÓN AMIGOS -->
     <div id="friendsSection" class="section">
         <div class="friends-tabs">
             <button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button>
@@ -368,7 +357,7 @@
         "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
     };
 
-    // ========== FUNCIONES USUARIO (sin cambios) ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -463,7 +452,7 @@
         saveUserDataToFirebase(); 
     }
 
-    // ========== SISTEMA DE AMIGOS (sin cambios) ==========
+    // ========== SISTEMA DE AMIGOS ==========
     async function sendFriendRequest(targetUid) {
         if (targetUid === currentUser.uid) {
             Swal.fire('Info', 'No puedes enviarte solicitud a ti mismo', 'info');
@@ -878,7 +867,7 @@
         });
     }
 
-    // ========== NAVEGACIÓN PRINCIPAL Y MENÚ DESPLEGABLE ==========
+    // ========== NAVEGACIÓN Y MENÚ ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -899,7 +888,7 @@
                 sections.friends.classList.add('active-section');
                 loadFriendsTab();
             }
-            // Cerrar el menú desplegable
+            // Cerrar menú desplegable si está abierto
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
     }
