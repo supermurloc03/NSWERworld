@@ -538,14 +538,16 @@
     }
     
     async function acceptFriendRequest(requestId, fromUid) {
-        // Actualizar la solicitud a 'accepted'
+        // Marcar solicitud como aceptada
         await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
-        // Escribir en ambas direcciones (simetría)
+        // Escribir en ambas direcciones para que sea simétrico
         await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
         await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
         Swal.fire('Aceptada', 'Ahora son amigos', 'success');
-        // Recargar la pestaña actual de amigos
-        loadFriendsTab();
+        // Esperar un momento para que Firebase propague los datos
+        setTimeout(() => {
+            loadFriendsTab(); // Recargar la pestaña actual
+        }, 500);
     }
     
     async function declineFriendRequest(requestId) {
@@ -575,38 +577,43 @@
         const container = document.getElementById('friendsContainer');
         if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
-        const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
-        const friendsObj = snapshot.val() || {};
-        const friendIds = Object.keys(friendsObj);
-        if (friendIds.length === 0) {
-            container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>';
-            return;
-        }
-        container.innerHTML = '';
-        for (const fid of friendIds) {
-            const userSnap = await database.ref(`users/${fid}`).once('value');
-            const userData = userSnap.val();
-            if (userData) {
-                const div = document.createElement('div');
-                div.className = 'friend-item';
-                div.innerHTML = `
-                    <div class="friend-info">
-                        <span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span>
-                        <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
-                    </div>
-                    <div class="friend-actions">
-                        <button class="remove-friend" data-uid="${fid}">❌ Eliminar</button>
-                    </div>
-                `;
-                container.appendChild(div);
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
+            const friendsObj = snapshot.val() || {};
+            const friendIds = Object.keys(friendsObj);
+            if (friendIds.length === 0) {
+                container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>';
+                return;
             }
+            container.innerHTML = '';
+            for (const fid of friendIds) {
+                const userSnap = await database.ref(`users/${fid}`).once('value');
+                const userData = userSnap.val();
+                if (userData) {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.innerHTML = `
+                        <div class="friend-info">
+                            <span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span>
+                            <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="remove-friend" data-uid="${fid}">❌ Eliminar</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+            document.querySelectorAll('.friend-name').forEach(el => {
+                el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
+            });
+            document.querySelectorAll('.remove-friend').forEach(btn => {
+                btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); });
+            });
+        } catch (err) {
+            console.error("Error cargando amigos:", err);
+            container.innerHTML = '<div class="empty-message">Error al cargar amigos. Recarga la página.</div>';
         }
-        document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
-        });
-        document.querySelectorAll('.remove-friend').forEach(btn => {
-            btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); });
-        });
     }
     
     async function loadSentRequests() {
@@ -959,7 +966,7 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD (REACTIVADAS) ==========
+    // ========== NORMAS DE LA COMUNIDAD ==========
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
             Swal.fire({
