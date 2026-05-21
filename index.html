@@ -507,7 +507,7 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== SISTEMA DE AMIGOS ==========
+    // ========== SISTEMA DE AMIGOS (CORREGIDO Y SIMÉTRICO) ==========
     async function sendFriendRequest(targetUid) {
         if (targetUid === currentUser.uid) {
             Swal.fire('Info', 'No puedes enviarte solicitud a ti mismo', 'info');
@@ -538,10 +538,13 @@
     }
     
     async function acceptFriendRequest(requestId, fromUid) {
+        // Actualizar la solicitud a 'accepted'
         await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
+        // Escribir en ambas direcciones (simetría)
         await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
         await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
         Swal.fire('Aceptada', 'Ahora son amigos', 'success');
+        // Recargar la pestaña actual de amigos
         loadFriendsTab();
     }
     
@@ -570,6 +573,7 @@
     
     async function loadFriendsList() {
         const container = document.getElementById('friendsContainer');
+        if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
         const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
         const friendsObj = snapshot.val() || {};
@@ -607,6 +611,7 @@
     
     async function loadSentRequests() {
         const container = document.getElementById('friendsContainer');
+        if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
         const snapshot = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
         const requests = [];
@@ -643,6 +648,7 @@
     
     async function loadReceivedRequests() {
         const container = document.getElementById('friendsContainer');
+        if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
         const snapshot = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
         const requests = [];
@@ -748,6 +754,7 @@
     // ========== NOTICIAS Y CURIOSIDADES ==========
     function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
+        if (!curioDiv) return;
         curioDiv.innerHTML = "";
         const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
         shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
@@ -755,6 +762,7 @@
     
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
+        if (!newsContainer) return;
         newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
         try {
             const response = await fetch('noticias.json?t=' + Date.now());
@@ -841,6 +849,7 @@
     
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
+        if (!container) return;
         container.innerHTML = "";
         members.forEach(member => {
             const card = document.createElement("div");
@@ -950,16 +959,54 @@
         }
     }
     
-    // ========== NORMAS (DESACTIVADAS TEMPORALMENTE PARA QUE EL LOGIN FUNCIONE) ==========
+    // ========== NORMAS DE LA COMUNIDAD (REACTIVADAS) ==========
     async function showRulesModal(requireAcceptance = false) {
-        // Simplemente cerramos sin hacer nada
-        return Promise.resolve(false);
+        return new Promise((resolve) => {
+            Swal.fire({
+                title: '📜 Normas de la comunidad NSWER',
+                html: `
+                    <div style="text-align:left; max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                        <p><strong>1. Respeto ante todo</strong><br>Trata a los demás con amabilidad. No se tolerarán insultos, acoso, discriminación ni lenguaje ofensivo.</p>
+                        <p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p>
+                        <p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p>
+                        <p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p>
+                        <p><strong>5. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
+                        <p><strong>6. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
+                showCancelButton: requireAcceptance ? false : true,
+                cancelButtonText: 'Cerrar',
+                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
+                allowOutsideClick: !requireAcceptance,
+                allowEscapeKey: !requireAcceptance
+            }).then(result => {
+                if (requireAcceptance && result.isConfirmed) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
     }
     
     async function enforceRules() {
-        console.log("Mostrando contenido principal (normas omitidas temporalmente)");
-        document.getElementById('mainContent').style.display = 'block';
-        initializeAfterLogin();
+        if (!currentUser.rulesAccepted) {
+            const accepted = await showRulesModal(true);
+            if (accepted) {
+                currentUser.rulesAccepted = true;
+                saveUserDataToFirebase();
+                document.getElementById('mainContent').style.display = 'block';
+                initializeAfterLogin();
+            } else {
+                await auth.signOut();
+                window.location.reload();
+            }
+        } else {
+            document.getElementById('mainContent').style.display = 'block';
+            initializeAfterLogin();
+        }
     }
     
     function initializeAfterLogin() {
