@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
+        /* ========== ESTILOS (sin cambios, solo los necesarios) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -421,7 +422,7 @@
         saveUserDataToFirebase(); 
     }
     
-    // ========== CHAT (sin cambios) ==========
+    // ========== CHAT ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const now = Date.now();
@@ -507,10 +508,8 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== SISTEMA DE AMIGOS CORREGIDO ==========
-    // Variables para listener
+    // ========== SISTEMA DE AMIGOS (CORREGIDO) ==========
     let friendsUnsubscribe = null;
-    let currentFriendTab = 'friends';
     
     async function sendFriendRequest(targetUid) {
         if (targetUid === currentUser.uid) {
@@ -539,29 +538,19 @@
             timestamp: Date.now()
         });
         Swal.fire('Solicitud enviada', 'Se ha enviado la solicitud de amistad', 'success');
+        // Recargar pestaña de solicitudes enviadas si está activa
+        if (currentFriendTab === 'sent') loadSentRequests();
     }
     
     async function acceptFriendRequest(requestId, fromUid) {
-        try {
-            // Actualizar la solicitud a 'accepted'
-            await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
-            // Escribir en ambas direcciones de forma atómica usando Promise.all
-            await Promise.all([
-                database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true),
-                database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true)
-            ]);
-            console.log(`Amistad aceptada: ${currentUser.uid} <-> ${fromUid}`);
-            Swal.fire('Aceptada', 'Ahora son amigos', 'success');
-            // Recargar la pestaña actual de amigos para forzar actualización visual
-            if (currentFriendTab === 'friends') {
-                loadFriendsList();
-            } else {
-                loadReceivedRequests(); // refrescar recibidas
-            }
-        } catch (error) {
-            console.error("Error al aceptar amistad:", error);
-            Swal.fire('Error', 'No se pudo aceptar la solicitud', 'error');
-        }
+        await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
+        // Escritura simétrica en ambas direcciones
+        await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
+        await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
+        Swal.fire('Aceptada', 'Ahora son amigos', 'success');
+        // Si la pestaña activa es "friends" o "received", refrescar
+        if (currentFriendTab === 'friends') loadFriendsList();
+        else if (currentFriendTab === 'received') loadReceivedRequests();
     }
     
     async function declineFriendRequest(requestId) {
@@ -573,42 +562,43 @@
     async function removeFriend(friendUid) {
         const confirm = await Swal.fire({ title: '¿Eliminar amigo?', text: 'Dejarán de ser amigos', icon: 'warning', showCancelButton: true, background: '#1e1b4b', color: 'white' });
         if (confirm.isConfirmed) {
-            await Promise.all([
-                database.ref(`friends/${currentUser.uid}/${friendUid}`).remove(),
-                database.ref(`friends/${friendUid}/${currentUser.uid}`).remove()
-            ]);
+            await database.ref(`friends/${currentUser.uid}/${friendUid}`).remove();
+            await database.ref(`friends/${friendUid}/${currentUser.uid}`).remove();
             Swal.fire('Eliminado', 'Amigo eliminado', 'success');
             if (currentFriendTab === 'friends') loadFriendsList();
         }
     }
     
-    // Funciones de carga de listas
-    async function loadFriendsList() {
+    let currentFriendTab = 'friends';
+    
+    async function loadSentRequests() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
         try {
-            const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
-            const friendsObj = snapshot.val() || {};
-            const friendIds = Object.keys(friendsObj);
-            if (friendIds.length === 0) {
-                container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>';
+            const snapshot = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+            const requests = [];
+            snapshot.forEach(req => {
+                if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
+            });
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="empty-message">No tienes solicitudes enviadas pendientes.</div>';
                 return;
             }
             container.innerHTML = '';
-            for (const fid of friendIds) {
-                const userSnap = await database.ref(`users/${fid}`).once('value');
+            for (const req of requests) {
+                const userSnap = await database.ref(`users/${req.to}`).once('value');
                 const userData = userSnap.val();
                 if (userData) {
                     const div = document.createElement('div');
                     div.className = 'friend-item';
                     div.innerHTML = `
                         <div class="friend-info">
-                            <span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span>
-                            <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
+                            <span class="friend-name" data-uid="${req.to}">${escapeHtml(userData.username)}</span>
+                            <span class="friend-bias">Bias: ${userData.bias || 'N/A'}</span>
                         </div>
                         <div class="friend-actions">
-                            <button class="remove-friend" data-uid="${fid}">❌ Eliminar</button>
+                            <span style="color:#ffb347;">⏳ Pendiente</span>
                         </div>
                     `;
                     container.appendChild(div);
@@ -617,136 +607,112 @@
             document.querySelectorAll('.friend-name').forEach(el => {
                 el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
             });
-            document.querySelectorAll('.remove-friend').forEach(btn => {
-                btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); });
-            });
         } catch (err) {
             console.error(err);
-            container.innerHTML = '<div class="empty-message">Error al cargar amigos.</div>';
+            container.innerHTML = '<div class="empty-message">Error al cargar solicitudes enviadas.</div>';
         }
-    }
-    
-    async function loadSentRequests() {
-        const container = document.getElementById('friendsContainer');
-        if (!container) return;
-        container.innerHTML = '<div class="empty-message">Cargando...</div>';
-        const snapshot = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
-        const requests = [];
-        snapshot.forEach(req => {
-            if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
-        });
-        if (requests.length === 0) {
-            container.innerHTML = '<div class="empty-message">No tienes solicitudes enviadas pendientes.</div>';
-            return;
-        }
-        container.innerHTML = '';
-        for (const req of requests) {
-            const userSnap = await database.ref(`users/${req.to}`).once('value');
-            const userData = userSnap.val();
-            if (userData) {
-                const div = document.createElement('div');
-                div.className = 'friend-item';
-                div.innerHTML = `
-                    <div class="friend-info">
-                        <span class="friend-name" data-uid="${req.to}">${escapeHtml(userData.username)}</span>
-                        <span class="friend-bias">Bias: ${userData.bias || 'N/A'}</span>
-                    </div>
-                    <div class="friend-actions">
-                        <span style="color:#ffb347;">⏳ Pendiente</span>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-        }
-        document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
-        });
     }
     
     async function loadReceivedRequests() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
         container.innerHTML = '<div class="empty-message">Cargando...</div>';
-        const snapshot = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
-        const requests = [];
-        snapshot.forEach(req => {
-            if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
+        try {
+            const snapshot = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
+            const requests = [];
+            snapshot.forEach(req => {
+                if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() });
+            });
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="empty-message">No tienes solicitudes recibidas.</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (const req of requests) {
+                const userSnap = await database.ref(`users/${req.from}`).once('value');
+                const userData = userSnap.val();
+                if (userData) {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.innerHTML = `
+                        <div class="friend-info">
+                            <span class="friend-name" data-uid="${req.from}">${escapeHtml(userData.username)}</span>
+                            <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="accept-req" data-id="${req.id}" data-from="${req.from}">✅ Aceptar</button>
+                            <button class="decline-req" data-id="${req.id}">❌ Rechazar</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+            document.querySelectorAll('.accept-req').forEach(btn => {
+                btn.addEventListener('click', (e) => { acceptFriendRequest(btn.dataset.id, btn.dataset.from); });
+            });
+            document.querySelectorAll('.decline-req').forEach(btn => {
+                btn.addEventListener('click', (e) => { declineFriendRequest(btn.dataset.id); });
+            });
+            document.querySelectorAll('.friend-name').forEach(el => {
+                el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
+            });
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<div class="empty-message">Error al cargar solicitudes recibidas.</div>';
+        }
+    }
+    
+    // Listener en tiempo real para amigos
+    function startFriendsListener() {
+        if (friendsUnsubscribe) friendsUnsubscribe();
+        if (!currentUser.uid) return;
+        const friendsRef = database.ref(`friends/${currentUser.uid}`);
+        friendsUnsubscribe = friendsRef.on('value', async (snapshot) => {
+            if (currentFriendTab === 'friends') {
+                await renderFriendsList(snapshot.val());
+            }
         });
-        if (requests.length === 0) {
-            container.innerHTML = '<div class="empty-message">No tienes solicitudes recibidas.</div>';
+    }
+    
+    async function renderFriendsList(friendsObj) {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        const friendIds = friendsObj ? Object.keys(friendsObj) : [];
+        if (friendIds.length === 0) {
+            container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>';
             return;
         }
         container.innerHTML = '';
-        for (const req of requests) {
-            const userSnap = await database.ref(`users/${req.from}`).once('value');
+        for (const fid of friendIds) {
+            const userSnap = await database.ref(`users/${fid}`).once('value');
             const userData = userSnap.val();
             if (userData) {
                 const div = document.createElement('div');
                 div.className = 'friend-item';
                 div.innerHTML = `
                     <div class="friend-info">
-                        <span class="friend-name" data-uid="${req.from}">${escapeHtml(userData.username)}</span>
+                        <span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span>
                         <span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span>
                     </div>
                     <div class="friend-actions">
-                        <button class="accept-req" data-id="${req.id}" data-from="${req.from}">✅ Aceptar</button>
-                        <button class="decline-req" data-id="${req.id}">❌ Rechazar</button>
+                        <button class="remove-friend" data-uid="${fid}">❌ Eliminar</button>
                     </div>
                 `;
                 container.appendChild(div);
             }
         }
-        document.querySelectorAll('.accept-req').forEach(btn => {
-            btn.addEventListener('click', (e) => { acceptFriendRequest(btn.dataset.id, btn.dataset.from); });
-        });
-        document.querySelectorAll('.decline-req').forEach(btn => {
-            btn.addEventListener('click', (e) => { declineFriendRequest(btn.dataset.id); });
-        });
         document.querySelectorAll('.friend-name').forEach(el => {
             el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); });
         });
-    }
-    
-    // Listener en tiempo real para la lista de amigos (solo cuando se está en la pestaña "Amigos")
-    function startFriendsListener() {
-        if (friendsUnsubscribe) friendsUnsubscribe();
-        if (!currentUser.uid) return;
-        const friendsRef = database.ref(`friends/${currentUser.uid}`);
-        friendsUnsubscribe = friendsRef.on('value', () => {
-            if (currentFriendTab === 'friends') {
-                loadFriendsList();
-            }
+        document.querySelectorAll('.remove-friend').forEach(btn => {
+            btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); });
         });
     }
     
-    function stopFriendsListener() {
-        if (friendsUnsubscribe) {
-            friendsUnsubscribe();
-            friendsUnsubscribe = null;
-        }
-    }
-    
-    // Inicializar pestañas de amigos
-    function initFriendsTabs() {
-        const tabs = document.querySelectorAll('.friends-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const newTab = tab.dataset.friendTab;
-                currentFriendTab = newTab;
-                // Detener listener si no es la pestaña de amigos
-                if (newTab !== 'friends') {
-                    stopFriendsListener();
-                } else {
-                    startFriendsListener();
-                }
-                // Cargar datos según pestaña
-                if (newTab === 'friends') loadFriendsList();
-                else if (newTab === 'sent') loadSentRequests();
-                else if (newTab === 'received') loadReceivedRequests();
-            });
-        });
+    async function loadFriendsList() {
+        // Forzar una carga inicial (ya que el listener se encarga de actualizar, pero para la primera vez)
+        const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
+        await renderFriendsList(snapshot.val());
     }
     
     // ========== MOSTRAR PERFIL ==========
@@ -810,7 +776,7 @@
         }
     }
     
-    // ========== NOTICIAS Y CURIOSIDADES (sin cambios) ==========
+    // ========== NOTICIAS Y CURIOSIDADES ==========
     function loadCuriosities() {
         const curioDiv = document.getElementById("curiositiesContainer");
         if (!curioDiv) return;
@@ -1018,7 +984,7 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD CORREGIDAS ==========
+    // ========== NORMAS DE LA COMUNIDAD ==========
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
             Swal.fire({
@@ -1059,8 +1025,9 @@
                 document.getElementById('mainContent').style.display = 'block';
                 initializeAfterLogin();
             } else {
-                await auth.signOut();
-                window.location.reload();
+                // Si no acepta, no se cierra sesión, solo se queda en modal. Pero para evitar bucle, mostramos mensaje.
+                Swal.fire('Necesitas aceptar las normas para continuar', 'Por favor, acepta las normas para usar la comunidad.', 'warning');
+                enforceRules(); // volver a mostrar
             }
         } else {
             document.getElementById('mainContent').style.display = 'block';
@@ -1078,7 +1045,7 @@
         initDropdown();
         initFriendsTabs();
         initEmojiPicker();
-        startFriendsListener(); // Iniciar listener de amigos
+        startFriendsListener();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
@@ -1102,14 +1069,11 @@
             if (sec === 'chat') sections.chat.classList.add('active-section');
             if (sec === 'friends') {
                 sections.friends.classList.add('active-section');
-                // Restablecer pestaña de amigos a "Amigos"
                 currentFriendTab = 'friends';
-                const tabs = document.querySelectorAll('.friends-tab');
-                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('.friends-tab.active').classList.remove('active');
                 document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                stopFriendsListener();
-                startFriendsListener();
                 loadFriendsList();
+                startFriendsListener(); // reactivar listener
             }
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
@@ -1136,12 +1100,10 @@
                     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
                     document.getElementById('friendsSection').classList.add('active-section');
                     currentFriendTab = 'friends';
-                    const tabs = document.querySelectorAll('.friends-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelector('.friends-tab.active').classList.remove('active');
                     document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                    stopFriendsListener();
-                    startFriendsListener();
                     loadFriendsList();
+                    startFriendsListener();
                 }
                 dropdown.classList.remove('show');
             });
@@ -1153,6 +1115,28 @@
         document.getElementById('viewRulesBtn').addEventListener('click', () => {
             showRulesModal(false);
             dropdown.classList.remove('show');
+        });
+    }
+    
+    function initFriendsTabs() {
+        const tabs = document.querySelectorAll('.friends-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const newTab = tab.dataset.friendTab;
+                if (newTab === currentFriendTab) return;
+                currentFriendTab = newTab;
+                if (friendsUnsubscribe) friendsUnsubscribe(); // detener listener anterior
+                if (currentFriendTab === 'friends') {
+                    startFriendsListener();
+                    loadFriendsList();
+                } else if (currentFriendTab === 'sent') {
+                    loadSentRequests();
+                } else if (currentFriendTab === 'received') {
+                    loadReceivedRequests();
+                }
+            });
         });
     }
     
