@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>NSWER WORLD - Fanpage NMIXX</title>
+    <title>NSWER WORLD - Fanpage NMIXX (Completa)</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -455,12 +455,6 @@
         ctx.shadowBlur = 0;
     }
     
-    function getCurrentPrizeIndex(rotation) {
-        let rawAngle = POINTER_ANGLE - rotation;
-        rawAngle = ((rawAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
-        return Math.floor(rawAngle / ANGLE_STEP) % SEGMENT_COUNT;
-    }
-    
     function computeTargetRotationForIndex(targetIdx) {
         const segmentCenter = targetIdx * ANGLE_STEP + ANGLE_STEP/2;
         let target = POINTER_ANGLE - segmentCenter;
@@ -574,6 +568,8 @@
         const data = snapshot.val();
         if (data) {
             Swal.fire('Perfil de NSWER', `👤 ${data.username}\n🎀 Bias: ${data.bias}\n🏆 Nivel ${data.level}\n⭐ ${data.xp} XP\n🏳️‍🌈 Pronombre: ${data.pronoun || "No especificado"}`, 'info');
+        } else {
+            Swal.fire('Error', 'Usuario no encontrado', 'error');
         }
     }
     function loadMessages() {
@@ -603,37 +599,227 @@
         });
     }
     
-    // ========== AMIGOS (simplificado pero funcional) ==========
+    // ========== AMIGOS (completo) ==========
     let friendsUnsubscribe = null;
     let currentFriendTab = 'friends';
-    async function sendFriendRequest(targetUid) { await database.ref(`friendRequests/${targetUid}/${currentUser.uid}`).set({ from: currentUser.uid, fromName: currentUser.username, timestamp: Date.now() }); Swal.fire('Enviada', 'Solicitud enviada', 'success'); }
-    async function acceptFriendRequest(requestId, fromUid) { await database.ref(`users/${currentUser.uid}/friends/${fromUid}`).set(true); await database.ref(`users/${fromUid}/friends/${currentUser.uid}`).set(true); await database.ref(`friendRequests/${currentUser.uid}/${requestId}`).remove(); Swal.fire('Aceptada', 'Ahora son amigos', 'success'); loadFriendsList(); }
-    async function declineFriendRequest(requestId) { await database.ref(`friendRequests/${currentUser.uid}/${requestId}`).remove(); Swal.fire('Rechazada', 'Solicitud eliminada', 'info'); loadFriendsList(); }
-    async function removeFriend(friendUid) { await database.ref(`users/${currentUser.uid}/friends/${friendUid}`).remove(); await database.ref(`users/${friendUid}/friends/${currentUser.uid}`).remove(); Swal.fire('Eliminado', 'Amigo eliminado', 'info'); loadFriendsList(); }
-    async function loadFriendsList() { /* similar al original, se omite por brevedad pero es estándar */ }
-    function startFriendsListener() { if (friendsUnsubscribe) friendsUnsubscribe(); const ref = database.ref(`users/${currentUser.uid}/friends`); friendsUnsubscribe = ref.on('value', () => { if (currentFriendTab === 'friends') loadFriendsList(); }); }
-    function initFriendsTabs() { /* similar */ }
     
-    // ========== NOTICIAS ==========
+    async function sendFriendRequest(targetUid) {
+        await database.ref(`friendRequests/${targetUid}/${currentUser.uid}`).set({ 
+            from: currentUser.uid, fromName: currentUser.username, fromBias: currentUser.bias,
+            timestamp: Date.now() 
+        });
+        Swal.fire('Solicitud enviada', '', 'success');
+        if (currentFriendTab === 'sent') loadSentRequests();
+    }
+    async function acceptFriendRequest(requestId, fromUid) {
+        await database.ref(`users/${currentUser.uid}/friends/${fromUid}`).set(true);
+        await database.ref(`users/${fromUid}/friends/${currentUser.uid}`).set(true);
+        await database.ref(`friendRequests/${currentUser.uid}/${requestId}`).remove();
+        Swal.fire('Amigo agregado', '', 'success');
+        if (currentFriendTab === 'friends') loadFriendsList();
+        else if (currentFriendTab === 'received') loadReceivedRequests();
+    }
+    async function declineFriendRequest(requestId) {
+        await database.ref(`friendRequests/${currentUser.uid}/${requestId}`).remove();
+        Swal.fire('Solicitud rechazada', '', 'info');
+        if (currentFriendTab === 'received') loadReceivedRequests();
+    }
+    async function removeFriend(friendUid) {
+        await database.ref(`users/${currentUser.uid}/friends/${friendUid}`).remove();
+        await database.ref(`users/${friendUid}/friends/${currentUser.uid}`).remove();
+        Swal.fire('Amigo eliminado', '', 'info');
+        if (currentFriendTab === 'friends') loadFriendsList();
+    }
+    async function loadFriendsList() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        const snapshot = await database.ref(`users/${currentUser.uid}/friends`).once('value');
+        const friends = snapshot.val() || {};
+        const friendIds = Object.keys(friends);
+        if (friendIds.length === 0) {
+            container.innerHTML = '<div class="empty-message">💔 No tienes amigos aún. Envía solicitudes.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const fid of friendIds) {
+            const userSnap = await database.ref(`users/${fid}`).once('value');
+            const user = userSnap.val();
+            if (user) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div><span class="friend-name" data-uid="${fid}">${escapeHtml(user.username)}</span><div class="friend-bias">🎀 ${user.bias}</div></div>
+                    <div class="friend-actions"><button class="remove-friend-btn" data-uid="${fid}">❌ Eliminar</button></div>
+                `;
+                container.appendChild(div);
+            }
+        }
+        document.querySelectorAll('.friend-name').forEach(el => {
+            el.addEventListener('click', () => showUserProfile(el.dataset.uid));
+        });
+        document.querySelectorAll('.remove-friend-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const fid = btn.dataset.uid;
+                const confirm = await Swal.fire({ title: '¿Eliminar amigo?', text: 'Dejarán de ser amigos', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí', cancelButtonText: 'No' });
+                if (confirm.isConfirmed) await removeFriend(fid);
+            });
+        });
+    }
+    async function loadSentRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        const snapshot = await database.ref(`friendRequests`).once('value');
+        const allRequests = snapshot.val() || {};
+        const sent = [];
+        for (const [targetId, requests] of Object.entries(allRequests)) {
+            if (requests && requests[currentUser.uid]) {
+                sent.push({ targetId, ...requests[currentUser.uid] });
+            }
+        }
+        if (sent.length === 0) {
+            container.innerHTML = '<div class="empty-message">📤 No tienes solicitudes enviadas.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const req of sent) {
+            const userSnap = await database.ref(`users/${req.targetId}`).once('value');
+            const user = userSnap.val();
+            const name = user ? user.username : 'Usuario desconocido';
+            const bias = user ? user.bias : '?';
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.innerHTML = `<div><span>${escapeHtml(name)}</span><div class="friend-bias">🎀 ${bias}</div></div><div><span style="font-size:0.7rem;">⏳ Pendiente</span></div>`;
+            container.appendChild(div);
+        }
+    }
+    async function loadReceivedRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        const snapshot = await database.ref(`friendRequests/${currentUser.uid}`).once('value');
+        const requests = snapshot.val() || {};
+        const requestIds = Object.keys(requests);
+        if (requestIds.length === 0) {
+            container.innerHTML = '<div class="empty-message">📭 No tienes solicitudes pendientes.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        for (const fromId of requestIds) {
+            const req = requests[fromId];
+            const userSnap = await database.ref(`users/${fromId}`).once('value');
+            const user = userSnap.val();
+            const name = user ? user.username : req.fromName || 'Usuario';
+            const bias = user ? user.bias : req.fromBias || '?';
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.innerHTML = `
+                <div><span class="friend-name" data-uid="${fromId}">${escapeHtml(name)}</span><div class="friend-bias">🎀 ${bias}</div></div>
+                <div class="friend-actions"><button class="accept-request" data-id="${fromId}">✅ Aceptar</button><button class="decline-request" data-id="${fromId}">❌ Rechazar</button></div>
+            `;
+            container.appendChild(div);
+        }
+        document.querySelectorAll('.friend-name').forEach(el => {
+            el.addEventListener('click', () => showUserProfile(el.dataset.uid));
+        });
+        document.querySelectorAll('.accept-request').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const fromId = btn.dataset.id;
+                await acceptFriendRequest(fromId, fromId);
+            });
+        });
+        document.querySelectorAll('.decline-request').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const fromId = btn.dataset.id;
+                await declineFriendRequest(fromId);
+            });
+        });
+    }
+    function startFriendsListener() {
+        if (friendsUnsubscribe) friendsUnsubscribe();
+        const ref = database.ref(`users/${currentUser.uid}/friends`);
+        friendsUnsubscribe = ref.on('value', () => {
+            if (currentFriendTab === 'friends') loadFriendsList();
+        });
+    }
+    function initFriendsTabs() {
+        const tabs = document.querySelectorAll('.friends-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFriendTab = tab.dataset.friendTab;
+                if (currentFriendTab === 'friends') loadFriendsList();
+                else if (currentFriendTab === 'sent') loadSentRequests();
+                else if (currentFriendTab === 'received') loadReceivedRequests();
+            });
+        });
+    }
+    
+    // ========== NOTICIAS (con datos locales para que funcione sin fetch externo) ==========
+    const noticiasLocales = [
+        { id: 1, fecha: "15/05/2025", texto: "🎉 NMIXX anuncia su nuevo comeback 'Fe3O4: STICK OUT' para junio." },
+        { id: 2, fecha: "10/05/2025", texto: "🏆 NMIXX gana 'Mejor Performance' en los K-Vibe Awards." },
+        { id: 3, fecha: "05/05/2025", texto: "💖 Lily y Haewon serán MCs especiales en Music Bank." }
+    ];
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         if (!newsContainer) return;
-        newsContainer.innerHTML = '<div class="news-item">⏳ Cargando noticias...</div>';
-        try {
-            const response = await fetch('https://gist.githubusercontent.com/nsuer/raw/noticias.json'); // fallback local
-            if (!response.ok) throw new Error();
-            const noticias = await response.json();
-            newsContainer.innerHTML = '';
-            noticias.forEach(noticia => {
-                const item = document.createElement('div'); item.className = 'news-item'; item.id = `news-${noticia.id}`;
-                item.innerHTML = `<div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div><div class="news-text">${escapeHtml(noticia.texto)}</div><div class="like-controls"><button class="like-btn" data-id="${noticia.id}">❤️ <span class="like-count">0</span></button></div>`;
-                newsContainer.appendChild(item);
-            });
-            attachLikeEventsFirebase();
-        } catch { newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias por ahora.</div>'; }
+        newsContainer.innerHTML = '';
+        for (const noticia of noticiasLocales) {
+            const item = document.createElement('div');
+            item.className = 'news-item'; item.id = `news-${noticia.id}`;
+            item.innerHTML = `<div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div><div class="news-text">${escapeHtml(noticia.texto)}</div><div class="like-controls"><button class="like-btn" data-id="${noticia.id}">❤️ <span class="like-count">0</span></button></div>`;
+            newsContainer.appendChild(item);
+        }
+        attachLikeEventsFirebase();
     }
-    async function handleLikeFirebase(event) { /* igual que original */ }
-    function attachLikeEventsFirebase() { /* igual */ }
+    async function handleLikeFirebase(event) {
+        if (!currentUser.uid) return;
+        const btn = event.currentTarget;
+        const newsId = btn.dataset.id;
+        const likeRef = database.ref(`likes/${newsId}`);
+        const userLikeRef = likeRef.child(`users/${currentUser.uid}`);
+        const snapshot = await userLikeRef.once('value');
+        const alreadyLiked = snapshot.val() === true;
+        if (!alreadyLiked) {
+            likeRef.child('count').transaction(current => (current || 0) + 1);
+            userLikeRef.set(true);
+            Swal.fire({ title: '¡Gracias!', text: 'Has apoyado esta noticia.', icon: 'success', timer: 1500, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
+        } else {
+            likeRef.child('count').transaction(current => (current || 1) - 1);
+            userLikeRef.remove();
+            Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
+        }
+        // Actualizar contador visual
+        const countSnap = await likeRef.child('count').once('value');
+        const newCount = countSnap.val() || 0;
+        const span = document.querySelector(`#news-${newsId} .like-count`);
+        if (span) span.innerText = newCount;
+    }
+    function attachLikeEventsFirebase() {
+        document.querySelectorAll('.like-btn').forEach(async btn => {
+            const newsId = btn.dataset.id;
+            const likeRef = database.ref(`likes/${newsId}`);
+            const countSnap = await likeRef.child('count').once('value');
+            const count = countSnap.val() || 0;
+            const span = btn.querySelector('.like-count');
+            if (span) span.innerText = count;
+            if (currentUser.uid) {
+                const userLikeSnap = await likeRef.child(`users/${currentUser.uid}`).once('value');
+                if (userLikeSnap.val() === true) {
+                    btn.classList.add('liked');
+                    btn.style.background = "#ff7eb3";
+                    btn.style.color = "#1e1a2f";
+                } else {
+                    btn.classList.remove('liked');
+                    btn.style.background = "rgba(255,255,255,0.1)";
+                    btn.style.color = "white";
+                }
+            }
+            btn.removeEventListener('click', handleLikeFirebase);
+            btn.addEventListener('click', handleLikeFirebase);
+        });
+    }
     
     // ========== CURIOSIDADES ==========
     const curiosidadesData = [
@@ -719,8 +905,9 @@
         let usernameInputHtml = `<input id="edit-nickname" class="swal2-input" value="${currentUser.username}" ${canChange ? '' : 'disabled'}>`;
         const { value: formValues } = await Swal.fire({
             title: '✏️ Editar perfil',
-            html: `<div style="text-align:left"><label>🎤 Nombre</label>${usernameInputHtml}<label>💖 Bias</label><select id="edit-bias" class="swal2-select">${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}</select><label>🏳️‍🌈 Pronombre</label><select id="edit-pronoun" class="swal2-select"><option value="Ella">Ella</option><option value="Él">Él</option><option value="Elle">Elle</option><option value="No especificado" selected>No especificado</option></select></div>`,
-            focusConfirm: false, showCancelButton: true, preConfirm: () => {
+            html: `<div style="text-align:left"><label>🎤 Nombre</label>${usernameInputHtml}<label>💖 Bias</label><select id="edit-bias" class="swal2-select">${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}</select><label>🏳️‍🌈 Pronombre</label><select id="edit-pronoun" class="swal2-select"><option value="Ella">Ella</option><option value="Él">Él</option><option value="Elle">Elle</option><option value="No especificado" ${currentUser.pronoun === 'No especificado' ? 'selected' : ''}>No especificado</option></select></div>`,
+            focusConfirm: false, showCancelButton: true, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar',
+            preConfirm: () => {
                 const newName = document.getElementById('edit-nickname').value.trim();
                 if (canChange && (!newName || newName.length < 3)) { Swal.showValidationMessage('Mínimo 3 caracteres'); return false; }
                 return { newName: canChange ? newName : currentUser.username, newBias: document.getElementById('edit-bias').value, newPronoun: document.getElementById('edit-pronoun').value };
@@ -735,12 +922,22 @@
             Swal.fire('¡Perfil actualizado!', '', 'success');
         }
     }
-    async function showRulesModal(requireAcceptance = false) { /* similar */ }
+    async function showRulesModal(requireAcceptance = false) {
+        const result = await Swal.fire({
+            title: '📜 Normas de NSWER WORLD',
+            html: `<div style="text-align:left;">1️⃣ Respetar a todos los miembros.<br>2️⃣ No spam ni contenido ofensivo.<br>3️⃣ Disfruta y comparte tu amor por NMIXX.<br>4️⃣ Cada 30 días puedes cambiar tu nombre.</div>`,
+            icon: 'info', confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
+            showCancelButton: requireAcceptance ? true : false,
+            cancelButtonText: requireAcceptance ? 'No acepto' : undefined
+        });
+        if (requireAcceptance) return result.isConfirmed;
+        return true;
+    }
     async function enforceRules() {
         if (!currentUser.rulesAccepted) {
             const accepted = await showRulesModal(true);
             if (accepted) { currentUser.rulesAccepted = true; saveUserDataToFirebase(); document.getElementById('mainContent').style.display = 'block'; initializeAfterLogin(); }
-            else { Swal.fire('Necesitas aceptar las normas', '', 'warning'); enforceRules(); }
+            else { Swal.fire('Necesitas aceptar las normas para continuar.', '', 'warning'); enforceRules(); }
         } else { document.getElementById('mainContent').style.display = 'block'; initializeAfterLogin(); }
     }
     
@@ -755,7 +952,7 @@
             sections.forEach(s => document.getElementById(`${s}Section`).classList.remove('active-section'));
             document.getElementById(`${sec}Section`).classList.add('active-section');
             document.getElementById('dropdownMenu').classList.remove('show');
-            if (sec === 'friends') loadFriendsList();
+            if (sec === 'friends') { currentFriendTab = 'friends'; loadFriendsList(); }
         }));
     }
     function initDropdown() {
@@ -769,6 +966,9 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
             document.getElementById('friendsSection').classList.add('active-section');
+            currentFriendTab = 'friends';
+            document.querySelector('.friends-tab.active')?.classList.remove('active');
+            document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
             loadFriendsList();
             dropdown.classList.remove('show');
         });
@@ -782,9 +982,6 @@
         picker.addEventListener('emoji-click', (event) => { input.value += event.detail.unicode; picker.style.display = 'none'; input.focus(); });
         document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) picker.style.display = 'none'; });
     }
-    function loadFriendsList() { /* función simplificada para que no falle */ const container = document.getElementById('friendsContainer'); if(container) container.innerHTML = '<div class="empty-message">🚀 Amigos próximamente</div>'; }
-    function startFriendsListener() {}
-    function initFriendsTabs() {}
     
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
@@ -828,7 +1025,13 @@
             catch(e) { Swal.fire('Error', 'Cuenta no existe o error.', 'error'); }
         }
     });
-    function getFriendlyErrorMessage(error) { return "Error: " + (error.code || "desconocido"); }
+    function getFriendlyErrorMessage(error) {
+        if (error.code === 'auth/email-already-in-use') return 'El correo ya está registrado.';
+        if (error.code === 'auth/weak-password') return 'La contraseña debe tener al menos 6 caracteres.';
+        if (error.code === 'auth/user-not-found') return 'Usuario no encontrado.';
+        if (error.code === 'auth/wrong-password') return 'Contraseña incorrecta.';
+        return 'Error: ' + (error.message || 'desconocido');
+    }
     authActionBtn.addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
