@@ -216,6 +216,27 @@
         .forgot-pw { margin-top: 10px; font-size: 0.8rem; color: #9ca3ff; cursor: pointer; display: inline-block; }
         .swal2-container { z-index: 20000 !important; }
         .custom-swal { background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important; border-radius: 32px !important; border: 2px solid #ff7eb3 !important; color: white !important; }
+        /* Corrección para que los selects de SweetAlert2 se vean bien */
+        .custom-swal .swal2-select, .custom-swal select {
+            background: #141829 !important;
+            border: 1px solid #ff7eb3 !important;
+            border-radius: 60px !important;
+            color: white !important;
+            padding: 12px 16px !important;
+            margin: 8px 0 !important;
+            width: 100% !important;
+        }
+        .custom-swal .swal2-select option, .custom-swal select option {
+            background: #141829 !important;
+            color: white !important;
+        }
+        .custom-swal .swal2-label {
+            color: #ffb3e0 !important;
+            text-align: left !important;
+            display: block !important;
+            margin-top: 8px !important;
+            font-weight: 500 !important;
+        }
         @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } .wheel-container canvas { max-width: 280px; } .wheel-pointer { top: -10px; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 30px solid #ffd966; } .wheel-pointer::after { top: -38px; left: -10px; font-size: 18px; } }
     </style>
 </head>
