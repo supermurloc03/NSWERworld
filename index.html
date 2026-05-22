@@ -61,14 +61,22 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* Noticias y curiosidades mejoradas (separadas) */
-        .news-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 20px;
+        /* Noticias */
+        .news-card {
+            background: rgba(20, 25, 55, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px;
         }
-        .news-card, .curiosities-card {
+        .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; transition: transform 0.2s; }
+        .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
+        .news-text { font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
+        .like-controls { display: flex; justify-content: flex-end; }
+        .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
+        
+        /* Curiosidades */
+        .curiosities-card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
             border-radius: 28px;
@@ -99,14 +107,6 @@
         .curio-content { flex: 1; }
         .curio-text { font-size: 0.9rem; line-height: 1.4; margin-bottom: 5px; }
         .curio-member-tag { font-size: 0.7rem; background: rgba(255,126,179,0.2); display: inline-block; padding: 2px 8px; border-radius: 20px; color: #ffb3e0; }
-        
-        /* Noticias (items) */
-        .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; transition: transform 0.2s; }
-        .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
-        .news-text { font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
-        .like-controls { display: flex; justify-content: flex-end; }
-        .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
-        .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
         
         /* Chat */
         .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
@@ -164,12 +164,12 @@
         .custom-swal .swal2-cancel { background: #ff4757 !important; border-radius: 60px !important; }
         .profile-stats { display: flex; justify-content: center; gap: 20px; margin: 15px 0; flex-wrap: wrap; }
         .profile-stat { background: #2d2a55; padding: 6px 14px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; }
-        @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .news-grid { grid-template-columns: 1fr; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO (sin cambios) -->
+<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -226,7 +226,8 @@
             </div>
             <div class="nav-links">
                 <button class="nav-btn active" data-section="home">🏠 Inicio</button>
-                <button class="nav-btn" data-section="news">📢 Novedades</button>
+                <button class="nav-btn" data-section="noticias">📰 Noticias</button>
+                <button class="nav-btn" data-section="curiosidades">🤯 Curiosidades</button>
                 <button class="nav-btn" data-section="chat">💬 Chat</button>
                 <button id="logoutBtn">Cerrar sesión</button>
             </div>
@@ -254,6 +255,7 @@
         </div>
     </div>
 
+    <!-- SECCIÓN INICIO -->
     <div id="homeSection" class="section active-section">
         <div class="level-area">
             <div class="level-stats">
@@ -272,32 +274,33 @@
         </div>
     </div>
 
-    <!-- SECCIÓN NOVEDADES: NOTICIAS Y CURIOSIDADES SEPARADAS -->
-    <div id="newsSection" class="section">
-        <div class="news-grid">
-            <!-- COLUMNA DE NOTICIAS -->
-            <div class="news-card">
-                <h3>📰 Últimas noticias</h3>
-                <div id="newsContainer"></div>
-            </div>
-            <!-- COLUMNA DE CURIOSIDADES -->
-            <div class="curiosities-card">
-                <h3>🤯 Curiosidades de NMIXX</h3>
-                <div class="filter-buttons" id="curiositiesFilters">
-                    <button class="filter-btn active" data-member="all">Todas</button>
-                    <button class="filter-btn" data-member="Lily">Lily</button>
-                    <button class="filter-btn" data-member="Haewon">Haewon</button>
-                    <button class="filter-btn" data-member="Sullyoon">Sullyoon</button>
-                    <button class="filter-btn" data-member="BAE">BAE</button>
-                    <button class="filter-btn" data-member="Jiwoo">Jiwoo</button>
-                    <button class="filter-btn" data-member="Kyujin">Kyujin</button>
-                </div>
-                <div id="curiositiesStats" class="curiosities-stats"></div>
-                <div id="curiositiesGrid" class="curiosities-grid"></div>
-            </div>
+    <!-- SECCIÓN NOTICIAS -->
+    <div id="noticiasSection" class="section">
+        <div class="news-card">
+            <h3>📰 Últimas noticias</h3>
+            <div id="newsContainer"></div>
         </div>
     </div>
 
+    <!-- SECCIÓN CURIOSIDADES -->
+    <div id="curiosidadesSection" class="section">
+        <div class="curiosities-card">
+            <h3>🤯 Curiosidades de NMIXX</h3>
+            <div class="filter-buttons" id="curiositiesFilters">
+                <button class="filter-btn active" data-member="all">Todas</button>
+                <button class="filter-btn" data-member="Lily">Lily</button>
+                <button class="filter-btn" data-member="Haewon">Haewon</button>
+                <button class="filter-btn" data-member="Sullyoon">Sullyoon</button>
+                <button class="filter-btn" data-member="BAE">BAE</button>
+                <button class="filter-btn" data-member="Jiwoo">Jiwoo</button>
+                <button class="filter-btn" data-member="Kyujin">Kyujin</button>
+            </div>
+            <div id="curiositiesStats" class="curiosities-stats"></div>
+            <div id="curiositiesGrid" class="curiosities-grid"></div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CHAT -->
     <div id="chatSection" class="section">
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages"></div>
@@ -312,6 +315,7 @@
         </div>
     </div>
 
+    <!-- SECCIÓN AMIGOS (solo visible desde el menú) -->
     <div id="friendsSection" class="section">
         <div class="friends-tabs">
             <button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button>
@@ -340,7 +344,7 @@
     const auth = firebase.auth();
     const database = firebase.database();
     
-    // ========== DATOS DE MIEMBROS (SIN CURIOSIDADES, SIN EDAD DINÁMICA) ==========
+    // ========== DATOS DE MIEMBROS (SIN EDAD, SIN CURIOSIDADES) ==========
     const membersData = {
         Lily: { 
             fullName: "Lily (릴리)", 
@@ -404,7 +408,7 @@
         }
     };
     
-    // ========== DATOS DE CURIOSIDADES (ampliados y sin repetición) ==========
+    // ========== DATOS DE CURIOSIDADES ==========
     const curiosidadesData = [
         { texto: "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.", member: "all" },
         { texto: "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.", member: "all" },
@@ -616,7 +620,7 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== SISTEMA DE AMIGOS COMPLETO (resumido por brevedad pero funcional) ==========
+    // ========== SISTEMA DE AMIGOS (resumido pero funcional) ==========
     let friendsUnsubscribe = null;
     let currentFriendTab = 'friends';
     
@@ -771,7 +775,7 @@
         } catch(error) { console.error(error); Swal.fire('Error', 'No se pudo cargar el perfil', 'error'); }
     }
     
-    // ========== NOTICIAS DESDE JSON ==========
+    // ========== NOTICIAS ==========
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         if (!newsContainer) return;
@@ -840,7 +844,7 @@
         }
     }
     
-    // ========== CURIOSIDADES (separadas, sin duplicar en modales) ==========
+    // ========== CURIOSIDADES (con filtros) ==========
     let currentCuriosityFilter = "all";
     
     function loadCuriosities() {
@@ -874,7 +878,7 @@
         });
     }
     
-    // ========== MODAL DE MIEMBRO (SIN CURIOSIDADES) ==========
+    // ========== MODAL DE MIEMBRO (sin curiosidades, solo datos básicos) ==========
     function showMemberModal(memberName) {
         const data = membersData[memberName];
         if (!data) return;
@@ -996,25 +1000,26 @@
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
     
-    // ========== NAVEGACIÓN ==========
+    // ========== NAVEGACIÓN (ahora con 4 secciones: inicio, noticias, curiosidades, chat) ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
-        const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection'), friends: document.getElementById('friendsSection') };
+        const sections = {
+            home: document.getElementById('homeSection'),
+            noticias: document.getElementById('noticiasSection'),
+            curiosidades: document.getElementById('curiosidadesSection'),
+            chat: document.getElementById('chatSection'),
+            friends: document.getElementById('friendsSection')
+        };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
             btns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             Object.values(sections).forEach(s => s.classList.remove('active-section'));
             if (sec === 'home') sections.home.classList.add('active-section');
-            if (sec === 'news') sections.news.classList.add('active-section');
-            if (sec === 'chat') sections.chat.classList.add('active-section');
-            if (sec === 'friends') {
-                sections.friends.classList.add('active-section');
-                currentFriendTab = 'friends';
-                document.querySelector('.friends-tab.active').classList.remove('active');
-                document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                loadFriendsList(); startFriendsListener();
-            }
+            else if (sec === 'noticias') sections.noticias.classList.add('active-section');
+            else if (sec === 'curiosidades') sections.curiosidades.classList.add('active-section');
+            else if (sec === 'chat') sections.chat.classList.add('active-section');
+            else if (sec === 'friends') sections.friends.classList.add('active-section');
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
     }
