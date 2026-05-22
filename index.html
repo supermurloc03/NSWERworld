@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS (sin cambios, solo los necesarios) ========== */
+        /* ========== ESTILOS COMPLETOS ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -66,7 +66,41 @@
         .like-controls { display: flex; justify-content: flex-end; }
         .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
-        .curio-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 10px 15px; margin-bottom: 12px; }
+        
+        /* ========== NUEVA SECCIÓN: FILTRO DE CURIOSIDADES ========== */
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .filter-btn {
+            background: #2d2a55;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        .filter-btn.active {
+            background: #ff7eb3;
+            color: #1e1a2f;
+            box-shadow: 0 0 8px #ff7eb3;
+        }
+        .filter-btn:hover {
+            background: #7c3aed;
+        }
+        
+        .curio-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 10px 15px;
+            margin-bottom: 12px;
+        }
+        
         .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .chat-messages { background: #0a0c1a; border-radius: 24px; height: 440px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .message { display: flex; flex-direction: column; max-width: 80%; border-radius: 20px; padding: 8px 14px; position: relative; word-wrap: break-word; }
@@ -228,8 +262,24 @@
 
     <div id="newsSection" class="section">
         <div class="news-grid">
-            <div class="news-card"><h3>📰 Últimas noticias</h3><div id="newsContainer"></div></div>
-            <div class="curiosities-card"><h3>🤯 Curiosidades de NMIXX</h3><div id="curiositiesContainer"></div></div>
+            <div class="news-card">
+                <h3>📰 Últimas noticias</h3>
+                <div id="newsContainer"></div>
+            </div>
+            <div class="curiosities-card">
+                <h3>🤯 Curiosidades de NMIXX</h3>
+                <!-- FILTROS DE CURIOSIDADES -->
+                <div class="filter-buttons" id="curiositiesFilters">
+                    <button class="filter-btn active" data-member="all">Todas</button>
+                    <button class="filter-btn" data-member="Lily">Lily</button>
+                    <button class="filter-btn" data-member="Haewon">Haewon</button>
+                    <button class="filter-btn" data-member="Sullyoon">Sullyoon</button>
+                    <button class="filter-btn" data-member="BAE">BAE</button>
+                    <button class="filter-btn" data-member="Jiwoo">Jiwoo</button>
+                    <button class="filter-btn" data-member="Kyujin">Kyujin</button>
+                </div>
+                <div id="curiositiesContainer"></div>
+            </div>
         </div>
     </div>
 
@@ -276,17 +326,25 @@
     const database = firebase.database();
     
     // ========== DATOS ESTÁTICOS ==========
-    const curiosidadesList = [
-        "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!",
-        "Haewon fue aprendiz por 7 años antes de debutar.",
-        "Sullyoon fue modelo infantil y le encanta dibujar.",
-        "BAE toca la batería y practicó artes marciales.",
-        "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.",
-        "Kyujin puede imitar a todos los miembros a la perfección.",
-        "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.",
-        "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.",
-        "El nombre NMIXX combina 'N' (now) y 'MIX' (combinación), simbolizando diversidad."
+    // Curiosidades con etiqueta de miembro
+    const curiosidadesData = [
+        { texto: "Lily tiene nacionalidad australiana y coreana, ¡habla inglés perfecto!", member: "Lily" },
+        { texto: "Haewon fue aprendiz por 7 años antes de debutar.", member: "Haewon" },
+        { texto: "Sullyoon fue modelo infantil y le encanta dibujar.", member: "Sullyoon" },
+        { texto: "BAE toca la batería y practicó artes marciales.", member: "BAE" },
+        { texto: "Jiwoo es la más joven del grupo y aprendió a bailar viendo YouTube.", member: "Jiwoo" },
+        { texto: "Kyujin puede imitar a todos los miembros a la perfección.", member: "Kyujin" },
+        { texto: "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.", member: "all" },
+        { texto: "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.", member: "all" },
+        { texto: "El nombre NMIXX combina 'N' (now) y 'MIX' (combinación), simbolizando diversidad.", member: "all" },
+        { texto: "Lily puede tocar el piano y la guitarra.", member: "Lily" },
+        { texto: "Haewon es conocida por su habilidad para imitar voces.", member: "Haewon" },
+        { texto: "Sullyoon fue compañera de escuela de una miembro de IVE.", member: "Sullyoon" },
+        { texto: "BAE tiene una certificación en cocina coreana.", member: "BAE" },
+        { texto: "Jiwoo entrenó durante solo 6 meses antes de debutar.", member: "Jiwoo" },
+        { texto: "Kyujin es la bailarina principal del grupo.", member: "Kyujin" }
     ];
+    
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     const levelThresholds = [0, 100, 300, 600, 1000];
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
@@ -508,7 +566,7 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== SISTEMA DE AMIGOS (CORREGIDO) ==========
+    // ========== SISTEMA DE AMIGOS ==========
     let friendsUnsubscribe = null;
     
     async function sendFriendRequest(targetUid) {
@@ -538,17 +596,14 @@
             timestamp: Date.now()
         });
         Swal.fire('Solicitud enviada', 'Se ha enviado la solicitud de amistad', 'success');
-        // Recargar pestaña de solicitudes enviadas si está activa
         if (currentFriendTab === 'sent') loadSentRequests();
     }
     
     async function acceptFriendRequest(requestId, fromUid) {
         await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
-        // Escritura simétrica en ambas direcciones
         await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
         await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
         Swal.fire('Aceptada', 'Ahora son amigos', 'success');
-        // Si la pestaña activa es "friends" o "received", refrescar
         if (currentFriendTab === 'friends') loadFriendsList();
         else if (currentFriendTab === 'received') loadReceivedRequests();
     }
@@ -662,7 +717,6 @@
         }
     }
     
-    // Listener en tiempo real para amigos
     function startFriendsListener() {
         if (friendsUnsubscribe) friendsUnsubscribe();
         if (!currentUser.uid) return;
@@ -710,7 +764,6 @@
     }
     
     async function loadFriendsList() {
-        // Forzar una carga inicial (ya que el listener se encarga de actualizar, pero para la primera vez)
         const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
         await renderFriendsList(snapshot.val());
     }
@@ -776,15 +829,7 @@
         }
     }
     
-    // ========== NOTICIAS Y CURIOSIDADES ==========
-    function loadCuriosities() {
-        const curioDiv = document.getElementById("curiositiesContainer");
-        if (!curioDiv) return;
-        curioDiv.innerHTML = "";
-        const shuffled = [...curiosidadesList].sort(() => 0.5 - Math.random());
-        shuffled.slice(0, 6).forEach(c => curioDiv.innerHTML += `<div class="curio-item">🔮 ${escapeHtml(c)}</div>`);
-    }
-    
+    // ========== NOTICIAS ==========
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         if (!newsContainer) return;
@@ -872,6 +917,41 @@
         }
     }
     
+    // ========== CURIOSIDADES CON FILTRO ==========
+    let currentCuriosityFilter = "all";
+    
+    function loadCuriosities() {
+        const curioDiv = document.getElementById("curiositiesContainer");
+        if (!curioDiv) return;
+        curioDiv.innerHTML = "";
+        const filtered = currentCuriosityFilter === "all" 
+            ? curiosidadesData 
+            : curiosidadesData.filter(c => c.member === currentCuriosityFilter);
+        if (filtered.length === 0) {
+            curioDiv.innerHTML = '<div class="curio-item">🔮 No hay curiosidades para este miembro.</div>';
+            return;
+        }
+        filtered.forEach(c => {
+            const div = document.createElement("div");
+            div.className = "curio-item";
+            div.innerHTML = `🔮 ${escapeHtml(c.texto)}`;
+            curioDiv.appendChild(div);
+        });
+    }
+    
+    function initCuriosityFilters() {
+        const filterBtns = document.querySelectorAll('#curiositiesFilters .filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCuriosityFilter = btn.getAttribute('data-member');
+                loadCuriosities();
+            });
+        });
+    }
+    
+    // ========== GENERAR TARJETAS MIEMBROS ==========
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         if (!container) return;
@@ -984,7 +1064,7 @@
         }
     }
     
-    // ========== NORMAS DE LA COMUNIDAD ==========
+    // ========== NORMAS ==========
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
             Swal.fire({
@@ -1025,7 +1105,6 @@
                 document.getElementById('mainContent').style.display = 'block';
                 initializeAfterLogin();
             } else {
-                // Si no acepta, no se cierra sesión, solo se queda en modal. Pero para evitar bucle, mostramos mensaje.
                 Swal.fire('Necesitas aceptar las normas para continuar', 'Por favor, acepta las normas para usar la comunidad.', 'warning');
                 enforceRules(); // volver a mostrar
             }
@@ -1039,12 +1118,13 @@
         updateUI();
         generateMemberCards();
         loadMessages();
-        loadCuriosities();
+        loadCuriosities();    // carga las curiosidades con el filtro actual (por defecto "all")
         loadNewsFromJSON();
         initNavigation();
         initDropdown();
         initFriendsTabs();
         initEmojiPicker();
+        initCuriosityFilters();
         startFriendsListener();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
@@ -1073,7 +1153,7 @@
                 document.querySelector('.friends-tab.active').classList.remove('active');
                 document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
                 loadFriendsList();
-                startFriendsListener(); // reactivar listener
+                startFriendsListener();
             }
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
@@ -1127,7 +1207,7 @@
                 const newTab = tab.dataset.friendTab;
                 if (newTab === currentFriendTab) return;
                 currentFriendTab = newTab;
-                if (friendsUnsubscribe) friendsUnsubscribe(); // detener listener anterior
+                if (friendsUnsubscribe) friendsUnsubscribe();
                 if (currentFriendTab === 'friends') {
                     startFriendsListener();
                     loadFriendsList();
@@ -1220,7 +1300,6 @@
             return;
         }
         if (!isLoginMode) {
-            // Registro
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
@@ -1243,7 +1322,6 @@
                 console.error(error);
             }
         } else {
-            // Login
             try {
                 const userCred = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCred.user;
