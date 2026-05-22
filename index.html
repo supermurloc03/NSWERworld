@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>NSWER WORLD - Fanpage NMIXX (Completa)</title>
+    <title>NSWER WORLD - Fanpage NMIXX (Ruleta 10 segmentos)</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS GENERALES ========== */
+        /* ========== ESTILOS GENERALES (SIN CAMBIOS) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -65,7 +65,7 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* ========== NUEVA RULETA GRANDE Y BONITA ========== */
+        /* ========== NUEVA RULETA (10 SEGMENTOS, XP + MONEDAS) ========== */
         .wheel-container { background: rgba(20, 25, 55, 0.6); backdrop-filter: blur(10px); border-radius: 48px; padding: 25px 20px; margin: 20px 0 30px; text-align: center; position: relative; }
         .wheel-title { font-size: 1.6rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: bold; background: linear-gradient(135deg, #FFB6C1, #9b59b6); background-clip: text; -webkit-background-clip: text; color: transparent; }
         .wheel-canvas-wrapper { position: relative; display: flex; justify-content: center; margin: 0 auto; }
@@ -218,7 +218,7 @@
         </div>
         <div class="hero"><img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
         
-        <!-- NUEVA RULETA GRANDE Y BONITA -->
+        <!-- NUEVA RULETA (10 SEGMENTOS, XP + MONEDAS) -->
         <div class="wheel-container">
             <div class="wheel-title">🎡 RULETA DIARIA NMIXX 🎡</div>
             <div class="wheel-canvas-wrapper">
@@ -384,11 +384,23 @@
     function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     function addCoins(amount) { currentUser.coins += amount; updateUI(); saveUserDataToFirebase(); }
     
-    // ========== NUEVA RULETA (21 SEGMENTOS, PUNTERO FIJO, 24H) ==========
-    const XP_PRIZES = [25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000];
-    const SEGMENT_COUNT = XP_PRIZES.length;
+    // ========== NUEVA RULETA (10 SEGMENTOS, XP + MONEDAS) ==========
+    // Cada segmento: { xp, coins, textLabel }
+    const SEGMENTS = [
+        { xp: 5, coins: 1, label: "5 XP\n1🪙" },
+        { xp: 10, coins: 2, label: "10 XP\n2🪙" },
+        { xp: 15, coins: 3, label: "15 XP\n3🪙" },
+        { xp: 20, coins: 4, label: "20 XP\n4🪙" },
+        { xp: 25, coins: 5, label: "25 XP\n5🪙" },
+        { xp: 30, coins: 6, label: "30 XP\n6🪙" },
+        { xp: 35, coins: 7, label: "35 XP\n7🪙" },
+        { xp: 40, coins: 8, label: "40 XP\n8🪙" },
+        { xp: 45, coins: 9, label: "45 XP\n9🪙" },
+        { xp: 50, coins: 10, label: "50 XP\n10🪙" }
+    ];
+    const SEGMENT_COUNT = SEGMENTS.length; // 10
     const ANGLE_STEP = (Math.PI * 2) / SEGMENT_COUNT;
-    const WHEEL_COLORS = ["#FF69B4", "#00CED1", "#BA55D3", "#FFB6C1", "#20B2AA", "#DA70D6", "#FF85B3", "#3CB371", "#FFA07A", "#9370DB", "#F08080", "#5F9EA0", "#FF6EB4", "#2E8B57", "#CD5C5C", "#48D1CC", "#C71585", "#66CDAA", "#FF7F50", "#8A2BE2", "#F06292"];
+    const WHEEL_COLORS = ["#FF69B4", "#00CED1", "#BA55D3", "#FFB6C1", "#20B2AA", "#DA70D6", "#FF85B3", "#3CB371", "#FFA07A", "#9370DB"];
     const POINTER_ANGLE = -Math.PI / 2; // arriba
     
     let currentRotation = 0;
@@ -423,11 +435,12 @@
             ctx.strokeStyle = "#FFF5E0";
             ctx.lineWidth = 2;
             ctx.stroke();
+            // Texto del premio (XP y monedas)
             const mid = start + ANGLE_STEP/2;
             const textRadius = width/2 - 28;
             const x = width/2 + Math.cos(mid) * textRadius;
             const y = height/2 + Math.sin(mid) * textRadius;
-            ctx.font = `bold ${Math.max(14, width/20)}px "Poppins"`;
+            ctx.font = `bold ${Math.max(12, width/24)}px "Poppins"`;
             ctx.fillStyle = "#FFF5E6";
             ctx.shadowBlur = 3;
             ctx.shadowColor = "black";
@@ -436,9 +449,14 @@
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(mid + Math.PI/2);
-            ctx.fillText(XP_PRIZES[i], 0, 0);
+            // Dividir el label en dos líneas
+            const lines = SEGMENTS[i].label.split('\n');
+            ctx.fillText(lines[0], 0, -6);
+            ctx.font = `bold ${Math.max(10, width/28)}px "Poppins"`;
+            ctx.fillText(lines[1], 0, 10);
             ctx.restore();
         }
+        // Centro NMIXX (completamente centrado)
         ctx.beginPath();
         ctx.arc(width/2, height/2, width*0.18, 0, 2*Math.PI);
         ctx.fillStyle = "#0c0a1edd";
@@ -448,10 +466,12 @@
         ctx.stroke();
         ctx.font = `bold ${Math.max(16, width/14)}px "Fredoka One"`;
         ctx.fillStyle = "#FFE4E1";
-        ctx.fillText("NMIXX", width/2-22, height/2+6);
-        ctx.font = `bold ${Math.max(10, width/22)}px "Poppins"`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("NMIXX", width/2, height/2 - 8);
+        ctx.font = `bold ${Math.max(12, width/20)}px "Poppins"`;
         ctx.fillStyle = "#FFB6C1";
-        ctx.fillText("MIXX", width/2-14, height/2-14);
+        ctx.fillText("MIXX", width/2, height/2 + 18);
         ctx.shadowBlur = 0;
     }
     
@@ -474,7 +494,8 @@
         }
         spinning = true;
         const randomIndex = Math.floor(Math.random() * SEGMENT_COUNT);
-        const prizeXP = XP_PRIZES[randomIndex];
+        const prizeXP = SEGMENTS[randomIndex].xp;
+        const prizeCoins = SEGMENTS[randomIndex].coins;
         const finalRot = computeTargetRotationForIndex(randomIndex);
         let delta = finalRot - currentRotation;
         delta = ((delta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
@@ -498,10 +519,18 @@
                 spinning = false;
                 cancelAnimationFrame(animFrame);
                 addXP(prizeXP);
+                addCoins(prizeCoins);
                 currentUser.lastSpin = Date.now();
                 saveUserDataToFirebase();
                 updateSpinTimerDisplay();
-                Swal.fire({ title: '🎉 ¡Premio obtenido! 🎉', text: `Has ganado ${prizeXP} XP`, icon: 'success', background: '#1e1b4b', color: 'white', confirmButtonColor: '#7c3aed' });
+                Swal.fire({ 
+                    title: '🎉 ¡Premio obtenido! 🎉', 
+                    text: `Has ganado ${prizeXP} XP y ${prizeCoins} 🪙`, 
+                    icon: 'success', 
+                    background: '#1e1b4b', 
+                    color: 'white', 
+                    confirmButtonColor: '#7c3aed' 
+                });
             }
         }
         if (animFrame) cancelAnimationFrame(animFrame);
@@ -526,7 +555,7 @@
         }
     }
     
-    // ========== CHAT ==========
+    // ========== CHAT (sin cambios) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -755,7 +784,7 @@
         });
     }
     
-    // ========== NOTICIAS (con datos locales para que funcione sin fetch externo) ==========
+    // ========== NOTICIAS ==========
     const noticiasLocales = [
         { id: 1, fecha: "15/05/2025", texto: "🎉 NMIXX anuncia su nuevo comeback 'Fe3O4: STICK OUT' para junio." },
         { id: 2, fecha: "10/05/2025", texto: "🏆 NMIXX gana 'Mejor Performance' en los K-Vibe Awards." },
@@ -790,7 +819,6 @@
             userLikeRef.remove();
             Swal.fire({ title: 'Like eliminado', text: 'Has retirado tu apoyo.', icon: 'info', timer: 1500, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
         }
-        // Actualizar contador visual
         const countSnap = await likeRef.child('count').once('value');
         const newCount = countSnap.val() || 0;
         const span = document.querySelector(`#news-${newsId} .like-count`);
