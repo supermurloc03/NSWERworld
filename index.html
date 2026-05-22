@@ -54,172 +54,28 @@
         .hero-logo { max-width: 450px; width: 90%; margin: 0 auto 20px; display: block; }
         .hero p { font-size: 1.1rem; margin-top: 5px; }
         
-        /* ========== TARJETAS DE MIEMBROS (ahora con cursor pointer) ========== */
-        .member-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .member-card {
-            background: rgba(20,25,55,0.6);
-            border-radius: 28px;
-            padding: 12px;
-            width: 110px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .member-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            background: rgba(20,25,55,0.8);
-        }
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #1e1a2f;
-            margin: 0 auto 8px;
-            border: 3px solid #ffb347;
-            transition: transform 0.2s;
-        }
-        .member-name {
-            font-weight: bold;
-            color: #ffb3e0;
-            font-size: 0.9rem;
-        }
+        /* Tarjetas de miembros */
+        .member-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+        .member-card { background: rgba(20,25,55,0.6); border-radius: 28px; padding: 12px; width: 110px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .member-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); background: rgba(20,25,55,0.8); }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
+        .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* ========== MODAL DE MIEMBRO (SweetAlert2 personalizado) ========== */
-        .member-modal-content {
-            text-align: left;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        .member-modal-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .member-modal-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ff7eb3;
-        }
-        .member-modal-basic {
-            flex: 1;
-        }
-        .member-modal-basic p {
-            margin: 5px 0;
-        }
-        .member-modal-basic strong {
-            color: #ffb3e0;
-        }
-        .member-modal-funfacts {
-            margin-top: 15px;
-        }
-        .funfact-item {
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
+        /* Curiosidades mejoradas */
+        .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .filter-btn { background: #2d2a55; border: none; color: white; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .filter-btn.active { background: #ff7eb3; color: #1e1a2f; box-shadow: 0 0 8px #ff7eb3; }
+        .filter-btn:hover { background: #7c3aed; }
+        .curiosities-stats { text-align: center; font-size: 0.8rem; color: #aaa; margin-bottom: 15px; }
+        .curiosities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .curio-card { background: linear-gradient(145deg, #1f2348, #161a3a); border-radius: 24px; padding: 16px 20px; transition: transform 0.2s, box-shadow 0.2s; border-left: 4px solid #ff7eb3; display: flex; align-items: flex-start; gap: 12px; }
+        .curio-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); background: #252a50; }
+        .curio-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; background: #ff7eb3; color: #1e1a2f; flex-shrink: 0; }
+        .curio-content { flex: 1; }
+        .curio-text { font-size: 0.9rem; line-height: 1.4; margin-bottom: 5px; }
+        .curio-member-tag { font-size: 0.7rem; background: rgba(255,126,179,0.2); display: inline-block; padding: 2px 8px; border-radius: 20px; color: #ffb3e0; }
         
-        /* ========== CURIOSIDADES MEJORADAS ========== */
-        .filter-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-        .filter-btn {
-            background: #2d2a55;
-            border: none;
-            color: white;
-            padding: 6px 16px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.85rem;
-        }
-        .filter-btn.active {
-            background: #ff7eb3;
-            color: #1e1a2f;
-            box-shadow: 0 0 8px #ff7eb3;
-        }
-        .filter-btn:hover {
-            background: #7c3aed;
-        }
-        .curiosities-stats {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-bottom: 15px;
-        }
-        .curiosities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .curio-card {
-            background: linear-gradient(145deg, #1f2348, #161a3a);
-            border-radius: 24px;
-            padding: 16px 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 4px solid #ff7eb3;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .curio-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            background: #252a50;
-        }
-        .curio-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            font-weight: bold;
-            background: #ff7eb3;
-            color: #1e1a2f;
-            flex-shrink: 0;
-        }
-        .curio-content {
-            flex: 1;
-        }
-        .curio-text {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 5px;
-        }
-        .curio-member-tag {
-            font-size: 0.7rem;
-            background: rgba(255,126,179,0.2);
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            color: #ffb3e0;
-        }
-        
-        /* ========== CHAT ========== */
+        /* Chat */
         .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .chat-messages { background: #0a0c1a; border-radius: 24px; height: 440px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .message { display: flex; flex-direction: column; max-width: 80%; border-radius: 20px; padding: 8px 14px; position: relative; word-wrap: break-word; }
@@ -238,7 +94,7 @@
         .emoji-picker-container { position: relative; display: inline-block; }
         emoji-picker { position: absolute; bottom: 50px; right: 0; z-index: 300; --emoji-picker-font-family: 'Poppins', sans-serif; --emoji-picker-background: #1e1b4b; --emoji-picker-border-radius: 20px; width: 280px; height: 350px; }
         
-        /* ========== AMIGOS ========== */
+        /* Amigos */
         .friends-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
         .friends-tab { background: transparent; border: none; color: #ccc; padding: 8px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; }
         .friends-tab.active { background: #7c3aed; color: white; }
@@ -251,7 +107,7 @@
         .friend-actions button.decline { background: #ff4757; }
         .empty-message { text-align: center; color: #aaa; padding: 20px; }
         
-        /* ========== MODALES Y RESPONSIVE ========== */
+        /* Modales y responsive */
         .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .auth-card h2 { margin-bottom: 10px; }
@@ -280,7 +136,7 @@
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO (sin cambios) -->
+<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -448,119 +304,17 @@
     const auth = firebase.auth();
     const database = firebase.database();
     
-    // ========== DATOS DE MIEMBROS PARA EL MODAL ==========
+    // ========== DATOS DE MIEMBROS ==========
     const membersData = {
-        Lily: {
-            fullName: "Lily (릴리)",
-            birth: "17 de octubre de 2002",
-            age: 23,
-            height: "165 cm",
-            position: "Vocalista principal",
-            color: "Rosa",
-            emoji: "🦢",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Lily-1-360x360.jpg",
-            funFacts: [
-                "Tiene nacionalidad australiana y coreana.",
-                "Habla inglés con fluidez.",
-                "Toca piano, guitarra y ukelele.",
-                "Fue aprendiz de JYP durante 5 años.",
-                "Su comida favorita es el pollo frito y el sushi.",
-                "Tiene una hermana mayor y un hermano menor."
-            ]
-        },
-        Haewon: {
-            fullName: "Haewon (해원)",
-            birth: "25 de febrero de 2003",
-            age: 22,
-            height: "161 cm",
-            position: "Líder, vocalista",
-            color: "Amarillo",
-            emoji: "🐣",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Haewon-1-360x360.jpg",
-            funFacts: [
-                "Fue aprendiz por 7 años, la más larga del grupo.",
-                "Es conocida por imitar voces.",
-                "Tiene certificación en inglés TOEIC casi perfecta.",
-                "Practicó taekwondo de niña.",
-                "Le encanta el café y colecciona tazas.",
-                "Es la líder del grupo."
-            ]
-        },
-        Sullyoon: {
-            fullName: "Sullyoon (설윤)",
-            birth: "26 de enero de 2004",
-            age: 21,
-            height: "168 cm",
-            position: "Vocalista, visual",
-            color: "Verde",
-            emoji: "🦢",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Sullyoon-1-360x360.jpg",
-            funFacts: [
-                "Fue modelo infantil y apareció en comerciales.",
-                "Le encanta dibujar y pintar.",
-                "Fue compañera de escuela de una miembro de IVE.",
-                "Es la más alta del grupo.",
-                "Tiene personalidad tímida al principio pero es cariñosa.",
-                "Su comida favorita es el tteokbokki."
-            ]
-        },
-        BAE: {
-            fullName: "BAE (배이)",
-            birth: "28 de diciembre de 2004",
-            age: 20,
-            height: "164 cm",
-            position: "Vocalista, bailarina",
-            color: "Azul claro",
-            emoji: "🐰",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/BAE-1-360x360.jpg",
-            funFacts: [
-                "Toca la batería y practicó kendo.",
-                "Tiene certificación en cocina coreana.",
-                "Es la más extrovertida y tiene mucha energía.",
-                "Se unió a JYP después de una audición en línea.",
-                "Le gusta el baloncesto y jugar videojuegos.",
-                "Su lema es 'Siempre sonríe'."
-            ]
-        },
-        Jiwoo: {
-            fullName: "Jiwoo (지우)",
-            birth: "13 de abril de 2005",
-            age: 20,
-            height: "163 cm",
-            position: "Bailarina principal, vocalista",
-            color: "Morado",
-            emoji: "🐶",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Jiwoo-1-360x360.jpg",
-            funFacts: [
-                "Es la más joven del grupo (maknae).",
-                "Aprendió a bailar viendo YouTube sin clases formales.",
-                "Es bailarina principal y destaca en freestyle.",
-                "Entrenó solo 6 meses antes de debutar.",
-                "Adora a los gatos y tiene dos mascotas.",
-                "Su color favorito es el morado."
-            ]
-        },
-        Kyujin: {
-            fullName: "Kyujin (규진)",
-            birth: "26 de mayo de 2006",
-            age: 19,
-            height: "160 cm",
-            position: "Bailarina principal, vocalista, center",
-            color: "Naranja",
-            emoji: "🐱",
-            imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Kyujin-1-360x360.jpg",
-            funFacts: [
-                "Puede imitar a todos los miembros a la perfección.",
-                "Es bailarina principal y también sabe cantar muy bien.",
-                "Fue compañera de escuela de Jang Wonyoung (IVE).",
-                "Practicó natación competitiva de pequeña.",
-                "Es la más baja del grupo pero tiene gran presencia escénica.",
-                "Le encanta el chocolate y los postres."
-            ]
-        }
+        Lily: { fullName: "Lily (릴리)", birth: "17 de octubre de 2002", age: 23, height: "165 cm", position: "Vocalista principal", color: "Rosa", emoji: "🦢", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Lily-1-360x360.jpg", funFacts: ["Tiene nacionalidad australiana y coreana.", "Habla inglés con fluidez.", "Toca piano, guitarra y ukelele.", "Fue aprendiz de JYP durante 5 años.", "Su comida favorita es el pollo frito y el sushi.", "Tiene una hermana mayor y un hermano menor."] },
+        Haewon: { fullName: "Haewon (해원)", birth: "25 de febrero de 2003", age: 22, height: "161 cm", position: "Líder, vocalista", color: "Amarillo", emoji: "🐣", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Haewon-1-360x360.jpg", funFacts: ["Fue aprendiz por 7 años, la más larga del grupo.", "Es conocida por imitar voces.", "Tiene certificación en inglés TOEIC casi perfecta.", "Practicó taekwondo de niña.", "Le encanta el café y colecciona tazas.", "Es la líder del grupo."] },
+        Sullyoon: { fullName: "Sullyoon (설윤)", birth: "26 de enero de 2004", age: 21, height: "168 cm", position: "Vocalista, visual", color: "Verde", emoji: "🦢", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Sullyoon-1-360x360.jpg", funFacts: ["Fue modelo infantil y apareció en comerciales.", "Le encanta dibujar y pintar.", "Fue compañera de escuela de una miembro de IVE.", "Es la más alta del grupo.", "Tiene personalidad tímida al principio pero es cariñosa.", "Su comida favorita es el tteokbokki."] },
+        BAE: { fullName: "BAE (배이)", birth: "28 de diciembre de 2004", age: 20, height: "164 cm", position: "Vocalista, bailarina", color: "Azul claro", emoji: "🐰", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/BAE-1-360x360.jpg", funFacts: ["Toca la batería y practicó kendo.", "Tiene certificación en cocina coreana.", "Es la más extrovertida y tiene mucha energía.", "Se unió a JYP después de una audición en línea.", "Le gusta el baloncesto y jugar videojuegos.", "Su lema es 'Siempre sonríe'."] },
+        Jiwoo: { fullName: "Jiwoo (지우)", birth: "13 de abril de 2005", age: 20, height: "163 cm", position: "Bailarina principal, vocalista", color: "Morado", emoji: "🐶", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Jiwoo-1-360x360.jpg", funFacts: ["Es la más joven del grupo (maknae).", "Aprendió a bailar viendo YouTube sin clases formales.", "Es bailarina principal y destaca en freestyle.", "Entrenó solo 6 meses antes de debutar.", "Adora a los gatos y tiene dos mascotas.", "Su color favorito es el morado."] },
+        Kyujin: { fullName: "Kyujin (규진)", birth: "26 de mayo de 2006", age: 19, height: "160 cm", position: "Bailarina principal, vocalista, center", color: "Naranja", emoji: "🐱", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Kyujin-1-360x360.jpg", funFacts: ["Puede imitar a todos los miembros a la perfección.", "Es bailarina principal y también sabe cantar muy bien.", "Fue compañera de escuela de Jang Wonyoung (IVE).", "Practicó natación competitiva de pequeña.", "Es la más baja del grupo pero tiene gran presencia escénica.", "Le encanta el chocolate y los postres."] }
     };
     
-    // ========== DATOS ESTÁTICOS (curiosidades) ==========
+    // ========== DATOS DE CURIOSIDADES ==========
     const curiosidadesData = [
         { texto: "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.", member: "all" },
         { texto: "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.", member: "all" },
@@ -611,27 +365,16 @@
     const levelThresholds = [0, 100, 300, 600, 1000];
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
     
-    const biasColors = {
-        "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A",
-        "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9"
-    };
-    const avatarColors = {
-        "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4",
-        "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF"
-    };
+    const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
+    const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
     
-    // ========== FUNCIONES USUARIO (iguales) ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
-            username: currentUser.username,
-            xp: currentUser.xp,
-            level: currentUser.level,
-            bias: currentUser.bias,
-            pronoun: currentUser.pronoun,
-            email: currentUser.email,
-            lastUsernameChange: currentUser.lastUsernameChange,
-            rulesAccepted: currentUser.rulesAccepted
+            username: currentUser.username, xp: currentUser.xp, level: currentUser.level,
+            bias: currentUser.bias, pronoun: currentUser.pronoun, email: currentUser.email,
+            lastUsernameChange: currentUser.lastUsernameChange, rulesAccepted: currentUser.rulesAccepted
         });
     }
     
@@ -657,35 +400,14 @@
         return new Promise((resolve) => {
             Swal.fire({
                 title: 'Completa tu perfil NSWER',
-                html: `
-                    <div style="text-align:left">
-                        <label class="swal2-label">🎤 Nombre de usuario</label>
-                        <input id="swal-nickname" class="swal2-input" placeholder="Ej: NSWER_Lover" value="NSWER_${Math.floor(Math.random()*1000)}">
-                        <label class="swal2-label">💖 Bias favorita</label>
-                        <select id="swal-bias" class="swal2-select">
-                            ${members.map(m => `<option value="${m}">${m}</option>`).join('')}
-                        </select>
-                        <label class="swal2-label">🏳️‍🌈 Pronombre (opcional)</label>
-                        <select id="swal-pronoun" class="swal2-select">
-                            <option value="Ella">Ella</option>
-                            <option value="Él">Él</option>
-                            <option value="Elle">Elle</option>
-                            <option value="No especificado">No especificado</option>
-                        </select>
-                    </div>
-                `,
-                focusConfirm: false,
-                customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm' },
-                confirmButtonText: 'Empezar',
-                showCancelButton: false,
+                html: `<div style="text-align:left"><label class="swal2-label">🎤 Nombre de usuario</label><input id="swal-nickname" class="swal2-input" placeholder="Ej: NSWER_Lover" value="NSWER_${Math.floor(Math.random()*1000)}"><label class="swal2-label">💖 Bias favorita</label><select id="swal-bias" class="swal2-select">${members.map(m => `<option value="${m}">${m}</option>`).join('')}</select><label class="swal2-label">🏳️‍🌈 Pronombre (opcional)</label><select id="swal-pronoun" class="swal2-select"><option value="Ella">Ella</option><option value="Él">Él</option><option value="Elle">Elle</option><option value="No especificado">No especificado</option></select></div>`,
+                focusConfirm: false, customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm' },
+                confirmButtonText: 'Empezar', showCancelButton: false,
                 preConfirm: () => {
                     const nickname = document.getElementById('swal-nickname').value.trim();
                     const bias = document.getElementById('swal-bias').value;
                     const pronoun = document.getElementById('swal-pronoun').value;
-                    if (!nickname || nickname.length < 3) {
-                        Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
-                        return false;
-                    }
+                    if (!nickname || nickname.length < 3) { Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres'); return false; }
                     return { nickname, bias, pronoun };
                 }
             }).then(result => {
@@ -693,8 +415,7 @@
                     currentUser.username = result.value.nickname;
                     currentUser.bias = result.value.bias;
                     currentUser.pronoun = result.value.pronoun;
-                    currentUser.xp = 0;
-                    currentUser.level = 1;
+                    currentUser.xp = 0; currentUser.level = 1;
                     currentUser.lastUsernameChange = Date.now();
                     currentUser.rulesAccepted = false;
                     saveUserDataToFirebase();
@@ -730,23 +451,16 @@
         if (newLevel !== currentUser.level) {
             currentUser.level = newLevel;
             Swal.fire({ title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`, text: `Has subido al NIVEL ${currentUser.level}`, icon: 'success', timer: 2000, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
-            saveUserDataToFirebase();
-            updateUI();
+            saveUserDataToFirebase(); updateUI();
         }
         saveUserDataToFirebase();
     }
-    function addXP(points=1) { 
-        currentUser.xp += points; 
-        recalcLevel(); 
-        updateUI(); 
-        saveUserDataToFirebase(); 
-    }
+    function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     
-    // ========== CHAT (igual) ==========
+    // ========== CHAT ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
-        const now = Date.now();
-        const diff = now - timestamp;
+        const diff = Date.now() - timestamp;
         const seconds = Math.floor(diff / 1000);
         if (seconds < 60) return "hace un momento";
         const minutes = Math.floor(seconds / 60);
@@ -759,21 +473,15 @@
         return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
     }
     
-    function getAvatarInitial(bias) {
-        return bias ? bias.charAt(0).toUpperCase() : "N";
-    }
+    function getAvatarInitial(bias) { return bias ? bias.charAt(0).toUpperCase() : "N"; }
     
     function sendMessage() {
         const input = document.getElementById("messageInput");
         const text = input.value.trim();
         if (!text) return;
         database.ref('chatMessages').push({
-            username: currentUser.username,
-            text: text,
-            bias: currentUser.bias,
-            level: currentUser.level,
-            timestamp: Date.now(),
-            uid: currentUser.uid
+            username: currentUser.username, text: text, bias: currentUser.bias,
+            level: currentUser.level, timestamp: Date.now(), uid: currentUser.uid
         });
         input.value = "";
         addXP(1);
@@ -787,10 +495,7 @@
             const container = document.getElementById("chatMessages");
             if (!container) return;
             container.innerHTML = "";
-            if (messages.length === 0) {
-                container.innerHTML = '<div class="message other">¡Escribe el primer mensaje!</div>';
-                return;
-            }
+            if (messages.length === 0) { container.innerHTML = '<div class="message other">¡Escribe el primer mensaje!</div>'; return; }
             messages.forEach(msg => {
                 const isOwn = msg.uid === currentUser.uid;
                 const avatarLetter = getAvatarInitial(msg.bias);
@@ -798,14 +503,7 @@
                 const timeStr = formatTimestamp(msg.timestamp);
                 const msgDiv = document.createElement("div");
                 msgDiv.className = `message ${isOwn ? 'own' : 'other'}`;
-                msgDiv.innerHTML = `
-                    <div class="message-header">
-                        <div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div>
-                        <span class="msg-username" data-uid="${msg.uid}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span>
-                        <span class="msg-timestamp">${timeStr}</span>
-                    </div>
-                    <div class="message-text">${escapeHtml(msg.text)}</div>
-                `;
+                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-uid="${msg.uid}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 container.appendChild(msgDiv);
             });
             document.querySelectorAll('.msg-username').forEach(el => {
@@ -828,22 +526,160 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== SISTEMA DE AMIGOS (íntegro, omito por brevedad pero en el código real está completo) ==========
+    // ========== SISTEMA DE AMIGOS COMPLETO ==========
     let friendsUnsubscribe = null;
     let currentFriendTab = 'friends';
     
-    async function sendFriendRequest(targetUid) { /* mismo código que antes */ }
-    async function acceptFriendRequest(requestId, fromUid) { /* mismo */ }
-    async function declineFriendRequest(requestId) { /* mismo */ }
-    async function removeFriend(friendUid) { /* mismo */ }
-    async function loadSentRequests() { /* mismo */ }
-    async function loadReceivedRequests() { /* mismo */ }
-    function startFriendsListener() { /* mismo */ }
-    async function renderFriendsList(friendsObj) { /* mismo */ }
-    async function loadFriendsList() { /* mismo */ }
+    async function sendFriendRequest(targetUid) {
+        if (targetUid === currentUser.uid) { Swal.fire('Info', 'No puedes enviarte solicitud a ti mismo', 'info'); return; }
+        const friendCheck = await database.ref(`friends/${currentUser.uid}/${targetUid}`).once('value');
+        if (friendCheck.exists()) { Swal.fire('Info', 'Ya son amigos', 'info'); return; }
+        const existingReq = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+        let already = false;
+        existingReq.forEach(req => { if (req.val().to === targetUid && req.val().status === 'pending') already = true; });
+        if (already) { Swal.fire('Info', 'Ya enviaste una solicitud a este usuario', 'info'); return; }
+        const reqId = database.ref('friendRequests').push().key;
+        await database.ref(`friendRequests/${reqId}`).set({ from: currentUser.uid, to: targetUid, status: 'pending', timestamp: Date.now() });
+        Swal.fire('Solicitud enviada', 'Se ha enviado la solicitud de amistad', 'success');
+        if (currentFriendTab === 'sent') loadSentRequests();
+    }
     
-    // ========== MOSTRAR PERFIL DE OTRO USUARIO ==========
-    async function showUserProfile(uid) { /* mismo */ }
+    async function acceptFriendRequest(requestId, fromUid) {
+        await database.ref(`friendRequests/${requestId}`).update({ status: 'accepted' });
+        await database.ref(`friends/${currentUser.uid}/${fromUid}`).set(true);
+        await database.ref(`friends/${fromUid}/${currentUser.uid}`).set(true);
+        Swal.fire('Aceptada', 'Ahora son amigos', 'success');
+        if (currentFriendTab === 'friends') loadFriendsList();
+        else if (currentFriendTab === 'received') loadReceivedRequests();
+    }
+    
+    async function declineFriendRequest(requestId) {
+        await database.ref(`friendRequests/${requestId}`).update({ status: 'declined' });
+        Swal.fire('Rechazada', 'Has rechazado la solicitud', 'info');
+        if (currentFriendTab === 'received') loadReceivedRequests();
+    }
+    
+    async function removeFriend(friendUid) {
+        const confirm = await Swal.fire({ title: '¿Eliminar amigo?', text: 'Dejarán de ser amigos', icon: 'warning', showCancelButton: true, background: '#1e1b4b', color: 'white' });
+        if (confirm.isConfirmed) {
+            await database.ref(`friends/${currentUser.uid}/${friendUid}`).remove();
+            await database.ref(`friends/${friendUid}/${currentUser.uid}`).remove();
+            Swal.fire('Eliminado', 'Amigo eliminado', 'success');
+            if (currentFriendTab === 'friends') loadFriendsList();
+        }
+    }
+    
+    async function loadSentRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        container.innerHTML = '<div class="empty-message">Cargando...</div>';
+        try {
+            const snapshot = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+            const requests = [];
+            snapshot.forEach(req => { if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() }); });
+            if (requests.length === 0) { container.innerHTML = '<div class="empty-message">No tienes solicitudes enviadas pendientes.</div>'; return; }
+            container.innerHTML = '';
+            for (const req of requests) {
+                const userSnap = await database.ref(`users/${req.to}`).once('value');
+                const userData = userSnap.val();
+                if (userData) {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.innerHTML = `<div class="friend-info"><span class="friend-name" data-uid="${req.to}">${escapeHtml(userData.username)}</span><span class="friend-bias">Bias: ${userData.bias || 'N/A'}</span></div><div class="friend-actions"><span style="color:#ffb347;">⏳ Pendiente</span></div>`;
+                    container.appendChild(div);
+                }
+            }
+            document.querySelectorAll('.friend-name').forEach(el => { el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); }); });
+        } catch(err) { container.innerHTML = '<div class="empty-message">Error al cargar solicitudes enviadas.</div>'; }
+    }
+    
+    async function loadReceivedRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        container.innerHTML = '<div class="empty-message">Cargando...</div>';
+        try {
+            const snapshot = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
+            const requests = [];
+            snapshot.forEach(req => { if (req.val().status === 'pending') requests.push({ id: req.key, ...req.val() }); });
+            if (requests.length === 0) { container.innerHTML = '<div class="empty-message">No tienes solicitudes recibidas.</div>'; return; }
+            container.innerHTML = '';
+            for (const req of requests) {
+                const userSnap = await database.ref(`users/${req.from}`).once('value');
+                const userData = userSnap.val();
+                if (userData) {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.innerHTML = `<div class="friend-info"><span class="friend-name" data-uid="${req.from}">${escapeHtml(userData.username)}</span><span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span></div><div class="friend-actions"><button class="accept-req" data-id="${req.id}" data-from="${req.from}">✅ Aceptar</button><button class="decline-req" data-id="${req.id}">❌ Rechazar</button></div>`;
+                    container.appendChild(div);
+                }
+            }
+            document.querySelectorAll('.accept-req').forEach(btn => { btn.addEventListener('click', (e) => { acceptFriendRequest(btn.dataset.id, btn.dataset.from); }); });
+            document.querySelectorAll('.decline-req').forEach(btn => { btn.addEventListener('click', (e) => { declineFriendRequest(btn.dataset.id); }); });
+            document.querySelectorAll('.friend-name').forEach(el => { el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); }); });
+        } catch(err) { container.innerHTML = '<div class="empty-message">Error al cargar solicitudes recibidas.</div>'; }
+    }
+    
+    function startFriendsListener() {
+        if (friendsUnsubscribe) friendsUnsubscribe();
+        if (!currentUser.uid) return;
+        const friendsRef = database.ref(`friends/${currentUser.uid}`);
+        friendsUnsubscribe = friendsRef.on('value', async (snapshot) => {
+            if (currentFriendTab === 'friends') {
+                await renderFriendsList(snapshot.val());
+            }
+        });
+    }
+    
+    async function renderFriendsList(friendsObj) {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        const friendIds = friendsObj ? Object.keys(friendsObj) : [];
+        if (friendIds.length === 0) { container.innerHTML = '<div class="empty-message">No tienes amigos aún. Envía solicitudes desde los perfiles.</div>'; return; }
+        container.innerHTML = '';
+        for (const fid of friendIds) {
+            const userSnap = await database.ref(`users/${fid}`).once('value');
+            const userData = userSnap.val();
+            if (userData) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `<div class="friend-info"><span class="friend-name" data-uid="${fid}">${escapeHtml(userData.username)}</span><span class="friend-bias">Bias: ${userData.bias || 'N/A'} | Nivel ${userData.level || 1}</span></div><div class="friend-actions"><button class="remove-friend" data-uid="${fid}">❌ Eliminar</button></div>`;
+                container.appendChild(div);
+            }
+        }
+        document.querySelectorAll('.friend-name').forEach(el => { el.addEventListener('click', (e) => { showUserProfile(el.dataset.uid); }); });
+        document.querySelectorAll('.remove-friend').forEach(btn => { btn.addEventListener('click', (e) => { removeFriend(btn.dataset.uid); }); });
+    }
+    
+    async function loadFriendsList() {
+        const snapshot = await database.ref(`friends/${currentUser.uid}`).once('value');
+        await renderFriendsList(snapshot.val());
+    }
+    
+    // ========== MOSTRAR PERFIL ==========
+    async function showUserProfile(uid) {
+        if (!uid) { Swal.fire('Info', 'Usuario no identificado', 'info'); return; }
+        try {
+            const snapshot = await database.ref(`users/${uid}`).once('value');
+            const data = snapshot.val();
+            if (!data) { Swal.fire('Error', 'Usuario no encontrado', 'error'); return; }
+            const isFriendSnap = await database.ref(`friends/${currentUser.uid}/${uid}`).once('value');
+            const isFriend = isFriendSnap.exists();
+            let requestPending = false;
+            const reqSnap = await database.ref('friendRequests').orderByChild('from').equalTo(currentUser.uid).once('value');
+            reqSnap.forEach(req => { if (req.val().to === uid && req.val().status === 'pending') requestPending = true; });
+            if (!requestPending) {
+                const reqSnap2 = await database.ref('friendRequests').orderByChild('to').equalTo(currentUser.uid).once('value');
+                reqSnap2.forEach(req => { if (req.val().from === uid && req.val().status === 'pending') requestPending = true; });
+            }
+            const buttonHtml = !isFriend && !requestPending && uid !== currentUser.uid ? `<button id="addFriendBtn" style="background:#7c3aed; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:15px;">➕ Agregar amigo</button>` : (isFriend ? `<p style="color:#4CAF7A;">✓ Amigos</p>` : (requestPending ? `<p style="color:#ffb347;">⏳ Solicitud pendiente</p>` : ''));
+            Swal.fire({
+                title: `🌟 ${data.username || 'Usuario'} 🌟`,
+                html: `<div class="profile-stats"><div class="profile-stat">🎀 Bias: ${data.bias || 'No definido'}</div><div class="profile-stat">🏆 Nivel ${data.level || 1}</div><div class="profile-stat">⭐ ${data.xp || 0} XP</div></div><div style="margin-top:10px;"><p>🏳️‍🌈 Pronombre: ${data.pronoun || 'No especificado'}</p><p>👥 Se unió: ${data.joined ? new Date(data.joined).toLocaleDateString() : 'desconocida'}</p>${buttonHtml}</div>`,
+                icon: 'info', confirmButtonColor: '#7c3aed', confirmButtonText: 'Cerrar', background: '#1e1b4b', color: 'white',
+                didOpen: () => { const btnAdd = document.getElementById('addFriendBtn'); if (btnAdd) btnAdd.onclick = () => { sendFriendRequest(uid); Swal.close(); }; }
+            });
+        } catch(error) { console.error(error); Swal.fire('Error', 'No se pudo cargar el perfil', 'error'); }
+    }
     
     // ========== NOTICIAS Y CURIOSIDADES ==========
     let currentCuriosityFilter = "all";
@@ -852,28 +688,17 @@
         const grid = document.getElementById("curiositiesGrid");
         const statsDiv = document.getElementById("curiositiesStats");
         if (!grid) return;
-        const filtered = currentCuriosityFilter === "all" 
-            ? curiosidadesData 
-            : curiosidadesData.filter(c => c.member === currentCuriosityFilter);
+        const filtered = currentCuriosityFilter === "all" ? curiosidadesData : curiosidadesData.filter(c => c.member === currentCuriosityFilter);
         statsDiv.innerHTML = `✨ Mostrando ${filtered.length} curiosidades ✨`;
         grid.innerHTML = "";
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div style="text-align:center; padding:40px;">🔮 No hay curiosidades para este miembro.</div>';
-            return;
-        }
+        if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px;">🔮 No hay curiosidades para este miembro.</div>'; return; }
         filtered.forEach(c => {
             const member = c.member === "all" ? "General" : c.member;
             const avatarColor = avatarColors[member] || "#ff7eb3";
             const initial = member === "General" ? "✨" : member.charAt(0);
             const card = document.createElement("div");
             card.className = "curio-card";
-            card.innerHTML = `
-                <div class="curio-avatar" style="background: ${avatarColor};">${initial}</div>
-                <div class="curio-content">
-                    <div class="curio-text">${escapeHtml(c.texto)}</div>
-                    <div class="curio-member-tag">${member}</div>
-                </div>
-            `;
+            card.innerHTML = `<div class="curio-avatar" style="background: ${avatarColor};">${initial}</div><div class="curio-content"><div class="curio-text">${escapeHtml(c.texto)}</div><div class="curio-member-tag">${member}</div></div>`;
             grid.appendChild(card);
         });
     }
@@ -898,24 +723,12 @@
             const response = await fetch('noticias.json?t=' + Date.now());
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const noticias = await response.json();
-            if (!noticias.length) {
-                newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>';
-                return;
-            }
+            if (!noticias.length) { newsContainer.innerHTML = '<div class="news-item">📭 No hay noticias.</div>'; return; }
             newsContainer.innerHTML = '';
             noticias.forEach(noticia => {
                 const item = document.createElement('div');
-                item.className = 'news-item';
-                item.id = `news-${noticia.id}`;
-                item.innerHTML = `
-                    <div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div>
-                    <div class="news-text">${escapeHtml(noticia.texto)}</div>
-                    <div class="like-controls">
-                        <button class="like-btn" data-id="${noticia.id}">
-                            ❤️ <span class="like-count">0</span>
-                        </button>
-                    </div>
-                `;
+                item.className = 'news-item'; item.id = `news-${noticia.id}`;
+                item.innerHTML = `<div class="news-date">📅 ${escapeHtml(noticia.fecha)}</div><div class="news-text">${escapeHtml(noticia.texto)}</div><div class="like-controls"><button class="like-btn" data-id="${noticia.id}">❤️ <span class="like-count">0</span></button></div>`;
                 newsContainer.appendChild(item);
             });
             noticias.forEach(noticia => {
@@ -931,21 +744,14 @@
                         const liked = snapshot.val() === true;
                         const btn = document.querySelector(`#news-${noticia.id} .like-btn`);
                         if (btn) {
-                            if (liked) {
-                                btn.classList.add('liked');
-                                btn.style.background = "#ff7eb3";
-                                btn.style.color = "#1e1a2f";
-                            } else {
-                                btn.classList.remove('liked');
-                                btn.style.background = "rgba(255,255,255,0.1)";
-                                btn.style.color = "white";
-                            }
+                            if (liked) { btn.classList.add('liked'); btn.style.background = "#ff7eb3"; btn.style.color = "#1e1a2f"; }
+                            else { btn.classList.remove('liked'); btn.style.background = "rgba(255,255,255,0.1)"; btn.style.color = "white"; }
                         }
                     });
                 }
             });
             attachLikeEventsFirebase();
-        } catch (error) {
+        } catch(error) {
             console.error(error);
             newsContainer.innerHTML = `<div class="news-item">⚠️ Error al cargar noticias.<br><button onclick="loadNewsFromJSON()" style="background:#7c3aed; border:none; padding:5px 12px; border-radius:40px; color:white;">Reintentar</button></div>`;
         }
@@ -977,45 +783,20 @@
         }
     }
     
-    // ========== NUEVA FUNCIÓN: MOSTRAR MODAL DE MIEMBRO ==========
+    // ========== MODAL DE MIEMBRO ==========
     function showMemberModal(memberName) {
         const data = membersData[memberName];
         if (!data) return;
-        
-        // Construir los fun facts en HTML
         const funFactsHtml = data.funFacts.map(fact => `<div class="funfact-item">🔹 ${escapeHtml(fact)}</div>`).join('');
-        
         Swal.fire({
             title: `${data.emoji} ${memberName} ${data.emoji}`,
-            html: `
-                <div class="member-modal-content">
-                    <div class="member-modal-header">
-                        <img class="member-modal-img" src="${data.imgUrl}" alt="${memberName}" onerror="this.src='https://via.placeholder.com/100?text=${memberName}'">
-                        <div class="member-modal-basic">
-                            <p><strong>Nombre:</strong> ${data.fullName}</p>
-                            <p><strong>Fecha de nacimiento:</strong> ${data.birth} (${data.age} años)</p>
-                            <p><strong>Altura:</strong> ${data.height}</p>
-                            <p><strong>Posición:</strong> ${data.position}</p>
-                            <p><strong>Color oficial:</strong> ${data.color}</p>
-                        </div>
-                    </div>
-                    <div class="member-modal-funfacts">
-                        <strong>🌸 Curiosidades:</strong><br>
-                        ${funFactsHtml}
-                    </div>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Cerrar',
-            customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm' },
-            confirmButtonColor: '#7c3aed',
-            background: '#1e1b4b',
-            color: 'white',
-            width: '550px'
+            html: `<div class="member-modal-content"><div class="member-modal-header"><img class="member-modal-img" src="${data.imgUrl}" alt="${memberName}" onerror="this.src='https://via.placeholder.com/100?text=${memberName}'"><div class="member-modal-basic"><p><strong>Nombre:</strong> ${data.fullName}</p><p><strong>Fecha de nacimiento:</strong> ${data.birth} (${data.age} años)</p><p><strong>Altura:</strong> ${data.height}</p><p><strong>Posición:</strong> ${data.position}</p><p><strong>Color oficial:</strong> ${data.color}</p></div></div><div class="member-modal-funfacts"><strong>🌸 Curiosidades:</strong><br>${funFactsHtml}</div></div>`,
+            icon: 'info', confirmButtonText: 'Cerrar', customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm' },
+            confirmButtonColor: '#7c3aed', background: '#1e1b4b', color: 'white', width: '550px'
         });
     }
     
-    // ========== GENERAR TARJETAS DE MIEMBROS (ahora con evento click) ==========
+    // ========== GENERAR TARJETAS DE MIEMBROS ==========
     function generateMemberCards() {
         const container = document.getElementById("memberGrid");
         if (!container) return;
@@ -1044,67 +825,33 @@
         const daysPassed = (Date.now() - currentUser.lastUsernameChange) / (1000 * 60 * 60 * 24);
         return daysPassed >= 30;
     }
-    
     function getRemainingDays() {
         if (!currentUser.lastUsernameChange) return 0;
         const daysPassed = (Date.now() - currentUser.lastUsernameChange) / (1000 * 60 * 60 * 24);
         if (daysPassed >= 30) return 0;
         return Math.ceil(30 - daysPassed);
     }
-    
     async function editProfileModal() {
         const canChange = canChangeUsername();
         const remaining = getRemainingDays();
-        let usernameInputHtml = '';
-        let usernameWarning = '';
+        let usernameInputHtml = '', usernameWarning = '';
         if (!canChange) {
             usernameInputHtml = `<input id="edit-nickname" class="swal2-input" value="${currentUser.username}" disabled style="opacity:0.6;">`;
             usernameWarning = `<p style="color:#ffb347; margin-top:5px; font-size:0.8rem;">⚠️ Solo puedes cambiar tu nombre de usuario una vez cada 30 días. Próximo cambio disponible en ${remaining} día(s).</p>`;
         } else {
             usernameInputHtml = `<input id="edit-nickname" class="swal2-input" value="${currentUser.username}" placeholder="Ej: NSWER_Lover">`;
         }
-        
         const { value: formValues } = await Swal.fire({
             title: '✏️ Editar perfil',
-            html: `
-                <div style="text-align:left">
-                    <label class="swal2-label">🎤 Nombre de usuario</label>
-                    ${usernameInputHtml}
-                    ${usernameWarning}
-                    <label class="swal2-label">💖 Bias favorita</label>
-                    <select id="edit-bias" class="swal2-select">
-                        ${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}
-                    </select>
-                    <label class="swal2-label">🏳️‍🌈 Pronombre</label>
-                    <select id="edit-pronoun" class="swal2-select">
-                        <option value="Ella" ${currentUser.pronoun === 'Ella' ? 'selected' : ''}>Ella</option>
-                        <option value="Él" ${currentUser.pronoun === 'Él' ? 'selected' : ''}>Él</option>
-                        <option value="Elle" ${currentUser.pronoun === 'Elle' ? 'selected' : ''}>Elle</option>
-                        <option value="No especificado" ${currentUser.pronoun === 'No especificado' ? 'selected' : ''}>No especificado</option>
-                    </select>
-                </div>
-            `,
-            focusConfirm: false,
-            customClass: {
-                popup: 'custom-swal',
-                confirmButton: 'swal2-confirm',
-                cancelButton: 'swal2-cancel'
-            },
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            confirmButtonText: 'Guardar cambios',
+            html: `<div style="text-align:left"><label class="swal2-label">🎤 Nombre de usuario</label>${usernameInputHtml}${usernameWarning}<label class="swal2-label">💖 Bias favorita</label><select id="edit-bias" class="swal2-select">${members.map(m => `<option value="${m}" ${m === currentUser.bias ? 'selected' : ''}>${m}</option>`).join('')}</select><label class="swal2-label">🏳️‍🌈 Pronombre</label><select id="edit-pronoun" class="swal2-select"><option value="Ella" ${currentUser.pronoun === 'Ella' ? 'selected' : ''}>Ella</option><option value="Él" ${currentUser.pronoun === 'Él' ? 'selected' : ''}>Él</option><option value="Elle" ${currentUser.pronoun === 'Elle' ? 'selected' : ''}>Elle</option><option value="No especificado" ${currentUser.pronoun === 'No especificado' ? 'selected' : ''}>No especificado</option></select></div>`,
+            focusConfirm: false, customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
+            showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonText: 'Guardar cambios',
             preConfirm: () => {
                 const newName = document.getElementById('edit-nickname').value.trim();
                 const newBias = document.getElementById('edit-bias').value;
                 const newPronoun = document.getElementById('edit-pronoun').value;
-                if (!canChange && newName !== currentUser.username) {
-                    Swal.showValidationMessage(`No puedes cambiar el nombre de usuario hasta dentro de ${remaining} día(s).`);
-                    return false;
-                }
-                if (canChange && (!newName || newName.length < 3)) {
-                    Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
-                    return false;
-                }
+                if (!canChange && newName !== currentUser.username) { Swal.showValidationMessage(`No puedes cambiar el nombre de usuario hasta dentro de ${remaining} día(s).`); return false; }
+                if (canChange && (!newName || newName.length < 3)) { Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres'); return false; }
                 return { newName: (canChange ? newName : currentUser.username), newBias, newPronoun };
             }
         });
@@ -1113,20 +860,9 @@
             currentUser.username = formValues.newName;
             currentUser.bias = formValues.newBias;
             currentUser.pronoun = formValues.newPronoun;
-            if (canChange && formValues.newName !== oldName) {
-                currentUser.lastUsernameChange = Date.now();
-            }
-            saveUserDataToFirebase();
-            updateUI();
-            Swal.fire({
-                title: '¡Perfil actualizado!',
-                text: 'Tus cambios se han guardado correctamente.',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false,
-                background: '#1e1b4b',
-                color: 'white'
-            });
+            if (canChange && formValues.newName !== oldName) { currentUser.lastUsernameChange = Date.now(); }
+            saveUserDataToFirebase(); updateUI();
+            Swal.fire({ title: '¡Perfil actualizado!', text: 'Tus cambios se han guardado correctamente.', icon: 'success', timer: 2000, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
         }
     }
     
@@ -1135,30 +871,12 @@
         return new Promise((resolve) => {
             Swal.fire({
                 title: '📜 Normas de la comunidad NSWER',
-                html: `
-                    <div style="text-align:left; max-height: 400px; overflow-y: auto; padding-right: 10px;">
-                        <p><strong>1. Respeto ante todo</strong><br>Trata a los demás con amabilidad. No se tolerarán insultos, acoso, discriminación ni lenguaje ofensivo.</p>
-                        <p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p>
-                        <p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p>
-                        <p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p>
-                        <p><strong>5. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p>
-                        <p><strong>6. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p>
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
-                showCancelButton: requireAcceptance ? false : true,
-                cancelButtonText: 'Cerrar',
+                html: `<div style="text-align:left; max-height: 400px; overflow-y: auto; padding-right: 10px;"><p><strong>1. Respeto ante todo</strong><br>Trata a los demás con amabilidad. No se tolerarán insultos, acoso, discriminación ni lenguaje ofensivo.</p><p><strong>2. Contenido adecuado</strong><br>No compartas imágenes, enlaces o mensajes de carácter sexual, violento o ilegal.</p><p><strong>3. Spam y publicidad</strong><br>No se permite enviar mensajes repetitivos, publicidad o enlaces externos sin permiso.</p><p><strong>4. Privacidad</strong><br>No compartas información personal de otros usuarios sin su consentimiento.</p><p><strong>5. Reportes</strong><br>Si ves un comportamiento inapropiado, reporta al administrador.</p><p><strong>6. Disfruta</strong><br>¡Somos una familia NSWER! Comparte tu amor por NMIXX y haz amigos.</p></div>`,
+                icon: 'info', confirmButtonText: requireAcceptance ? 'Acepto las normas' : 'Cerrar',
+                showCancelButton: requireAcceptance ? false : true, cancelButtonText: 'Cerrar',
                 customClass: { popup: 'custom-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                allowOutsideClick: !requireAcceptance,
-                allowEscapeKey: !requireAcceptance
-            }).then(result => {
-                if (requireAcceptance && result.isConfirmed) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
-            });
+                allowOutsideClick: !requireAcceptance, allowEscapeKey: !requireAcceptance
+            }).then(result => { resolve(requireAcceptance && result.isConfirmed); });
         });
     }
     
@@ -1181,16 +899,8 @@
     }
     
     function initializeAfterLogin() {
-        updateUI();
-        generateMemberCards();
-        loadMessages();
-        loadCuriosities();
-        loadNewsFromJSON();
-        initNavigation();
-        initDropdown();
-        initFriendsTabs();
-        initEmojiPicker();
-        initCuriosityFilters();
+        updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
+        initNavigation(); initDropdown(); initFriendsTabs(); initEmojiPicker(); initCuriosityFilters();
         startFriendsListener();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
@@ -1199,12 +909,7 @@
     // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
-        const sections = {
-            home: document.getElementById('homeSection'),
-            news: document.getElementById('newsSection'),
-            chat: document.getElementById('chatSection'),
-            friends: document.getElementById('friendsSection')
-        };
+        const sections = { home: document.getElementById('homeSection'), news: document.getElementById('newsSection'), chat: document.getElementById('chatSection'), friends: document.getElementById('friendsSection') };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
             btns.forEach(b => b.classList.remove('active'));
@@ -1218,8 +923,7 @@
                 currentFriendTab = 'friends';
                 document.querySelector('.friends-tab.active').classList.remove('active');
                 document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                loadFriendsList();
-                startFriendsListener();
+                loadFriendsList(); startFriendsListener();
             }
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
@@ -1228,15 +932,8 @@
     function initDropdown() {
         const menuBtn = document.getElementById('menuBtn');
         const dropdown = document.getElementById('dropdownMenu');
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('show');
-        });
-        document.addEventListener('click', (e) => {
-            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
+        menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); });
+        document.addEventListener('click', (e) => { if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('show'); });
         const dropdownItems = document.querySelectorAll('.dropdown-item');
         dropdownItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -1248,20 +945,13 @@
                     currentFriendTab = 'friends';
                     document.querySelector('.friends-tab.active').classList.remove('active');
                     document.querySelector('.friends-tab[data-friend-tab="friends"]').classList.add('active');
-                    loadFriendsList();
-                    startFriendsListener();
+                    loadFriendsList(); startFriendsListener();
                 }
                 dropdown.classList.remove('show');
             });
         });
-        document.getElementById('editProfileBtn').addEventListener('click', () => {
-            editProfileModal();
-            dropdown.classList.remove('show');
-        });
-        document.getElementById('viewRulesBtn').addEventListener('click', () => {
-            showRulesModal(false);
-            dropdown.classList.remove('show');
-        });
+        document.getElementById('editProfileBtn').addEventListener('click', () => { editProfileModal(); dropdown.classList.remove('show'); });
+        document.getElementById('viewRulesBtn').addEventListener('click', () => { showRulesModal(false); dropdown.classList.remove('show'); });
     }
     
     function initFriendsTabs() {
@@ -1274,14 +964,9 @@
                 if (newTab === currentFriendTab) return;
                 currentFriendTab = newTab;
                 if (friendsUnsubscribe) friendsUnsubscribe();
-                if (currentFriendTab === 'friends') {
-                    startFriendsListener();
-                    loadFriendsList();
-                } else if (currentFriendTab === 'sent') {
-                    loadSentRequests();
-                } else if (currentFriendTab === 'received') {
-                    loadReceivedRequests();
-                }
+                if (currentFriendTab === 'friends') { startFriendsListener(); loadFriendsList(); }
+                else if (currentFriendTab === 'sent') loadSentRequests();
+                else if (currentFriendTab === 'received') loadReceivedRequests();
             });
         });
     }
@@ -1291,20 +976,9 @@
         const picker = document.getElementById('emojiPicker');
         const input = document.getElementById('messageInput');
         if (!emojiBtn || !picker) return;
-        emojiBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
-        });
-        picker.addEventListener('emoji-click', (event) => {
-            input.value += event.detail.unicode;
-            picker.style.display = 'none';
-            input.focus();
-        });
-        document.addEventListener('click', (e) => {
-            if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) {
-                picker.style.display = 'none';
-            }
-        });
+        emojiBtn.addEventListener('click', (e) => { e.stopPropagation(); picker.style.display = picker.style.display === 'none' ? 'block' : 'none'; });
+        picker.addEventListener('emoji-click', (event) => { input.value += event.detail.unicode; picker.style.display = 'none'; input.focus(); });
+        document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) picker.style.display = 'none'; });
     }
     
     // ========== LOGIN/REGISTRO ==========
@@ -1340,9 +1014,7 @@
             } catch (error) {
                 Swal.fire('Error', error.code === 'auth/user-not-found' ? 'No existe esa cuenta.' : 'Error al enviar.', 'error');
             }
-        } else if (email) {
-            Swal.fire('Error', 'Correo inválido.', 'error');
-        }
+        } else if (email) { Swal.fire('Error', 'Correo inválido.', 'error'); }
     });
     
     function getFriendlyErrorMessage(error) {
@@ -1361,18 +1033,12 @@
     authActionBtn.addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value.trim();
-        if (!email || !password) {
-            Swal.fire('Error', 'Completa todos los campos.', 'error');
-            return;
-        }
+        if (!email || !password) { Swal.fire('Error', 'Completa todos los campos.', 'error'); return; }
         if (!isLoginMode) {
             const nickname = document.getElementById('authNickname').value.trim();
             const bias = document.getElementById('authBias').value;
             const pronoun = document.getElementById('authPronoun').value;
-            if (!nickname || nickname.length < 3) {
-                Swal.fire('Error', 'Nombre mínimo 3 caracteres.', 'error');
-                return;
-            }
+            if (!nickname || nickname.length < 3) { Swal.fire('Error', 'Nombre mínimo 3 caracteres.', 'error'); return; }
             try {
                 const userCred = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCred.user;
@@ -1394,17 +1060,7 @@
                 const snapshot = await database.ref(`users/${user.uid}`).once('value');
                 const data = snapshot.val();
                 if (data) {
-                    currentUser = {
-                        uid: user.uid,
-                        username: data.username,
-                        xp: data.xp,
-                        level: data.level,
-                        bias: data.bias,
-                        pronoun: data.pronoun,
-                        email: email,
-                        lastUsernameChange: data.lastUsernameChange,
-                        rulesAccepted: data.rulesAccepted
-                    };
+                    currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted };
                 } else {
                     currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
                 }
@@ -1427,17 +1083,7 @@
             const snapshot = await database.ref(`users/${user.uid}`).once('value');
             const data = snapshot.val();
             if (data) {
-                currentUser = {
-                    uid: user.uid,
-                    username: data.username,
-                    xp: data.xp,
-                    level: data.level,
-                    bias: data.bias,
-                    pronoun: data.pronoun,
-                    email: user.email,
-                    lastUsernameChange: data.lastUsernameChange,
-                    rulesAccepted: data.rulesAccepted
-                };
+                currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email: user.email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted };
             } else {
                 currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false };
             }
@@ -1448,17 +1094,6 @@
             document.getElementById('mainContent').style.display = 'none';
         }
     });
-    
-    // Declaraciones vacías para funciones de amigos (para evitar errores; en el código completo se han omitido por espacio pero deberían estar implementadas)
-    async function loadSentRequests() { const container = document.getElementById('friendsContainer'); if(container) container.innerHTML = '<div class="empty-message">Cargando...</div>'; }
-    async function loadReceivedRequests() { const container = document.getElementById('friendsContainer'); if(container) container.innerHTML = '<div class="empty-message">Cargando...</div>'; }
-    function startFriendsListener() {}
-    async function renderFriendsList() {}
-    async function loadFriendsList() {}
-    async function sendFriendRequest() {}
-    async function acceptFriendRequest() {}
-    async function declineFriendRequest() {}
-    async function removeFriend() {}
 </script>
 </body>
 </html>
