@@ -350,7 +350,7 @@
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
     const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
     
-    // ========== FUNCIONES USUARIO MEJORADAS ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -451,7 +451,6 @@
         currentUser.coins += amount; 
         updateUI(); 
         saveUserDataToFirebase();
-        // Forzar actualización en tiempo real (el listener de coins ya lo hará)
     }
     
     // ========== RULETA ==========
@@ -616,7 +615,7 @@
         }
     }
     
-    // ========== CHAT Y AMIGOS (funciones completas) ==========
+    // ========== CHAT Y AMIGOS ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -813,7 +812,7 @@
         });
     }
     
-    // Funciones de amigos (simplificadas pero completas)
+    // ========== SISTEMA DE AMIGOS (simplificado pero funcional) ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -1033,15 +1032,80 @@
     }
     
     // ========== CURIOSIDADES ==========
-    const curiosidadesData = [ /* ... (el mismo array de siempre, por brevedad no lo copio pero está en tu código) */ ];
-    // (Para no alargar el mensaje, asume que curiosidadesData está definido igual que antes)
-    
+    const curiosidadesData = [
+        { texto: "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.", member: "all" },
+        { texto: "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.", member: "all" },
+        { texto: "El nombre NMIXX combina 'N' (now) y 'MIX' (combinación), simbolizando diversidad.", member: "all" },
+        { texto: "El concepto de NMIXX se centra en el 'MIXXTOPIA', un mundo de fantasía.", member: "all" },
+        { texto: "Su primer EP 'expérgo' vendió más de 600,000 copias.", member: "all" },
+        { texto: "NMIXX es conocida por sus cambios de ritmo dentro de una misma canción (MIXX POP).", member: "all" },
+        { texto: "Las miembros tienen colores oficiales: Lily (rosa), Haewon (amarillo), Sullyoon (verde), BAE (azul claro), Jiwoo (morado), Kyujin (naranja).", member: "all" },
+        { texto: "Lily nació en Australia y tiene nacionalidad australiana y coreana.", member: "Lily" },
+        { texto: "Lily habla inglés con fluidez y a veces corrige la pronunciación.", member: "Lily" },
+        { texto: "Lily puede tocar el piano, la guitarra y el ukelele.", member: "Lily" },
+        { texto: "Lily fue aprendiz de JYP durante 5 años.", member: "Lily" },
+        { texto: "La comida favorita de Lily es el pollo frito y el sushi.", member: "Lily" },
+        { texto: "Lily tiene una hermana mayor y un hermano menor.", member: "Lily" },
+        { texto: "Haewon fue aprendiz por 7 años, la más larga del grupo.", member: "Haewon" },
+        { texto: "Haewon es conocida por imitar voces.", member: "Haewon" },
+        { texto: "Haewon tiene certificación en inglés TOEIC casi perfecta.", member: "Haewon" },
+        { texto: "Haewon es la líder del grupo.", member: "Haewon" },
+        { texto: "Haewon practicó taekwondo de niña.", member: "Haewon" },
+        { texto: "A Haewon le encanta el café y colecciona tazas.", member: "Haewon" },
+        { texto: "Sullyoon fue modelo infantil y apareció en comerciales.", member: "Sullyoon" },
+        { texto: "Sullyoon le encanta dibujar y pintar.", member: "Sullyoon" },
+        { texto: "Sullyoon fue compañera de escuela de una miembro de IVE.", member: "Sullyoon" },
+        { texto: "Sullyoon es la más alta del grupo.", member: "Sullyoon" },
+        { texto: "Sullyoon tiene una personalidad tímida al principio.", member: "Sullyoon" },
+        { texto: "La comida favorita de Sullyoon es el tteokbokki.", member: "Sullyoon" },
+        { texto: "BAE toca la batería y practicó kendo.", member: "BAE" },
+        { texto: "BAE tiene certificación en cocina coreana.", member: "BAE" },
+        { texto: "BAE es la más extrovertida.", member: "BAE" },
+        { texto: "BAE se unió a JYP después de una audición en línea.", member: "BAE" },
+        { texto: "A BAE le gusta el baloncesto y los videojuegos.", member: "BAE" },
+        { texto: "El lema de BAE es 'Siempre sonríe'.", member: "BAE" },
+        { texto: "Jiwoo es la más joven del grupo (maknae).", member: "Jiwoo" },
+        { texto: "Jiwoo aprendió a bailar viendo YouTube.", member: "Jiwoo" },
+        { texto: "Jiwoo es bailarina principal y destaca en freestyle.", member: "Jiwoo" },
+        { texto: "Jiwoo entrenó solo 6 meses antes de debutar.", member: "Jiwoo" },
+        { texto: "Jiwoo adora a los gatos y tiene dos mascotas.", member: "Jiwoo" },
+        { texto: "El color favorito de Jiwoo es el morado.", member: "Jiwoo" },
+        { texto: "Kyujin puede imitar a todos los miembros.", member: "Kyujin" },
+        { texto: "Kyujin es bailarina principal y sabe cantar muy bien.", member: "Kyujin" },
+        { texto: "Kyujin fue compañera de escuela de Jang Wonyoung (IVE).", member: "Kyujin" },
+        { texto: "Kyujin practicó natación competitiva.", member: "Kyujin" },
+        { texto: "Kyujin es la más baja del grupo pero tiene gran presencia.", member: "Kyujin" },
+        { texto: "A Kyujin le encanta el chocolate y los postres.", member: "Kyujin" }
+    ];
     let currentCuriosityFilter = "all";
     function loadCuriosities() {
-        // Implementación existente
+        const grid = document.getElementById("curiositiesGrid");
+        const statsDiv = document.getElementById("curiositiesStats");
+        if (!grid) return;
+        const filtered = currentCuriosityFilter === "all" ? curiosidadesData : curiosidadesData.filter(c => c.member === currentCuriosityFilter);
+        statsDiv.innerHTML = `✨ Mostrando ${filtered.length} curiosidades ✨`;
+        grid.innerHTML = "";
+        if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px;">🔮 No hay curiosidades para este miembro.</div>'; return; }
+        filtered.forEach(c => {
+            const member = c.member === "all" ? "General" : c.member;
+            const avatarColor = avatarColors[member] || "#ff7eb3";
+            const initial = member === "General" ? "✨" : member.charAt(0);
+            const card = document.createElement("div");
+            card.className = "curio-card";
+            card.innerHTML = `<div class="curio-avatar" style="background: ${avatarColor};">${initial}</div><div class="curio-content"><div class="curio-text">${escapeHtml(c.texto)}</div><div class="curio-member-tag">${member}</div></div>`;
+            grid.appendChild(card);
+        });
     }
     function initCuriosityFilters() {
-        // Implementación existente
+        const filterBtns = document.querySelectorAll('#curiositiesFilters .filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCuriosityFilter = btn.getAttribute('data-member');
+                loadCuriosities();
+            });
+        });
     }
     
     // ========== MIEMBROS ==========
@@ -1123,7 +1187,7 @@
         }
     }
     
-    // ========== NORMAS MEJORADA (SIN BUCLE Y CON MANEJO DE ERROR) ==========
+    // ========== NORMAS MEJORADA (SIN BUCLE Y CON MODAL ASEGURADO) ==========
     let isAcceptingRules = false;
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
@@ -1151,9 +1215,8 @@
     }
     
     async function enforceRules() {
-        if (isAcceptingRules) return; // Evitar múltiples llamadas
+        if (isAcceptingRules) return;
         isAcceptingRules = true;
-        
         if (!currentUser.rulesAccepted) {
             const accepted = await showRulesModal(true);
             if (accepted) {
@@ -1161,9 +1224,7 @@
                 await saveUserDataToFirebase();
                 document.getElementById('mainContent').style.display = 'block';
                 initializeAfterLogin();
-                isAcceptingRules = false;
             } else {
-                // Si no acepta, cerrar sesión o mostrar mensaje
                 await Swal.fire({
                     title: 'Necesitas aceptar las normas',
                     text: 'Para usar la comunidad debes aceptar las normas.',
@@ -1172,13 +1233,12 @@
                 });
                 await auth.signOut();
                 window.location.reload();
-                isAcceptingRules = false;
             }
         } else {
             document.getElementById('mainContent').style.display = 'block';
             initializeAfterLogin();
-            isAcceptingRules = false;
         }
+        isAcceptingRules = false;
     }
     
     // ========== NAVEGACIÓN ==========
@@ -1254,7 +1314,7 @@
         document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) picker.style.display = 'none'; });
     }
     
-    let currentFriendTab = 'friends'; // Declaración global
+    let currentFriendTab = 'friends';
     
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
