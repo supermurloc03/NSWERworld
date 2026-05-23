@@ -19,12 +19,11 @@
     <!-- Emoji Picker -->
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
-    <!-- Google Fonts para tipografía más cool -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ========== ESTILOS GENERALES ========== */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
         .main-content { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
@@ -65,41 +64,41 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* ===== NUEVA RULETA ESTILO NMIXX - VERSIÓN PREMIUM ===== */
+        /* ===== RULETA REDISEÑADA - ESTILO PREMIUM ===== */
         .wheel-wrapper {
-            background: radial-gradient(circle at 30% 20%, rgba(30,20,70,0.9), rgba(10,5,30,0.95));
-            backdrop-filter: blur(16px);
-            border-radius: 80px;
+            background: radial-gradient(circle at 30% 20%, rgba(20,15,50,0.95), rgba(5,3,20,0.98));
+            backdrop-filter: blur(12px);
+            border-radius: 70px;
             padding: 35px 25px;
             margin: 30px 0 40px;
             text-align: center;
-            border: 1px solid rgba(255,126,179,0.8);
-            box-shadow: 0 25px 45px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,126,179,0.6);
+            box-shadow: 0 30px 50px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
         }
         .wheel-wrapper::before {
             content: "✨";
             position: absolute;
-            top: -20px;
-            left: -20px;
-            font-size: 100px;
+            top: -30px;
+            left: -30px;
+            font-size: 140px;
             opacity: 0.1;
             pointer-events: none;
-            transform: rotate(-15deg);
+            transform: rotate(-20deg);
         }
         .wheel-wrapper::after {
             content: "🎤";
             position: absolute;
-            bottom: -30px;
-            right: -20px;
-            font-size: 120px;
+            bottom: -40px;
+            right: -30px;
+            font-size: 160px;
             opacity: 0.1;
             pointer-events: none;
-            transform: rotate(10deg);
+            transform: rotate(15deg);
         }
         .wheel-title {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 900;
             font-family: 'Orbitron', monospace;
             background: linear-gradient(135deg, #ff7eb3, #c084fc, #7c3aed, #ffb347);
@@ -107,13 +106,13 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            animation: shimmer 6s infinite;
+            gap: 25px;
+            text-shadow: 0 0 15px rgba(0,0,0,0.3);
+            animation: shimmer 8s infinite;
         }
         @keyframes shimmer {
             0% { background-position: 0% 50%; }
@@ -121,48 +120,48 @@
             100% { background-position: 0% 50%; }
         }
         .wheel-title span:first-child {
-            font-size: 2.5rem;
-            filter: drop-shadow(0 0 5px #ff7eb3);
+            font-size: 2.8rem;
+            filter: drop-shadow(0 0 8px #ff7eb3);
         }
         .wheel-container {
             position: relative;
             display: flex;
             justify-content: center;
             margin: 0 auto;
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
         }
         canvas {
             display: block;
             width: 100%;
             height: auto;
-            max-width: 460px;
+            max-width: 480px;
             border-radius: 50%;
-            box-shadow: 0 0 0 8px rgba(255,126,179,0.4), 0 25px 45px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.2);
+            box-shadow: 0 0 0 10px rgba(255,126,179,0.3), 0 30px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.2);
             transition: filter 0.2s;
             background: #1e1a2f;
         }
         .wheel-pointer {
             position: absolute;
-            top: -30px;
+            top: -35px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 26px solid transparent;
-            border-right: 26px solid transparent;
-            border-top: 60px solid #ffd966;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+            border-left: 28px solid transparent;
+            border-right: 28px solid transparent;
+            border-top: 65px solid #ffd966;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5));
             z-index: 20;
         }
         .wheel-pointer::after {
             content: "🎙️";
             position: absolute;
-            top: -75px;
-            left: -20px;
-            font-size: 42px;
+            top: -80px;
+            left: -24px;
+            font-size: 48px;
             color: white;
-            text-shadow: 0 0 10px #ff7eb3;
+            text-shadow: 0 0 12px #ff7eb3;
         }
         .spin-btn {
             background: linear-gradient(95deg, #ff7eb3, #c084fc, #7c3aed);
@@ -170,20 +169,20 @@
             border: none;
             color: white;
             font-weight: bold;
-            padding: 16px 45px;
-            border-radius: 60px;
-            font-size: 1.5rem;
-            margin-top: 35px;
+            padding: 18px 50px;
+            border-radius: 80px;
+            font-size: 1.6rem;
+            margin-top: 40px;
             cursor: pointer;
             transition: 0.4s;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
             letter-spacing: 2px;
             font-family: 'Orbitron', monospace;
         }
         .spin-btn:hover {
             background-position: right center;
             transform: scale(1.05);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.5);
         }
         .spin-btn:disabled {
             background: #4a4a6a;
@@ -192,18 +191,18 @@
             transform: none;
         }
         .remaining-time {
-            font-size: 1.1rem;
-            margin-top: 20px;
+            font-size: 1.2rem;
+            margin-top: 25px;
             color: #ffd966;
             background: rgba(0,0,0,0.6);
             display: inline-block;
-            padding: 8px 28px;
+            padding: 10px 32px;
             border-radius: 60px;
             font-weight: 600;
             backdrop-filter: blur(4px);
         }
         
-        /* Noticias, curiosidades, chat, amigos (estilos existentes) */
+        /* Resto de estilos (noticias, chat, amigos) - igual que antes */
         .news-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
@@ -257,7 +256,7 @@
         .custom-swal .swal2-select, .custom-swal select { background: #141829 !important; border: 1px solid #ff7eb3 !important; border-radius: 60px !important; color: white !important; padding: 12px 16px !important; margin: 8px 0 !important; width: 100% !important; }
         .custom-swal .swal2-select option, .custom-swal select option { background: #141829 !important; color: white !important; }
         .custom-swal .swal2-label { color: #ffb3e0 !important; text-align: left !important; display: block !important; margin-top: 8px !important; font-weight: 500 !important; }
-        @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } .wheel-container canvas { max-width: 300px; } .wheel-pointer { top: -20px; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 40px solid #ffd966; } .wheel-pointer::after { top: -55px; left: -16px; font-size: 30px; } }
+        @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } .wheel-container canvas { max-width: 320px; } .wheel-pointer { top: -20px; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 45px solid #ffd966; } .wheel-pointer::after { top: -60px; left: -20px; font-size: 34px; } }
     </style>
 </head>
 <body>
@@ -315,7 +314,7 @@
         </div>
         <div class="hero"><img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
         
-        <!-- RULETA PREMIUM -->
+        <!-- RULETA REDISEÑADA -->
         <div class="wheel-wrapper">
             <div class="wheel-title"><span>🎡 MIXX WHEEL 🎡</span><span>✨ NMIXX ✨</span></div>
             <div class="wheel-container">
@@ -482,15 +481,15 @@
     function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     function addCoins(amount) { currentUser.coins += amount; updateUI(); saveUserDataToFirebase(); }
     
-    // ========== RULETA PREMIUM NMIXX ==========
+    // ========== RULETA REDISEÑADA - CÓDIGO CORREGIDO ==========
     let canSpinToday = true;
     const wheelSegments = [
-        { name: "LILY", emoji: "🐨", xp: 18, coins: 12, prob: 20, color: "#FFB7C5" },
-        { name: "HAEWON", emoji: "🐻‍❄️", xp: 12, coins: 8, prob: 25, color: "#FFD8B7" },
-        { name: "SULLYOON", emoji: "🦌", xp: 22, coins: 15, prob: 15, color: "#B7F0C4" },
+        { name: "Lily", emoji: "🐨", xp: 18, coins: 12, prob: 20, color: "#FFB7C5" },
+        { name: "Haewon", emoji: "🐻‍❄️", xp: 12, coins: 8, prob: 25, color: "#FFD8B7" },
+        { name: "Sullyoon", emoji: "🦌", xp: 22, coins: 15, prob: 15, color: "#B7F0C4" },
         { name: "BAE", emoji: "🐥", xp: 10, coins: 5, prob: 30, color: "#C5B9FF" },
-        { name: "JIWOO", emoji: "🐶", xp: 28, coins: 22, prob: 7, color: "#FFF2B7" },
-        { name: "KYUJIN", emoji: "🐱", xp: 35, coins: 30, prob: 3, color: "#B7E4FF" }
+        { name: "Jiwoo", emoji: "🐶", xp: 28, coins: 22, prob: 7, color: "#FFF2B7" },
+        { name: "Kyujin", emoji: "🐱", xp: 35, coins: 30, prob: 3, color: "#B7E4FF" }
     ];
     let currentRotation = 0;
     let spinning = false;
@@ -505,34 +504,34 @@
             const end = start + angleStep;
             ctx.beginPath();
             ctx.moveTo(width/2, height/2);
-            ctx.arc(width/2, height/2, width/2 - 8, start, end);
+            ctx.arc(width/2, height/2, width/2 - 12, start, end);
             ctx.fillStyle = wheelSegments[i].color;
             ctx.fill();
             ctx.save();
             ctx.translate(width/2, height/2);
             ctx.rotate(start + angleStep/2);
             ctx.fillStyle = "#1a1a2e";
-            ctx.font = `bold ${Math.max(14, width/28)}px "Poppins"`;
+            ctx.font = `${Math.max(18, width/22)}px "Poppins"`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(wheelSegments[i].emoji, width/3, -20);
-            ctx.font = `bold ${Math.max(11, width/35)}px "Orbitron"`;
+            ctx.fillText(wheelSegments[i].emoji, width/3, -25);
+            ctx.font = `${Math.max(14, width/28)}px "Poppins"`;
             ctx.fillStyle = "#0a0a1a";
-            ctx.fillText(wheelSegments[i].name, width/3, 10);
-            ctx.font = `${Math.max(10, width/40)}px "Poppins"`;
+            ctx.fillText(wheelSegments[i].name, width/3, 5);
+            ctx.font = `${Math.max(12, width/34)}px "Poppins"`;
             ctx.fillStyle = "#2c2a4a";
-            ctx.fillText(`${wheelSegments[i].xp} XP`, width/3, 35);
+            ctx.fillText(`${wheelSegments[i].xp} XP`, width/3, 32);
             ctx.fillStyle = "#d4af37";
-            ctx.fillText(`${wheelSegments[i].coins}🪙`, width/3, 55);
+            ctx.fillText(`${wheelSegments[i].coins} 🪙`, width/3, 54);
             ctx.restore();
         }
         ctx.beginPath();
-        ctx.arc(width/2, height/2, 30, 0, 2*Math.PI);
+        ctx.arc(width/2, height/2, 36, 0, 2*Math.PI);
         ctx.fillStyle = "#1e1b4b";
         ctx.fill();
         ctx.fillStyle = "#ffd966";
-        ctx.font = `bold ${width/20}px "Orbitron"`;
-        ctx.fillText("MIXX", width/2-28, height/2+8);
+        ctx.font = `bold ${Math.max(16, width/22)}px "Orbitron"`;
+        ctx.fillText("NMIXX", width/2-48, height/2+8);
     }
     
     function getRandomPrize() {
@@ -599,7 +598,7 @@
                     background: '#1e1b4b',
                     color: 'white',
                     confirmButtonColor: '#7c3aed',
-                    imageUrl: `https://kprofiles.com/wp-content/uploads/2022/02/${prize.member.charAt(0)+prize.member.slice(1).toLowerCase()}-1-360x360.jpg`,
+                    imageUrl: `https://kprofiles.com/wp-content/uploads/2022/02/${prize.member}-1-360x360.jpg`,
                     imageWidth: 100,
                     imageHeight: 100,
                     imageAlt: prize.member
@@ -613,7 +612,7 @@
     function resizeCanvas() {
         if (!canvas) return;
         const container = canvas.parentElement;
-        const size = Math.min(container.clientWidth, 480);
+        const size = Math.min(container.clientWidth, 500);
         canvas.width = size;
         canvas.height = size;
         width = size;
@@ -640,7 +639,7 @@
         }
     }
     
-    // ========== CHAT Y SISTEMA DE AMIGOS (código funcional ya probado) ==========
+    // ========== CHAT, AMIGOS Y RESTO (código funcional, igual que antes) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -837,7 +836,7 @@
         });
     }
     
-    // Funciones de amigos (simplificadas pero funcionales - ya las tenías)
+    // Funciones de amigos (simplificadas pero funcionales)
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -859,7 +858,7 @@
             if (currentFriendTab === 'sent') loadSentRequests();
         } catch(error) {
             console.error(error);
-            Swal.fire('Error', 'No se pudo enviar la solicitud. Verifica las reglas de Firebase.', 'error');
+            Swal.fire('Error', 'No se pudo enviar la solicitud.', 'error');
         }
     }
     async function acceptFriendRequest(fromUid) {
