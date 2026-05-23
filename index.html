@@ -453,15 +453,15 @@
         saveUserDataToFirebase();
     }
     
-    // ========== RULETA CON MEJOR ALEATORIEDAD ==========
+    // ========== RULETA EQUITATIVA (misma probabilidad para todos) ==========
     let canSpinToday = true;
     const wheelSegments = [
-        { name: "Lily", emoji: "🐨", xp: 15, coins: 8, prob: 25, color: "#FFB7C5", img: "img/lily.jpg" },
-        { name: "Haewon", emoji: "🐻‍❄️", xp: 12, coins: 6, prob: 25, color: "#FFD8B7", img: "img/haewon.jpg" },
-        { name: "Sullyoon", emoji: "🦌", xp: 20, coins: 12, prob: 18, color: "#B7F0C4", img: "img/sullyoon.jpg" },
-        { name: "BAE", emoji: "🐥", xp: 10, coins: 5, prob: 22, color: "#C5B9FF", img: "img/bae.jpg" },
-        { name: "Jiwoo", emoji: "🐶", xp: 30, coins: 16, prob: 7, color: "#FFF2B7", img: "img/jiwoo.jpg" },
-        { name: "Kyujin", emoji: "🐱", xp: 50, coins: 20, prob: 3, color: "#B7E4FF", img: "img/kyujin.jpg" }
+        { name: "Lily", emoji: "🐨", xp: 15, coins: 8, color: "#FFB7C5", img: "img/lily.jpg" },
+        { name: "Haewon", emoji: "🐻‍❄️", xp: 12, coins: 6, color: "#FFD8B7", img: "img/haewon.jpg" },
+        { name: "Sullyoon", emoji: "🦌", xp: 20, coins: 12, color: "#B7F0C4", img: "img/sullyoon.jpg" },
+        { name: "BAE", emoji: "🐥", xp: 10, coins: 5, color: "#C5B9FF", img: "img/bae.jpg" },
+        { name: "Jiwoo", emoji: "🐶", xp: 30, coins: 16, color: "#FFF2B7", img: "img/jiwoo.jpg" },
+        { name: "Kyujin", emoji: "🐱", xp: 50, coins: 20, color: "#B7E4FF", img: "img/kyujin.jpg" }
     ];
     let currentRotation = 0;
     let spinning = false;
@@ -510,15 +510,11 @@
         ctx.fillText("NMIXX", width/2, height/2);
     }
     
+    // Selección aleatoria uniforme (todos con la misma probabilidad)
     function getRandomPrize() {
-        const totalProb = wheelSegments.reduce((s,seg)=> s+seg.prob,0);
-        let rand = Math.random() * totalProb;
-        let acum = 0;
-        for (let seg of wheelSegments) {
-            acum += seg.prob;
-            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 💰`, member: seg.name, img: seg.img };
-        }
-        return wheelSegments[0];
+        const randomIndex = Math.floor(Math.random() * wheelSegments.length);
+        const seg = wheelSegments[randomIndex];
+        return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 💰`, member: seg.name, img: seg.img };
     }
     
     function showConfetti() {
