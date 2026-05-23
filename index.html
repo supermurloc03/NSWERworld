@@ -376,6 +376,10 @@
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
     const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
     
+    // Variable global para pestaña de amigos
+    let currentFriendTab = 'friends';
+    let friendsUnsubscribe = null;
+    
     // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
@@ -588,7 +592,7 @@
         }
     }
     
-    // ========== CHAT (con manejo de usuarios sin uid) ==========
+    // ========== CHAT ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -655,16 +659,20 @@
     // ========== BUSCAR USUARIO POR NOMBRE ==========
     async function findUserByUsername(username) {
         if (!username) return null;
-        const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
-        const data = snapshot.val();
-        if (data) {
-            const uids = Object.keys(data);
-            if (uids.length > 0) return uids[0];
+        try {
+            const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
+            const data = snapshot.val();
+            if (data) {
+                const uids = Object.keys(data);
+                if (uids.length > 0) return uids[0];
+            }
+        } catch(e) {
+            console.error("Error buscando usuario:", e);
         }
         return null;
     }
     
-    // ========== MANEJAR CLIC EN NOMBRE (con búsqueda por nombre) ==========
+    // ========== MANEJAR CLIC EN NOMBRE ==========
     async function handleUsernameClick(event) {
         const uid = event.currentTarget.getAttribute('data-uid');
         const username = event.currentTarget.getAttribute('data-username');
@@ -691,7 +699,7 @@
             }
             showUserProfile(uid);
         } else if (username) {
-            // Intentar encontrar el UID por nombre
+            // Buscar por nombre
             Swal.fire({
                 title: 'Buscando usuario...',
                 text: `Intentando encontrar a ${username}`,
@@ -754,16 +762,20 @@
         let friendStatus = 'none';
         let actionButtonsHtml = '';
         if (uid !== currentUser.uid) {
-            const friendCheck = await database.ref(`friends/${currentUser.uid}/friends/${uid}`).once('value');
-            if (friendCheck.exists()) {
-                friendStatus = 'friends';
-            } else {
-                const sentRequest = await database.ref(`friends/${currentUser.uid}/sent/${uid}`).once('value');
-                if (sentRequest.exists()) friendStatus = 'sent';
-                else {
-                    const receivedRequest = await database.ref(`friends/${uid}/sent/${currentUser.uid}`).once('value');
-                    if (receivedRequest.exists()) friendStatus = 'received';
+            try {
+                const friendCheck = await database.ref(`friends/${currentUser.uid}/friends/${uid}`).once('value');
+                if (friendCheck.exists()) {
+                    friendStatus = 'friends';
+                } else {
+                    const sentRequest = await database.ref(`friends/${currentUser.uid}/sent/${uid}`).once('value');
+                    if (sentRequest.exists()) friendStatus = 'sent';
+                    else {
+                        const receivedRequest = await database.ref(`friends/${uid}/sent/${currentUser.uid}`).once('value');
+                        if (receivedRequest.exists()) friendStatus = 'received';
+                    }
                 }
+            } catch(e) {
+                console.warn("Error verificando amistad:", e);
             }
             
             if (friendStatus === 'none') {
@@ -813,46 +825,61 @@
     // ========== SISTEMA DE AMIGOS COMPLETO ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
-        const existingFriend = await database.ref(`friends/${currentUser.uid}/friends/${targetUid}`).once('value');
-        if (existingFriend.exists()) { Swal.fire('Info', 'Ya son amigos', 'info'); return; }
-        const existingSent = await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).once('value');
-        if (existingSent.exists()) { Swal.fire('Info', 'Ya enviaste una solicitud', 'info'); return; }
-        const existingReceived = await database.ref(`friends/${targetUid}/sent/${currentUser.uid}`).once('value');
-        if (existingReceived.exists()) { Swal.fire('Info', 'Ya tienes una solicitud de este usuario', 'info'); return; }
-        
-        await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).set({
-            from: currentUser.uid, to: targetUid, timestamp: Date.now(),
-            username: currentUser.username, bias: currentUser.bias
-        });
-        await database.ref(`friends/${targetUid}/received/${currentUser.uid}`).set({
-            from: currentUser.uid, to: targetUid, timestamp: Date.now(),
-            username: currentUser.username, bias: currentUser.bias
-        });
-        Swal.fire('Solicitud enviada', '', 'success');
-        if (currentFriendTab === 'sent') loadSentRequests();
+        try {
+            const existingFriend = await database.ref(`friends/${currentUser.uid}/friends/${targetUid}`).once('value');
+            if (existingFriend.exists()) { Swal.fire('Info', 'Ya son amigos', 'info'); return; }
+            const existingSent = await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).once('value');
+            if (existingSent.exists()) { Swal.fire('Info', 'Ya enviaste una solicitud', 'info'); return; }
+            const existingReceived = await database.ref(`friends/${targetUid}/sent/${currentUser.uid}`).once('value');
+            if (existingReceived.exists()) { Swal.fire('Info', 'Ya tienes una solicitud de este usuario', 'info'); return; }
+            
+            await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).set({
+                from: currentUser.uid, to: targetUid, timestamp: Date.now(),
+                username: currentUser.username, bias: currentUser.bias
+            });
+            await database.ref(`friends/${targetUid}/received/${currentUser.uid}`).set({
+                from: currentUser.uid, to: targetUid, timestamp: Date.now(),
+                username: currentUser.username, bias: currentUser.bias
+            });
+            Swal.fire('Solicitud enviada', '', 'success');
+            if (currentFriendTab === 'sent') loadSentRequests();
+        } catch(e) {
+            console.error("Error enviando solicitud:", e);
+            Swal.fire('Error', 'No se pudo enviar la solicitud. Verifica las reglas de Firebase.', 'error');
+        }
     }
     
     async function acceptFriendRequest(fromUid) {
-        const requestData = await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).once('value');
-        if (!requestData.exists()) { Swal.fire('Error', 'La solicitud ya no existe', 'error'); return; }
-        const data = requestData.val();
-        await database.ref(`friends/${currentUser.uid}/friends/${fromUid}`).set({
-            uid: fromUid, username: data.username, bias: data.bias, since: Date.now()
-        });
-        const myData = { uid: currentUser.uid, username: currentUser.username, bias: currentUser.bias, since: Date.now() };
-        await database.ref(`friends/${fromUid}/friends/${currentUser.uid}`).set(myData);
-        await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).remove();
-        await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
-        Swal.fire('¡Amigos!', 'Ahora son amigos', 'success');
-        if (currentFriendTab === 'friends') loadFriendsList();
-        else if (currentFriendTab === 'received') loadReceivedRequests();
+        try {
+            const requestData = await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).once('value');
+            if (!requestData.exists()) { Swal.fire('Error', 'La solicitud ya no existe', 'error'); return; }
+            const data = requestData.val();
+            await database.ref(`friends/${currentUser.uid}/friends/${fromUid}`).set({
+                uid: fromUid, username: data.username, bias: data.bias, since: Date.now()
+            });
+            const myData = { uid: currentUser.uid, username: currentUser.username, bias: currentUser.bias, since: Date.now() };
+            await database.ref(`friends/${fromUid}/friends/${currentUser.uid}`).set(myData);
+            await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).remove();
+            await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
+            Swal.fire('¡Amigos!', 'Ahora son amigos', 'success');
+            if (currentFriendTab === 'friends') loadFriendsList();
+            else if (currentFriendTab === 'received') loadReceivedRequests();
+        } catch(e) {
+            console.error("Error aceptando solicitud:", e);
+            Swal.fire('Error', 'No se pudo aceptar la solicitud', 'error');
+        }
     }
     
     async function declineFriendRequest(fromUid) {
-        await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).remove();
-        await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
-        Swal.fire('Solicitud rechazada', '', 'info');
-        if (currentFriendTab === 'received') loadReceivedRequests();
+        try {
+            await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).remove();
+            await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
+            Swal.fire('Solicitud rechazada', '', 'info');
+            if (currentFriendTab === 'received') loadReceivedRequests();
+        } catch(e) {
+            console.error("Error rechazando solicitud:", e);
+            Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
+        }
     }
     
     async function removeFriend(friendUid) {
@@ -861,87 +888,101 @@
             showCancelButton: true, confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
         });
         if (!confirm.isConfirmed) return;
-        await database.ref(`friends/${currentUser.uid}/friends/${friendUid}`).remove();
-        await database.ref(`friends/${friendUid}/friends/${currentUser.uid}`).remove();
-        Swal.fire('Amigo eliminado', '', 'success');
-        if (currentFriendTab === 'friends') loadFriendsList();
+        try {
+            await database.ref(`friends/${currentUser.uid}/friends/${friendUid}`).remove();
+            await database.ref(`friends/${friendUid}/friends/${currentUser.uid}`).remove();
+            Swal.fire('Amigo eliminado', '', 'success');
+            if (currentFriendTab === 'friends') loadFriendsList();
+        } catch(e) {
+            console.error("Error eliminando amigo:", e);
+            Swal.fire('Error', 'No se pudo eliminar al amigo', 'error');
+        }
     }
     
     async function loadSentRequests() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
-        const snapshot = await database.ref(`friends/${currentUser.uid}/sent`).once('value');
-        const sent = snapshot.val() || {};
-        const sentList = Object.values(sent);
-        if (sentList.length === 0) {
-            container.innerHTML = '<div class="empty-message">📤 No tienes solicitudes enviadas</div>';
-            return;
-        }
-        container.innerHTML = '';
-        for (let req of sentList) {
-            const div = document.createElement('div');
-            div.className = 'friend-item';
-            div.innerHTML = `
-                <div><span class="friend-name" data-uid="${req.to}">${escapeHtml(req.username || req.to)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
-                <div class="friend-actions"><button class="cancel-request-btn" data-uid="${req.to}">Cancelar</button></div>
-            `;
-            container.appendChild(div);
-        }
-        document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-        });
-        document.querySelectorAll('.cancel-request-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const toUid = btn.getAttribute('data-uid');
-                await database.ref(`friends/${currentUser.uid}/sent/${toUid}`).remove();
-                await database.ref(`friends/${toUid}/received/${currentUser.uid}`).remove();
-                loadSentRequests();
-                Swal.fire('Solicitud cancelada', '', 'info');
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/sent`).once('value');
+            const sent = snapshot.val() || {};
+            const sentList = Object.values(sent);
+            if (sentList.length === 0) {
+                container.innerHTML = '<div class="empty-message">📤 No tienes solicitudes enviadas</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let req of sentList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div><span class="friend-name" data-uid="${req.to}">${escapeHtml(req.username || req.to)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
+                    <div class="friend-actions"><button class="cancel-request-btn" data-uid="${req.to}">Cancelar</button></div>
+                `;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => {
+                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
             });
-        });
+            document.querySelectorAll('.cancel-request-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const toUid = btn.getAttribute('data-uid');
+                    await database.ref(`friends/${currentUser.uid}/sent/${toUid}`).remove();
+                    await database.ref(`friends/${toUid}/received/${currentUser.uid}`).remove();
+                    loadSentRequests();
+                    Swal.fire('Solicitud cancelada', '', 'info');
+                });
+            });
+        } catch(e) {
+            console.error("Error cargando solicitudes enviadas:", e);
+            container.innerHTML = '<div class="empty-message">Error al cargar</div>';
+        }
     }
     
     async function loadReceivedRequests() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
-        const snapshot = await database.ref(`friends/${currentUser.uid}/received`).once('value');
-        const received = snapshot.val() || {};
-        const receivedList = Object.values(received);
-        if (receivedList.length === 0) {
-            container.innerHTML = '<div class="empty-message">📥 No tienes solicitudes recibidas</div>';
-            return;
-        }
-        container.innerHTML = '';
-        for (let req of receivedList) {
-            const div = document.createElement('div');
-            div.className = 'friend-item';
-            div.innerHTML = `
-                <div><span class="friend-name" data-uid="${req.from}">${escapeHtml(req.username || req.from)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
-                <div class="friend-actions"><button class="accept-request-btn" data-uid="${req.from}">Aceptar</button><button class="decline-request-btn" data-uid="${req.from}">Rechazar</button></div>
-            `;
-            container.appendChild(div);
-        }
-        document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-        });
-        document.querySelectorAll('.accept-request-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const fromUid = btn.getAttribute('data-uid');
-                await acceptFriendRequest(fromUid);
-                loadReceivedRequests();
-                if (currentFriendTab === 'friends') loadFriendsList();
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/received`).once('value');
+            const received = snapshot.val() || {};
+            const receivedList = Object.values(received);
+            if (receivedList.length === 0) {
+                container.innerHTML = '<div class="empty-message">📥 No tienes solicitudes recibidas</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let req of receivedList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div><span class="friend-name" data-uid="${req.from}">${escapeHtml(req.username || req.from)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
+                    <div class="friend-actions"><button class="accept-request-btn" data-uid="${req.from}">Aceptar</button><button class="decline-request-btn" data-uid="${req.from}">Rechazar</button></div>
+                `;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => {
+                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
             });
-        });
-        document.querySelectorAll('.decline-request-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const fromUid = btn.getAttribute('data-uid');
-                await declineFriendRequest(fromUid);
-                loadReceivedRequests();
+            document.querySelectorAll('.accept-request-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const fromUid = btn.getAttribute('data-uid');
+                    await acceptFriendRequest(fromUid);
+                    loadReceivedRequests();
+                    if (currentFriendTab === 'friends') loadFriendsList();
+                });
             });
-        });
+            document.querySelectorAll('.decline-request-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const fromUid = btn.getAttribute('data-uid');
+                    await declineFriendRequest(fromUid);
+                    loadReceivedRequests();
+                });
+            });
+        } catch(e) {
+            console.error("Error cargando solicitudes recibidas:", e);
+            container.innerHTML = '<div class="empty-message">Error al cargar</div>';
+        }
     }
     
-    let friendsUnsubscribe = null;
     function startFriendsListener() {
         if (friendsUnsubscribe) friendsUnsubscribe();
         const friendsRef = database.ref(`friends/${currentUser.uid}/friends`);
@@ -953,33 +994,38 @@
     async function loadFriendsList() {
         const container = document.getElementById('friendsContainer');
         if (!container) return;
-        const snapshot = await database.ref(`friends/${currentUser.uid}/friends`).once('value');
-        const friends = snapshot.val() || {};
-        const friendsList = Object.values(friends);
-        if (friendsList.length === 0) {
-            container.innerHTML = '<div class="empty-message">👥 Aún no tienes amigos. ¡Envía solicitudes!</div>';
-            return;
-        }
-        container.innerHTML = '';
-        for (let friend of friendsList) {
-            const div = document.createElement('div');
-            div.className = 'friend-item';
-            div.innerHTML = `
-                <div><span class="friend-name" data-uid="${friend.uid}">${escapeHtml(friend.username)}</span><div class="friend-bias">Bias: ${escapeHtml(friend.bias)}</div></div>
-                <div class="friend-actions"><button class="remove-friend-btn" data-uid="${friend.uid}">Eliminar</button></div>
-            `;
-            container.appendChild(div);
-        }
-        document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-        });
-        document.querySelectorAll('.remove-friend-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const friendUid = btn.getAttribute('data-uid');
-                await removeFriend(friendUid);
-                loadFriendsList();
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/friends`).once('value');
+            const friends = snapshot.val() || {};
+            const friendsList = Object.values(friends);
+            if (friendsList.length === 0) {
+                container.innerHTML = '<div class="empty-message">👥 Aún no tienes amigos. ¡Envía solicitudes!</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let friend of friendsList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div><span class="friend-name" data-uid="${friend.uid}">${escapeHtml(friend.username)}</span><div class="friend-bias">Bias: ${escapeHtml(friend.bias)}</div></div>
+                    <div class="friend-actions"><button class="remove-friend-btn" data-uid="${friend.uid}">Eliminar</button></div>
+                `;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => {
+                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
             });
-        });
+            document.querySelectorAll('.remove-friend-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const friendUid = btn.getAttribute('data-uid');
+                    await removeFriend(friendUid);
+                    loadFriendsList();
+                });
+            });
+        } catch(e) {
+            console.error("Error cargando lista de amigos:", e);
+            container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>';
+        }
     }
     
     // ========== NOTICIAS ==========
