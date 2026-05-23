@@ -253,7 +253,7 @@
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
-            <div class="coins-badge" id="coinsDisplay">🪙 0</div>
+            <div class="coins-badge" id="coinsDisplay">💰 0</div>
             <div id="pronounDisplay" class="pronoun-badge" style="display: none;"></div>
         </div>
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
@@ -384,7 +384,7 @@
             const newCoins = snapshot.val();
             if (newCoins !== null && newCoins !== currentUser.coins) {
                 currentUser.coins = newCoins;
-                document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
+                document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
             }
         });
     }
@@ -427,7 +427,7 @@
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
-        document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
+        document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
         const pronounDiv = document.getElementById("pronounDisplay");
@@ -494,7 +494,7 @@
             ctx.fillStyle = "#2c2a4a";
             ctx.fillText(`${wheelSegments[i].xp} XP`, width/3.2, 34);
             ctx.fillStyle = "#d4af37";
-            ctx.fillText(`${wheelSegments[i].coins} 🪙`, width/3.2, 52);
+            ctx.fillText(`${wheelSegments[i].coins} 💰`, width/3.2, 52);
             ctx.restore();
         }
         const centerRadius = Math.max(28, width / 12);
@@ -516,7 +516,7 @@
         let acum = 0;
         for (let seg of wheelSegments) {
             acum += seg.prob;
-            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 🪙`, member: seg.name, img: seg.img };
+            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 💰`, member: seg.name, img: seg.img };
         }
         return wheelSegments[0];
     }
@@ -699,7 +699,7 @@
                         <p><strong>🎀 Bias:</strong> ${currentUser.bias}</p>
                         <p><strong>🏆 Nivel:</strong> ${currentUser.level}</p>
                         <p><strong>⭐ XP:</strong> ${currentUser.xp}</p>
-                        <p><strong>🪙 Monedas:</strong> ${currentUser.coins}</p>
+                        <p><strong>💰 Monedas:</strong> ${currentUser.coins}</p>
                         <p><strong>🏳️‍🌈 Pronombre:</strong> ${currentUser.pronoun}</p>
                     </div>`,
                     icon: 'info',
@@ -785,7 +785,7 @@
                 <p><strong>🎀 Bias:</strong> ${escapeHtml(bias)}</p>
                 <p><strong>🏆 Nivel:</strong> ${level}</p>
                 <p><strong>⭐ XP:</strong> ${xp}</p>
-                <p><strong>🪙 Monedas:</strong> ${coins}</p>
+                <p><strong>💰 Monedas:</strong> ${coins}</p>
                 <p><strong>🏳️‍🌈 Pronombre:</strong> ${escapeHtml(pronoun)}</p>
                 ${actionButtonsHtml}
             </div>`,
@@ -1187,7 +1187,7 @@
         }
     }
     
-    // ========== NORMAS MEJORADA (SIN BUCLE Y CON MODAL ASEGURADO) ==========
+    // ========== NORMAS MEJORADA ==========
     let isAcceptingRules = false;
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
