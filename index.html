@@ -253,7 +253,7 @@
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
-            <div class="coins-badge" id="coinsDisplay">💰 0</div>
+            <div class="coins-badge" id="coinsDisplay">🪙 0</div>
             <div id="pronounDisplay" class="pronoun-badge" style="display: none;"></div>
         </div>
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
@@ -334,7 +334,7 @@
     const auth = firebase.auth();
     const database = firebase.database();
     
-    // ========== DATOS MIEMBROS (con imágenes en carpeta img/) ==========
+    // ========== DATOS MIEMBROS ==========
     const membersData = {
         Lily: { fullName: "Lily (릴리)", animal: "🐨 Koala (Lilangi)", birth: "17 de octubre de 2002", height: "165 cm", position: "Vocalista principal", color: "Rosa", emoji: "🐨", imgUrl: "img/lily.jpg" },
         Haewon: { fullName: "Haewon (해원)", animal: "🐻‍❄️ Oso polar (Haengmani)", birth: "25 de febrero de 2003", height: "161 cm", position: "Líder, vocalista", color: "Amarillo", emoji: "🐻‍❄️", imgUrl: "img/haewon.jpg" },
@@ -384,7 +384,7 @@
             const newCoins = snapshot.val();
             if (newCoins !== null && newCoins !== currentUser.coins) {
                 currentUser.coins = newCoins;
-                document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
+                document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
             }
         });
     }
@@ -427,7 +427,7 @@
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
-        document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
+        document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
         const pronounDiv = document.getElementById("pronounDisplay");
@@ -453,7 +453,7 @@
         saveUserDataToFirebase();
     }
     
-    // ========== RULETA ==========
+    // ========== RULETA CON MEJOR ALEATORIEDAD ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, prob: 25, color: "#FFB7C5", img: "img/lily.jpg" },
@@ -494,7 +494,7 @@
             ctx.fillStyle = "#2c2a4a";
             ctx.fillText(`${wheelSegments[i].xp} XP`, width/3.2, 34);
             ctx.fillStyle = "#d4af37";
-            ctx.fillText(`${wheelSegments[i].coins} 💰`, width/3.2, 52);
+            ctx.fillText(`${wheelSegments[i].coins} 🪙`, width/3.2, 52);
             ctx.restore();
         }
         const centerRadius = Math.max(28, width / 12);
@@ -516,7 +516,7 @@
         let acum = 0;
         for (let seg of wheelSegments) {
             acum += seg.prob;
-            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 💰`, member: seg.name, img: seg.img };
+            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 🪙`, member: seg.name, img: seg.img };
         }
         return wheelSegments[0];
     }
@@ -527,6 +527,7 @@
         setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.7, x: 0.8 }, colors: ['#c5b9ff', '#fff2b7'] }), 400);
     }
     
+    // ⭐ FUNCIÓN SPIN MEJORADA CON ALEATORIEDAD REAL ⭐
     async function spinWheel() {
         if (spinning || !canSpinToday) return;
         const now = Date.now();
@@ -538,28 +539,32 @@
             return;
         }
         spinning = true;
+        
         const prize = getRandomPrize();
-        const extraSpins = Math.floor(Math.random() * 10) + 10;
+        const extraSpins = Math.floor(Math.random() * 16) + 5; // 5 a 20 vueltas extra
         const segmentIndex = wheelSegments.findIndex(s => s.name === prize.member);
         const angleStep = (Math.PI * 2) / wheelSegments.length;
-        const targetSegmentAngle = (segmentIndex * angleStep) + (angleStep/2);
-        const pointerAngle = -Math.PI/2;
-        let targetRotation = pointerAngle - targetSegmentAngle;
-        targetRotation = ((targetRotation % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+        const segmentStart = segmentIndex * angleStep;
+        const segmentEnd = segmentStart + angleStep;
+        const randomAngleInSegment = segmentStart + Math.random() * angleStep;
+        const pointerAngle = -Math.PI / 2;
+        let targetRotation = pointerAngle - randomAngleInSegment;
+        targetRotation = ((targetRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
         const totalAngle = (Math.PI * 2) * extraSpins + targetRotation;
         const startRot = currentRotation;
-        const duration = 2600;
+        const duration = Math.random() * 1000 + 2000; // entre 2000 y 3000 ms
         const startTime = performance.now();
         
         function animate(nowTime) {
             const elapsed = nowTime - startTime;
             const t = Math.min(1, elapsed / duration);
-            const ease = 1 - Math.pow(1-t, 3);
+            const ease = 1 - Math.pow(1 - t, 3);
             currentRotation = startRot + totalAngle * ease;
             drawWheel();
-            if (t < 1) requestAnimationFrame(animate);
-            else {
-                currentRotation = (startRot + totalAngle) % (Math.PI*2);
+            if (t < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                currentRotation = (startRot + totalAngle) % (Math.PI * 2);
                 drawWheel();
                 addXP(prize.xp);
                 addCoins(prize.coins);
@@ -582,6 +587,7 @@
                 spinning = false;
             }
         }
+        
         requestAnimationFrame(animate);
     }
     
@@ -699,7 +705,7 @@
                         <p><strong>🎀 Bias:</strong> ${currentUser.bias}</p>
                         <p><strong>🏆 Nivel:</strong> ${currentUser.level}</p>
                         <p><strong>⭐ XP:</strong> ${currentUser.xp}</p>
-                        <p><strong>💰 Monedas:</strong> ${currentUser.coins}</p>
+                        <p><strong>🪙 Monedas:</strong> ${currentUser.coins}</p>
                         <p><strong>🏳️‍🌈 Pronombre:</strong> ${currentUser.pronoun}</p>
                     </div>`,
                     icon: 'info',
@@ -785,7 +791,7 @@
                 <p><strong>🎀 Bias:</strong> ${escapeHtml(bias)}</p>
                 <p><strong>🏆 Nivel:</strong> ${level}</p>
                 <p><strong>⭐ XP:</strong> ${xp}</p>
-                <p><strong>💰 Monedas:</strong> ${coins}</p>
+                <p><strong>🪙 Monedas:</strong> ${coins}</p>
                 <p><strong>🏳️‍🌈 Pronombre:</strong> ${escapeHtml(pronoun)}</p>
                 ${actionButtonsHtml}
             </div>`,
@@ -812,7 +818,7 @@
         });
     }
     
-    // ========== SISTEMA DE AMIGOS (simplificado pero funcional) ==========
+    // Funciones de amigos (simplificadas pero completas)
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
