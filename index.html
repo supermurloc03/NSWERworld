@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS GENERALES (igual que tu original) ========== */
+        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -462,7 +462,7 @@
     function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     function addCoins(amount) { currentUser.coins += amount; updateUI(); saveUserDataToFirebase(); }
     
-    // ========== RULETA (igual que tu original) ==========
+    // ========== RULETA ==========
     let canSpinToday = true;
     let wheelSegments = [
         { text: "5 XP\n2🪙", xp: 5, coins: 2, prob: 30 },
@@ -588,7 +588,7 @@
         }
     }
     
-    // ========== CHAT ==========
+    // ========== CHAT CORREGIDO (maneja mensajes sin uid) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -609,12 +609,17 @@
         const text = input.value.trim();
         if (!text) return;
         database.ref('chatMessages').push({
-            username: currentUser.username, text: text, bias: currentUser.bias,
-            level: currentUser.level, timestamp: Date.now(), uid: currentUser.uid
+            username: currentUser.username,
+            text: text,
+            bias: currentUser.bias,
+            level: currentUser.level,
+            timestamp: Date.now(),
+            uid: currentUser.uid  // Aseguramos que los mensajes nuevos tengan uid
         });
         input.value = "";
         addXP(1);
     }
+    
     function loadMessages() {
         database.ref('chatMessages').on('value', snapshot => {
             const data = snapshot.val();
@@ -624,16 +629,26 @@
             if (!container) return;
             container.innerHTML = "";
             if (messages.length === 0) { container.innerHTML = '<div class="message other">¡Escribe el primer mensaje!</div>'; return; }
+            
             messages.forEach(msg => {
-                const isOwn = msg.uid === currentUser.uid;
+                const isOwn = (msg.uid === currentUser.uid);
+                let uidForClick = msg.uid || null;
+                let usernameForClick = msg.username;
                 const avatarLetter = getAvatarInitial(msg.bias);
                 const avatarColor = avatarColors[msg.bias] || "#2d2a55";
                 const timeStr = formatTimestamp(msg.timestamp);
                 const msgDiv = document.createElement("div");
                 msgDiv.className = `message ${isOwn ? 'own' : 'other'}`;
-                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-uid="${msg.uid}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                
+                if (uidForClick) {
+                    msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-uid="${uidForClick}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                } else {
+                    // Usuario sin uid (antiguo)
+                    msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-username="${escapeHtml(usernameForClick)}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                }
                 container.appendChild(msgDiv);
             });
+            
             document.querySelectorAll('.msg-username').forEach(el => {
                 el.removeEventListener('click', handleUsernameClick);
                 el.addEventListener('click', handleUsernameClick);
@@ -643,22 +658,68 @@
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== MANEJAR CLIC EN NOMBRE DE USUARIO (showUserProfile COMPLETO) ==========
+    // ========== MANEJAR CLIC EN NOMBRE (corregido) ==========
     function handleUsernameClick(event) {
         const uid = event.currentTarget.getAttribute('data-uid');
-        if (!uid) return;
-        if (uid === currentUser.uid) {
+        const username = event.currentTarget.getAttribute('data-username');
+        
+        if (uid) {
+            if (uid === currentUser.uid) {
+                Swal.fire({
+                    title: '✨ Tu perfil ✨',
+                    html: `<div style="text-align:left">
+                        <p><strong>👤 Nombre:</strong> ${currentUser.username}</p>
+                        <p><strong>🎀 Bias:</strong> ${currentUser.bias}</p>
+                        <p><strong>🏆 Nivel:</strong> ${currentUser.level}</p>
+                        <p><strong>⭐ XP:</strong> ${currentUser.xp}</p>
+                        <p><strong>🪙 Monedas:</strong> ${currentUser.coins}</p>
+                        <p><strong>🏳️‍🌈 Pronombre:</strong> ${currentUser.pronoun}</p>
+                    </div>`,
+                    icon: 'info',
+                    confirmButtonText: 'Cerrar',
+                    customClass: { popup: 'custom-swal' },
+                    background: '#1e1b4b',
+                    color: 'white'
+                });
+                return;
+            }
+            showUserProfile(uid);
+        } else if (username) {
             Swal.fire({
-                title: '✨ Tu perfil ✨',
+                title: `👤 ${escapeHtml(username)}`,
                 html: `<div style="text-align:left">
-                    <p><strong>👤 Nombre:</strong> ${currentUser.username}</p>
-                    <p><strong>🎀 Bias:</strong> ${currentUser.bias}</p>
-                    <p><strong>🏆 Nivel:</strong> ${currentUser.level}</p>
-                    <p><strong>⭐ XP:</strong> ${currentUser.xp}</p>
-                    <p><strong>🪙 Monedas:</strong> ${currentUser.coins}</p>
-                    <p><strong>🏳️‍🌈 Pronombre:</strong> ${currentUser.pronoun}</p>
+                    <p>⚠️ Este usuario no está registrado o es un visitante antiguo.</p>
+                    <p>No es posible interactuar con él/ella.</p>
                 </div>`,
-                icon: 'info',
+                icon: 'warning',
+                confirmButtonText: 'Cerrar',
+                customClass: { popup: 'custom-swal' },
+                background: '#1e1b4b',
+                color: 'white'
+            });
+        } else {
+            Swal.fire('Error', 'No se pudo identificar al usuario', 'error');
+        }
+    }
+    
+    // ========== showUserProfile robusto ==========
+    async function showUserProfile(uid) {
+        if (!uid) return;
+        let userData = null;
+        try {
+            const snapshot = await database.ref(`users/${uid}`).once('value');
+            userData = snapshot.val();
+        } catch (error) {
+            console.error("Error al obtener usuario:", error);
+            Swal.fire('Error', 'No se pudo cargar el perfil', 'error');
+            return;
+        }
+        
+        if (!userData) {
+            Swal.fire({
+                title: 'Usuario no encontrado',
+                html: `<p>Esta cuenta ya no existe o fue eliminada.</p>`,
+                icon: 'warning',
                 confirmButtonText: 'Cerrar',
                 customClass: { popup: 'custom-swal' },
                 background: '#1e1b4b',
@@ -666,58 +727,49 @@
             });
             return;
         }
-        showUserProfile(uid);
-    }
-
-    async function showUserProfile(uid) {
-        if (!uid) return;
-        const snapshot = await database.ref(`users/${uid}`).once('value');
-        const userData = snapshot.val();
-        if (!userData) {
-            Swal.fire('Error', 'Usuario no encontrado', 'error');
-            return;
-        }
-        const username = userData.username || 'NSWER';
-        const bias = userData.bias || 'Lily';
+        
+        const username = userData.username || "NSWER";
+        const bias = userData.bias || "Lily";
         const level = userData.level || 1;
         const xp = userData.xp || 0;
         const coins = userData.coins || 0;
-        const pronoun = userData.pronoun || 'No especificado';
+        const pronoun = userData.pronoun || "No especificado";
         
-        // Verificar estado de amistad
         let friendStatus = 'none';
-        const friendCheck = await database.ref(`friends/${currentUser.uid}/friends/${uid}`).once('value');
-        if (friendCheck.exists()) {
-            friendStatus = 'friends';
-        } else {
-            const sentRequest = await database.ref(`friends/${currentUser.uid}/sent/${uid}`).once('value');
-            if (sentRequest.exists()) friendStatus = 'sent';
-            else {
-                const receivedRequest = await database.ref(`friends/${uid}/sent/${currentUser.uid}`).once('value');
-                if (receivedRequest.exists()) friendStatus = 'received';
+        let actionButtonsHtml = '';
+        if (uid !== currentUser.uid) {
+            const friendCheck = await database.ref(`friends/${currentUser.uid}/friends/${uid}`).once('value');
+            if (friendCheck.exists()) {
+                friendStatus = 'friends';
+            } else {
+                const sentRequest = await database.ref(`friends/${currentUser.uid}/sent/${uid}`).once('value');
+                if (sentRequest.exists()) friendStatus = 'sent';
+                else {
+                    const receivedRequest = await database.ref(`friends/${uid}/sent/${currentUser.uid}`).once('value');
+                    if (receivedRequest.exists()) friendStatus = 'received';
+                }
+            }
+            
+            if (friendStatus === 'none') {
+                actionButtonsHtml = `<button id="friendActionBtn" style="background:#7c3aed; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">➕ Agregar amigo</button>`;
+            } else if (friendStatus === 'sent') {
+                actionButtonsHtml = `<button disabled style="background:#555; border:none; padding:8px 16px; border-radius:40px; color:#ccc; margin-top:10px;">⏳ Solicitud enviada</button>`;
+            } else if (friendStatus === 'received') {
+                actionButtonsHtml = `<div style="display:flex; gap:10px; justify-content:center; margin-top:10px;"><button id="acceptFriendBtn" style="background:#4caf50; border:none; padding:8px 16px; border-radius:40px; color:white; cursor:pointer;">✅ Aceptar</button><button id="rejectFriendBtn" style="background:#f44336; border:none; padding:8px 16px; border-radius:40px; color:white; cursor:pointer;">❌ Rechazar</button></div>`;
+            } else if (friendStatus === 'friends') {
+                actionButtonsHtml = `<button id="removeFriendBtn" style="background:#f44336; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">❌ Eliminar amigo</button>`;
             }
         }
         
-        let actionButton = '';
-        if (friendStatus === 'none') {
-            actionButton = `<button id="friendActionBtn" style="background:#7c3aed; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">➕ Agregar amigo</button>`;
-        } else if (friendStatus === 'sent') {
-            actionButton = `<button disabled style="background:#555; border:none; padding:8px 16px; border-radius:40px; color:#ccc; margin-top:10px;">⏳ Solicitud enviada</button>`;
-        } else if (friendStatus === 'received') {
-            actionButton = `<div style="display:flex; gap:10px; justify-content:center; margin-top:10px;"><button id="acceptFriendBtn" style="background:#4caf50; border:none; padding:8px 16px; border-radius:40px; color:white; cursor:pointer;">✅ Aceptar</button><button id="rejectFriendBtn" style="background:#f44336; border:none; padding:8px 16px; border-radius:40px; color:white; cursor:pointer;">❌ Rechazar</button></div>`;
-        } else if (friendStatus === 'friends') {
-            actionButton = `<button id="removeFriendBtn" style="background:#f44336; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">❌ Eliminar amigo</button>`;
-        }
-        
         const result = await Swal.fire({
-            title: `👤 ${username}`,
+            title: `👤 ${escapeHtml(username)}`,
             html: `<div style="text-align:left">
-                <p><strong>🎀 Bias:</strong> ${bias}</p>
+                <p><strong>🎀 Bias:</strong> ${escapeHtml(bias)}</p>
                 <p><strong>🏆 Nivel:</strong> ${level}</p>
                 <p><strong>⭐ XP:</strong> ${xp}</p>
                 <p><strong>🪙 Monedas:</strong> ${coins}</p>
-                <p><strong>🏳️‍🌈 Pronombre:</strong> ${pronoun}</p>
-                ${actionButton}
+                <p><strong>🏳️‍🌈 Pronombre:</strong> ${escapeHtml(pronoun)}</p>
+                ${actionButtonsHtml}
             </div>`,
             icon: 'info',
             showConfirmButton: true,
@@ -745,69 +797,37 @@
     // ========== SISTEMA DE AMIGOS COMPLETO ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
-        // Verificar si ya existe solicitud o son amigos
         const existingFriend = await database.ref(`friends/${currentUser.uid}/friends/${targetUid}`).once('value');
-        if (existingFriend.exists()) {
-            Swal.fire('Info', 'Ya son amigos', 'info');
-            return;
-        }
+        if (existingFriend.exists()) { Swal.fire('Info', 'Ya son amigos', 'info'); return; }
         const existingSent = await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).once('value');
-        if (existingSent.exists()) {
-            Swal.fire('Info', 'Ya enviaste una solicitud', 'info');
-            return;
-        }
+        if (existingSent.exists()) { Swal.fire('Info', 'Ya enviaste una solicitud', 'info'); return; }
         const existingReceived = await database.ref(`friends/${targetUid}/sent/${currentUser.uid}`).once('value');
-        if (existingReceived.exists()) {
-            Swal.fire('Info', 'Ya tienes una solicitud de este usuario', 'info');
-            return;
-        }
+        if (existingReceived.exists()) { Swal.fire('Info', 'Ya tienes una solicitud de este usuario', 'info'); return; }
         
         await database.ref(`friends/${currentUser.uid}/sent/${targetUid}`).set({
-            from: currentUser.uid,
-            to: targetUid,
-            timestamp: Date.now(),
-            username: currentUser.username,
-            bias: currentUser.bias
+            from: currentUser.uid, to: targetUid, timestamp: Date.now(),
+            username: currentUser.username, bias: currentUser.bias
         });
         await database.ref(`friends/${targetUid}/received/${currentUser.uid}`).set({
-            from: currentUser.uid,
-            to: targetUid,
-            timestamp: Date.now(),
-            username: currentUser.username,
-            bias: currentUser.bias
+            from: currentUser.uid, to: targetUid, timestamp: Date.now(),
+            username: currentUser.username, bias: currentUser.bias
         });
-        Swal.fire('Solicitud enviada', `Se envió solicitud a ${targetUid}`, 'success');
-        // Refrescar la vista si estamos en la pestaña de enviadas
+        Swal.fire('Solicitud enviada', '', 'success');
         if (currentFriendTab === 'sent') loadSentRequests();
     }
     
     async function acceptFriendRequest(fromUid) {
-        // Mover de recibidas a amigos mutuos
         const requestData = await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).once('value');
-        if (!requestData.exists()) {
-            Swal.fire('Error', 'La solicitud ya no existe', 'error');
-            return;
-        }
+        if (!requestData.exists()) { Swal.fire('Error', 'La solicitud ya no existe', 'error'); return; }
         const data = requestData.val();
-        // Agregar a lista de amigos de ambos
         await database.ref(`friends/${currentUser.uid}/friends/${fromUid}`).set({
-            uid: fromUid,
-            username: data.username,
-            bias: data.bias,
-            since: Date.now()
+            uid: fromUid, username: data.username, bias: data.bias, since: Date.now()
         });
-        // Obtener datos del usuario actual para el otro
-        await database.ref(`friends/${fromUid}/friends/${currentUser.uid}`).set({
-            uid: currentUser.uid,
-            username: currentUser.username,
-            bias: currentUser.bias,
-            since: Date.now()
-        });
-        // Eliminar la solicitud de recibidas y enviadas
+        const myData = { uid: currentUser.uid, username: currentUser.username, bias: currentUser.bias, since: Date.now() };
+        await database.ref(`friends/${fromUid}/friends/${currentUser.uid}`).set(myData);
         await database.ref(`friends/${currentUser.uid}/received/${fromUid}`).remove();
         await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
-        
-        Swal.fire('¡Amigos!', `Ahora son amigos`, 'success');
+        Swal.fire('¡Amigos!', 'Ahora son amigos', 'success');
         if (currentFriendTab === 'friends') loadFriendsList();
         else if (currentFriendTab === 'received') loadReceivedRequests();
     }
@@ -821,12 +841,8 @@
     
     async function removeFriend(friendUid) {
         const confirm = await Swal.fire({
-            title: '¿Eliminar amigo?',
-            text: 'Dejarás de ser amigo de este usuario',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            title: '¿Eliminar amigo?', text: 'Dejarás de ser amigo', icon: 'warning',
+            showCancelButton: true, confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
         });
         if (!confirm.isConfirmed) return;
         await database.ref(`friends/${currentUser.uid}/friends/${friendUid}`).remove();
@@ -856,10 +872,7 @@
             container.appendChild(div);
         }
         document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showUserProfile(el.getAttribute('data-uid'));
-            });
+            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
         });
         document.querySelectorAll('.cancel-request-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -893,10 +906,7 @@
             container.appendChild(div);
         }
         document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showUserProfile(el.getAttribute('data-uid'));
-            });
+            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
         });
         document.querySelectorAll('.accept-request-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -945,10 +955,7 @@
             container.appendChild(div);
         }
         document.querySelectorAll('.friend-name').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showUserProfile(el.getAttribute('data-uid'));
-            });
+            el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
         });
         document.querySelectorAll('.remove-friend-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
