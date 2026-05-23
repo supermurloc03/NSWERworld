@@ -65,7 +65,7 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* ===== RULETA REDISEÑADA ===== */
+        /* ===== RULETA ===== */
         .wheel-wrapper {
             background: linear-gradient(145deg, #1e1a3a, #0f0c2a);
             backdrop-filter: blur(12px);
@@ -253,7 +253,7 @@
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
-            <div class="coins-badge" id="coinsDisplay">🪙 0</div>
+            <div class="coins-badge" id="coinsDisplay">💰 0</div>
             <div id="pronounDisplay" class="pronoun-badge" style="display: none;"></div>
         </div>
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
@@ -269,7 +269,7 @@
         </div>
         <div class="hero"><img class="hero-logo" src="img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
         
-        <!-- RULETA REDISEÑADA -->
+        <!-- RULETA -->
         <div class="wheel-wrapper">
             <div class="wheel-title">🎡 MIXX WHEEL 🎡</div>
             <div class="wheel-container">
@@ -384,7 +384,7 @@
             const newCoins = snapshot.val();
             if (newCoins !== null && newCoins !== currentUser.coins) {
                 currentUser.coins = newCoins;
-                document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
+                document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
             }
         });
     }
@@ -427,7 +427,7 @@
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
         document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
-        document.getElementById("coinsDisplay").innerHTML = `🪙 ${currentUser.coins}`;
+        document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
         const pronounDiv = document.getElementById("pronounDisplay");
@@ -494,7 +494,7 @@
             ctx.fillStyle = "#2c2a4a";
             ctx.fillText(`${wheelSegments[i].xp} XP`, width/3.2, 34);
             ctx.fillStyle = "#d4af37";
-            ctx.fillText(`${wheelSegments[i].coins} 🪙`, width/3.2, 52);
+            ctx.fillText(`${wheelSegments[i].coins} 💰`, width/3.2, 52);
             ctx.restore();
         }
         const centerRadius = Math.max(28, width / 12);
@@ -516,7 +516,7 @@
         let acum = 0;
         for (let seg of wheelSegments) {
             acum += seg.prob;
-            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 🪙`, member: seg.name, img: seg.img };
+            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 💰`, member: seg.name, img: seg.img };
         }
         return wheelSegments[0];
     }
@@ -527,7 +527,6 @@
         setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.7, x: 0.8 }, colors: ['#c5b9ff', '#fff2b7'] }), 400);
     }
     
-    // ⭐ FUNCIÓN SPIN MEJORADA CON ALEATORIEDAD REAL ⭐
     async function spinWheel() {
         if (spinning || !canSpinToday) return;
         const now = Date.now();
@@ -705,7 +704,7 @@
                         <p><strong>🎀 Bias:</strong> ${currentUser.bias}</p>
                         <p><strong>🏆 Nivel:</strong> ${currentUser.level}</p>
                         <p><strong>⭐ XP:</strong> ${currentUser.xp}</p>
-                        <p><strong>🪙 Monedas:</strong> ${currentUser.coins}</p>
+                        <p><strong>💰 Monedas:</strong> ${currentUser.coins}</p>
                         <p><strong>🏳️‍🌈 Pronombre:</strong> ${currentUser.pronoun}</p>
                     </div>`,
                     icon: 'info',
@@ -791,7 +790,7 @@
                 <p><strong>🎀 Bias:</strong> ${escapeHtml(bias)}</p>
                 <p><strong>🏆 Nivel:</strong> ${level}</p>
                 <p><strong>⭐ XP:</strong> ${xp}</p>
-                <p><strong>🪙 Monedas:</strong> ${coins}</p>
+                <p><strong>💰 Monedas:</strong> ${coins}</p>
                 <p><strong>🏳️‍🌈 Pronombre:</strong> ${escapeHtml(pronoun)}</p>
                 ${actionButtonsHtml}
             </div>`,
