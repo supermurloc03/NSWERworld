@@ -13,10 +13,14 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    
     <!-- Emoji Picker -->
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
+        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -57,15 +61,113 @@
         .member-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); background: rgba(20,25,55,0.8); }
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
-        .wheel-wrapper { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(12px); border-radius: 48px; padding: 25px 20px; margin: 20px 0 30px; text-align: center; border: 1px solid rgba(255,126,179,0.5); }
-        .wheel-title { font-size: 1.6rem; font-weight: bold; background: linear-gradient(45deg, #ff7eb3, #c084fc); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .wheel-container { position: relative; display: flex; justify-content: center; margin: 0 auto; max-width: 400px; width: 100%; }
-        canvas { display: block; width: 100%; height: auto; max-width: 380px; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 40px solid #ffd966; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); z-index: 10; }
-        .wheel-pointer::after { content: "▼"; position: absolute; top: -48px; left: -12px; font-size: 24px; color: #ffd966; text-shadow: 0 2px 2px black; }
-        .spin-btn { background: linear-gradient(95deg, #7c3aed, #c084fc); border: none; color: white; font-weight: bold; padding: 12px 30px; border-radius: 60px; font-size: 1.2rem; margin-top: 25px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .spin-btn:disabled { background: #4a4a6a; cursor: not-allowed; opacity: 0.6; }
-        .remaining-time { font-size: 0.9rem; margin-top: 12px; color: #ffb3e0; background: rgba(0,0,0,0.4); display: inline-block; padding: 4px 16px; border-radius: 40px; }
+        
+        /* ===== NUEVA RULETA ESTILO NMIXX ===== */
+        .wheel-wrapper {
+            background: linear-gradient(145deg, #1a1d3a, #0f122e);
+            backdrop-filter: blur(12px);
+            border-radius: 56px;
+            padding: 30px 20px;
+            margin: 20px 0 30px;
+            text-align: center;
+            border: 1px solid rgba(255,126,179,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .wheel-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff7eb3, #c084fc, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+        .wheel-title span:first-child {
+            font-size: 2rem;
+        }
+        .wheel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            max-width: 450px;
+            width: 100%;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 420px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px rgba(255,126,179,0.3), 0 20px 40px rgba(0,0,0,0.4);
+            transition: filter 0.2s;
+            background: #2a2a5a;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            border-top: 50px solid #ffd966;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            z-index: 10;
+        }
+        .wheel-pointer::after {
+            content: "🎤";
+            position: absolute;
+            top: -60px;
+            left: -16px;
+            font-size: 32px;
+            color: white;
+            text-shadow: 0 2px 5px black;
+        }
+        .spin-btn {
+            background: linear-gradient(95deg, #ff7eb3, #c084fc, #7c3aed);
+            background-size: 200% auto;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 14px 35px;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+        .spin-btn:hover {
+            background-position: right center;
+            transform: scale(1.02);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+        }
+        .spin-btn:disabled {
+            background: #4a4a6a;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+        .remaining-time {
+            font-size: 1rem;
+            margin-top: 15px;
+            color: #ffd966;
+            background: rgba(0,0,0,0.5);
+            display: inline-block;
+            padding: 6px 22px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        
+        /* Noticias, curiosidades, chat, amigos (estilos existentes) */
         .news-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
@@ -173,6 +275,8 @@
             </div>
         </div>
         <div class="hero"><img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
+        
+        <!-- RULETA NUEVA -->
         <div class="wheel-wrapper">
             <div class="wheel-title"><span>🎡 MIXX WHEEL 🎡</span><span>✨ NMIXX ✨</span></div>
             <div class="wheel-container">
@@ -182,6 +286,7 @@
             <button id="spinButton" class="spin-btn">🎲 GIRAR LA RULETA 🎲</button>
             <div id="spinTimer" class="remaining-time"></div>
         </div>
+
         <div class="member-grid" id="memberGrid"></div>
         <div style="text-align:center; margin-top:30px;"><p>🌸 Bienvenido, <strong id="homeUsername">NSWER</strong>! 🌸</p><p>Comparte tu amor por NMIXX, gana experiencia y sube de nivel.</p></div>
     </div>
@@ -247,7 +352,7 @@
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
     const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
     
-    // ========== FUNCIONES USUARIO ==========
+    // ========== FUNCIONES USUARIO (sin cambios) ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -333,33 +438,21 @@
     function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     function addCoins(amount) { currentUser.coins += amount; updateUI(); saveUserDataToFirebase(); }
     
-    // ========== RULETA ==========
+    // ========== RULETA ESTILO NMIXX ==========
     let canSpinToday = true;
-    let wheelSegments = [
-        { text: "5 XP\n2🪙", xp: 5, coins: 2, prob: 30 },
-        { text: "10 XP\n5🪙", xp: 10, coins: 5, prob: 25 },
-        { text: "15 XP\n10🪙", xp: 15, coins: 10, prob: 20 },
-        { text: "25 XP\n15🪙", xp: 25, coins: 15, prob: 15 },
-        { text: "50 XP\n25🪙", xp: 50, coins: 25, prob: 7 },
-        { text: "100 XP\n50🪙", xp: 100, coins: 50, prob: 3 }
+    const wheelSegments = [
+        { name: "Lily", emoji: "🐨", xp: 15, coins: 8, prob: 20, color: "#FFB7C5" },
+        { name: "Haewon", emoji: "🐻‍❄️", xp: 10, coins: 5, prob: 25, color: "#FFD8B7" },
+        { name: "Sullyoon", emoji: "🦌", xp: 20, coins: 12, prob: 15, color: "#B7F0C4" },
+        { name: "BAE", emoji: "🐥", xp: 8, coins: 3, prob: 30, color: "#C5B9FF" },
+        { name: "Jiwoo", emoji: "🐶", xp: 25, coins: 15, prob: 7, color: "#FFF2B7" },
+        { name: "Kyujin", emoji: "🐱", xp: 30, coins: 20, prob: 3, color: "#B7E4FF" }
     ];
-    let wheelColors = ["#FFB7C5", "#FFD8B7", "#B7F0C4", "#C5B9FF", "#FFF2B7", "#B7E4FF"];
     let currentRotation = 0;
     let spinning = false;
     const canvas = document.getElementById('wheelCanvas');
     let ctx, width, height;
     
-    function resizeCanvas() {
-        if (!canvas) return;
-        const container = canvas.parentElement;
-        const size = Math.min(container.clientWidth, 380);
-        canvas.width = size;
-        canvas.height = size;
-        width = size;
-        height = size;
-        ctx = canvas.getContext('2d');
-        drawWheel();
-    }
     function drawWheel() {
         if (!ctx) return;
         const angleStep = (Math.PI * 2) / wheelSegments.length;
@@ -367,41 +460,57 @@
             const start = i * angleStep + currentRotation;
             const end = start + angleStep;
             ctx.beginPath();
-            ctx.fillStyle = wheelColors[i % wheelColors.length];
+            ctx.fillStyle = wheelSegments[i].color;
             ctx.moveTo(width/2, height/2);
-            ctx.arc(width/2, height/2, width/2 - 5, start, end);
+            ctx.arc(width/2, height/2, width/2 - 8, start, end);
             ctx.fill();
             ctx.save();
             ctx.translate(width/2, height/2);
             ctx.rotate(start + angleStep/2);
             ctx.fillStyle = "#1e1a2f";
-            ctx.font = `bold ${Math.max(12, width/28)}px "Poppins"`;
+            ctx.font = `bold ${Math.max(12, width/32)}px "Poppins"`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            const lines = wheelSegments[i].text.split('\n');
-            ctx.fillText(lines[0], width/3.5, -5);
-            ctx.font = `${Math.max(10, width/32)}px "Poppins"`;
-            ctx.fillText(lines[1], width/3.5, 15);
+            ctx.fillText(wheelSegments[i].emoji, width/3.2, -8);
+            ctx.font = `${Math.max(10, width/40)}px "Poppins"`;
+            ctx.fillText(wheelSegments[i].name, width/3.2, 18);
+            ctx.font = `bold ${Math.max(9, width/44)}px "Poppins"`;
+            ctx.fillStyle = "#2c2a4a";
+            ctx.fillText(`${wheelSegments[i].xp} XP`, width/3.2, 40);
             ctx.restore();
         }
         ctx.beginPath();
-        ctx.arc(width/2, height/2, 25, 0, 2*Math.PI);
+        ctx.arc(width/2, height/2, 28, 0, 2*Math.PI);
         ctx.fillStyle = "#2d2a55";
         ctx.fill();
         ctx.fillStyle = "#ffd966";
-        ctx.font = `bold ${width/18}px "Poppins"`;
-        ctx.fillText("🎲", width/2-10, height/2+8);
+        ctx.font = `bold ${width/16}px "Poppins"`;
+        ctx.fillText("N", width/2-10, height/2+8);
+        ctx.font = `bold ${width/22}px "Poppins"`;
+        ctx.fillText("MIXX", width/2-18, height/2+28);
     }
+    
     function getRandomPrize() {
         const totalProb = wheelSegments.reduce((s,seg)=> s+seg.prob,0);
         let rand = Math.random() * totalProb;
         let acum = 0;
         for (let seg of wheelSegments) {
             acum += seg.prob;
-            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 🪙` };
+            if (rand <= acum) return { xp: seg.xp, coins: seg.coins, text: `${seg.xp} XP y ${seg.coins} 🪙`, member: seg.name };
         }
-        return { xp: 5, coins: 2, text: "5 XP y 2 🪙" };
+        return { xp: 15, coins: 8, text: "15 XP y 8 🪙", member: "Lily" };
     }
+    
+    function showConfetti() {
+        const duration = 1500;
+        const end = Date.now() + duration;
+        (function frame() {
+            confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.6 }, colors: ['#ff7eb3', '#c084fc', '#ffd966'] });
+            confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, colors: ['#ff7eb3', '#c084fc', '#ffd966'] });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+    }
+    
     async function spinWheel() {
         if (spinning || !canSpinToday) return;
         const now = Date.now();
@@ -414,12 +523,18 @@
         }
         spinning = true;
         const prize = getRandomPrize();
-        const extraSpins = Math.floor(Math.random() * 5) + 5;
-        const targetAngle = (Math.random() * Math.PI * 2);
-        const totalAngle = (Math.PI * 2) * extraSpins + targetAngle;
+        const extraSpins = Math.floor(Math.random() * 8) + 6;
+        const segmentIndex = wheelSegments.findIndex(s => s.xp === prize.xp && s.coins === prize.coins);
+        const angleStep = (Math.PI * 2) / wheelSegments.length;
+        const targetSegmentAngle = (segmentIndex * angleStep) + (angleStep/2);
+        const pointerAngle = -Math.PI/2;
+        let targetRotation = pointerAngle - targetSegmentAngle;
+        targetRotation = ((targetRotation % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+        const totalAngle = (Math.PI * 2) * extraSpins + targetRotation;
         const startRot = currentRotation;
-        const duration = 2000;
+        const duration = 2500;
         const startTime = performance.now();
+        
         function animate(nowTime) {
             const elapsed = nowTime - startTime;
             const t = Math.min(1, elapsed / duration);
@@ -435,12 +550,37 @@
                 currentUser.lastSpin = Date.now();
                 saveUserDataToFirebase();
                 updateSpinButtonState();
-                Swal.fire({ title: '🎉 ¡Premio obtenido! 🎉', text: `Has ganado ${prize.text}`, icon: 'success', background: '#1e1b4b', color: 'white', confirmButtonColor: '#7c3aed' });
+                showConfetti();
+                Swal.fire({
+                    title: `🎉 ¡${prize.member} te ha bendecido! 🎉`,
+                    text: `Has ganado ${prize.text}`,
+                    icon: 'success',
+                    background: '#1e1b4b',
+                    color: 'white',
+                    confirmButtonColor: '#7c3aed',
+                    imageUrl: `https://kprofiles.com/wp-content/uploads/2022/02/${prize.member}-1-360x360.jpg`,
+                    imageWidth: 80,
+                    imageHeight: 80,
+                    imageAlt: prize.member
+                });
                 spinning = false;
             }
         }
         requestAnimationFrame(animate);
     }
+    
+    function resizeCanvas() {
+        if (!canvas) return;
+        const container = canvas.parentElement;
+        const size = Math.min(container.clientWidth, 420);
+        canvas.width = size;
+        canvas.height = size;
+        width = size;
+        height = size;
+        ctx = canvas.getContext('2d');
+        drawWheel();
+    }
+    
     function updateSpinButtonState() {
         const now = Date.now();
         const canSpin = (!currentUser.lastSpin || (now - currentUser.lastSpin) >= 24*60*60*1000);
@@ -455,11 +595,11 @@
             timerDiv.innerHTML = `⏳ Próximo giro en ${hours}h ${minutes}m`;
         } else {
             spinBtn.disabled = false;
-            timerDiv.innerHTML = "✨ ¡Gira una vez al día! ✨";
+            timerDiv.innerHTML = "✨ ¡Gira una vez al día y consigue premios de tus miembros favoritas! ✨";
         }
     }
     
-    // ========== CHAT ==========
+    // ========== CHAT, AMIGOS Y RESTO DE FUNCIONES (sin cambios) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -521,7 +661,6 @@
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== BUSCAR USUARIO POR NOMBRE ==========
     async function findUserByUsername(username) {
         if (!username) return null;
         const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
@@ -533,7 +672,6 @@
         return null;
     }
     
-    // ========== MANEJAR CLIC EN NOMBRE ==========
     async function handleUsernameClick(event) {
         const uid = event.currentTarget.getAttribute('data-uid');
         const username = event.currentTarget.getAttribute('data-username');
@@ -578,7 +716,6 @@
         }
     }
     
-    // ========== MOSTRAR PERFIL COMPLETO ==========
     async function showUserProfile(uid) {
         if (!uid) return;
         let userData = null;
@@ -660,7 +797,7 @@
         });
     }
     
-    // ========== SISTEMA DE AMIGOS ==========
+    // ========== SISTEMA DE AMIGOS (idéntico al funcional) ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -820,7 +957,7 @@
         } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>'; }
     }
     
-    // ========== NOTICIAS ==========
+    // ========== NOTICIAS (simplificado, igual que antes) ==========
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         if (!newsContainer) return;
@@ -1147,7 +1284,7 @@
         document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) picker.style.display = 'none'; });
     }
     
-    let currentFriendTab = 'friends'; // <--- VARIABLE GLOBAL DECLARADA CORRECTAMENTE
+    let currentFriendTab = 'friends';
     
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
