@@ -436,7 +436,7 @@
     function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
     function addCoins(amount) { currentUser.coins += amount; updateUI(); saveUserDataToFirebase(); }
     
-    // ========== RULETA REDISEÑADA (con imágenes locales) ==========
+    // ========== RULETA REDISEÑADA (con centro corregido) ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, prob: 25, color: "#FFB7C5", img: "lily.jpg" },
@@ -480,17 +480,18 @@
             ctx.fillText(`${wheelSegments[i].coins} 🪙`, width/3.2, 52);
             ctx.restore();
         }
-        // Centro con NMIXX bien ajustado
+        // Centro de la ruleta (círculo y texto NMIXX ajustado)
+        const centerRadius = Math.max(28, width / 12);
         ctx.beginPath();
-        ctx.arc(width/2, height/2, 35, 0, 2*Math.PI);
+        ctx.arc(width/2, height/2, centerRadius, 0, 2*Math.PI);
         ctx.fillStyle = "#1e1b4b";
         ctx.fill();
         ctx.fillStyle = "#ffd966";
-        const centerFontSize = Math.max(16, width/18);
+        const centerFontSize = Math.max(12, centerRadius * 0.55);
         ctx.font = `bold ${centerFontSize}px "Orbitron"`;
-        const text = "NMIXX";
-        const textWidth = ctx.measureText(text).width;
-        ctx.fillText(text, width/2 - textWidth/2, height/2 + centerFontSize/3);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("NMIXX", width/2, height/2);
     }
     
     function getRandomPrize() {
