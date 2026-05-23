@@ -17,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js" type="module"></script>
     
     <style>
-        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -39,8 +38,6 @@
         .dropdown-menu.show { display: flex; }
         .dropdown-item { background: transparent; border: none; color: white; padding: 10px 18px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
         .dropdown-item:hover { background: #7c3aed; }
-        
-        /* Perfil y monedas */
         .profile-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 8px 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
         .user-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; font-size: 0.9rem; }
         .coins-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffd966; display: inline-flex; align-items: center; gap: 5px; }
@@ -50,114 +47,25 @@
         .level-stats { display: flex; gap: 20px; align-items: center; }
         .level-badge { background: linear-gradient(135deg, #ffb347, #ff7e05); padding: 4px 14px; border-radius: 40px; font-weight: bold; color: #1e1a2f; font-size: 0.85rem; }
         .points { background: #2a2a5a; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; }
-        
-        /* Secciones */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
         .hero { text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 48px; padding: 30px 20px; margin-bottom: 30px; }
         .hero-logo { max-width: 450px; width: 90%; margin: 0 auto 20px; display: block; }
-        
-        /* Miembros */
         .member-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
         .member-card { background: rgba(20,25,55,0.6); border-radius: 28px; padding: 12px; width: 110px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
         .member-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); background: rgba(20,25,55,0.8); }
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
-        
-        /* RULETA MEJORADA */
-        .wheel-wrapper {
-            background: rgba(20, 25, 55, 0.7);
-            backdrop-filter: blur(12px);
-            border-radius: 48px;
-            padding: 25px 20px;
-            margin: 20px 0 30px;
-            text-align: center;
-            border: 1px solid rgba(255,126,179,0.5);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-        .wheel-title {
-            font-size: 1.6rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff7eb3, #c084fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .wheel-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            margin: 0 auto;
-            max-width: 400px;
-            width: 100%;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            max-width: 380px;
-            border-radius: 50%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: filter 0.2s;
-        }
-        .wheel-pointer {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 40px solid #ffd966;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-            z-index: 10;
-        }
-        .wheel-pointer::after {
-            content: "▼";
-            position: absolute;
-            top: -48px;
-            left: -12px;
-            font-size: 24px;
-            color: #ffd966;
-            text-shadow: 0 2px 2px black;
-        }
-        .spin-btn {
-            background: linear-gradient(95deg, #7c3aed, #c084fc);
-            border: none;
-            color: white;
-            font-weight: bold;
-            padding: 12px 30px;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            margin-top: 25px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .spin-btn:disabled {
-            background: #4a4a6a;
-            cursor: not-allowed;
-            opacity: 0.6;
-            transform: none;
-        }
-        .remaining-time {
-            font-size: 0.9rem;
-            margin-top: 12px;
-            color: #ffb3e0;
-            background: rgba(0,0,0,0.4);
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 40px;
-        }
-        
-        /* Noticias */
+        .wheel-wrapper { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(12px); border-radius: 48px; padding: 25px 20px; margin: 20px 0 30px; text-align: center; border: 1px solid rgba(255,126,179,0.5); }
+        .wheel-title { font-size: 1.6rem; font-weight: bold; background: linear-gradient(45deg, #ff7eb3, #c084fc); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .wheel-container { position: relative; display: flex; justify-content: center; margin: 0 auto; max-width: 400px; width: 100%; }
+        canvas { display: block; width: 100%; height: auto; max-width: 380px; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 40px solid #ffd966; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); z-index: 10; }
+        .wheel-pointer::after { content: "▼"; position: absolute; top: -48px; left: -12px; font-size: 24px; color: #ffd966; text-shadow: 0 2px 2px black; }
+        .spin-btn { background: linear-gradient(95deg, #7c3aed, #c084fc); border: none; color: white; font-weight: bold; padding: 12px 30px; border-radius: 60px; font-size: 1.2rem; margin-top: 25px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .spin-btn:disabled { background: #4a4a6a; cursor: not-allowed; opacity: 0.6; }
+        .remaining-time { font-size: 0.9rem; margin-top: 12px; color: #ffb3e0; background: rgba(0,0,0,0.4); display: inline-block; padding: 4px 16px; border-radius: 40px; }
         .news-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
@@ -165,8 +73,6 @@
         .like-controls { display: flex; justify-content: flex-end; }
         .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
-        
-        /* Curiosidades */
         .curiosities-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }
         .filter-btn { background: #2d2a55; border: none; color: white; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
@@ -176,8 +82,6 @@
         .curio-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; background: #ff7eb3; color: #1e1a2f; flex-shrink: 0; }
         .curio-text { font-size: 0.9rem; line-height: 1.4; margin-bottom: 5px; }
         .curio-member-tag { font-size: 0.7rem; background: rgba(255,126,179,0.2); display: inline-block; padding: 2px 8px; border-radius: 20px; color: #ffb3e0; }
-        
-        /* Chat */
         .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .chat-messages { background: #0a0c1a; border-radius: 24px; height: 440px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .message { display: flex; flex-direction: column; max-width: 80%; border-radius: 20px; padding: 8px 14px; position: relative; word-wrap: break-word; }
@@ -192,8 +96,6 @@
         .chat-input button { background: #7c3aed; border: none; padding: 0 20px; border-radius: 60px; color: white; cursor: pointer; }
         .emoji-picker-container { position: relative; display: inline-block; }
         emoji-picker { position: absolute; bottom: 50px; right: 0; z-index: 300; width: 280px; height: 350px; }
-        
-        /* Amigos */
         .friends-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
         .friends-tab { background: transparent; border: none; color: #ccc; padding: 8px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; }
         .friends-tab.active { background: #7c3aed; color: white; }
@@ -203,8 +105,6 @@
         .friend-bias { font-size: 0.7rem; color: #9ca3ff; }
         .friend-actions button { background: #7c3aed; border: none; color: white; padding: 5px 12px; border-radius: 40px; margin-left: 8px; cursor: pointer; }
         .empty-message { text-align: center; color: #aaa; padding: 20px; }
-        
-        /* Auth modal */
         .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: linear-gradient(145deg, #1e1b4b, #0f0c2c); border-radius: 40px; padding: 35px; width: 90%; max-width: 450px; text-align: center; border: 2px solid #ff7eb3; }
         .input-group { margin-bottom: 15px; text-align: left; }
@@ -216,32 +116,14 @@
         .forgot-pw { margin-top: 10px; font-size: 0.8rem; color: #9ca3ff; cursor: pointer; display: inline-block; }
         .swal2-container { z-index: 20000 !important; }
         .custom-swal { background: linear-gradient(145deg, #1e1b4b, #0f0c2c) !important; border-radius: 32px !important; border: 2px solid #ff7eb3 !important; color: white !important; }
-        .custom-swal .swal2-select, .custom-swal select {
-            background: #141829 !important;
-            border: 1px solid #ff7eb3 !important;
-            border-radius: 60px !important;
-            color: white !important;
-            padding: 12px 16px !important;
-            margin: 8px 0 !important;
-            width: 100% !important;
-        }
-        .custom-swal .swal2-select option, .custom-swal select option {
-            background: #141829 !important;
-            color: white !important;
-        }
-        .custom-swal .swal2-label {
-            color: #ffb3e0 !important;
-            text-align: left !important;
-            display: block !important;
-            margin-top: 8px !important;
-            font-weight: 500 !important;
-        }
+        .custom-swal .swal2-select, .custom-swal select { background: #141829 !important; border: 1px solid #ff7eb3 !important; border-radius: 60px !important; color: white !important; padding: 12px 16px !important; margin: 8px 0 !important; width: 100% !important; }
+        .custom-swal .swal2-select option, .custom-swal select option { background: #141829 !important; color: white !important; }
+        .custom-swal .swal2-label { color: #ffb3e0 !important; text-align: left !important; display: block !important; margin-top: 8px !important; font-weight: 500 !important; }
         @media (max-width: 750px) { .navbar-top { flex-direction: column; align-items: center; gap: 8px; } .navbar-bottom { justify-content: center; } body { padding-top: 130px; } .hero-logo { max-width: 300px; } .message { max-width: 90%; } emoji-picker { width: 260px; height: 320px; right: -20px; } .member-card { width: 95px; } .avatar { width: 65px; height: 65px; font-size: 1.8rem; } .curiosities-grid { grid-template-columns: 1fr; } .wheel-container canvas { max-width: 280px; } .wheel-pointer { top: -10px; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 30px solid #ffd966; } .wheel-pointer::after { top: -38px; left: -10px; font-size: 18px; } }
     </style>
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -257,7 +139,6 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -275,7 +156,6 @@
         </div>
     </div>
 
-    <!-- Perfil -->
     <div class="profile-area">
         <div class="user-info">
             <div>👤 <span id="usernameDisplay">Fan</span></div>
@@ -285,7 +165,6 @@
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
     </div>
 
-    <!-- INICIO -->
     <div id="homeSection" class="section active-section">
         <div class="level-area">
             <div class="level-stats">
@@ -294,8 +173,6 @@
             </div>
         </div>
         <div class="hero"><img class="hero-logo" src="https://raw.githubusercontent.com/supermurloc03/NSWERworld/main/img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
-        
-        <!-- RULETA MEJORADA -->
         <div class="wheel-wrapper">
             <div class="wheel-title"><span>🎡 MIXX WHEEL 🎡</span><span>✨ NMIXX ✨</span></div>
             <div class="wheel-container">
@@ -305,15 +182,12 @@
             <button id="spinButton" class="spin-btn">🎲 GIRAR LA RULETA 🎲</button>
             <div id="spinTimer" class="remaining-time"></div>
         </div>
-
         <div class="member-grid" id="memberGrid"></div>
         <div style="text-align:center; margin-top:30px;"><p>🌸 Bienvenido, <strong id="homeUsername">NSWER</strong>! 🌸</p><p>Comparte tu amor por NMIXX, gana experiencia y sube de nivel.</p></div>
     </div>
 
-    <!-- NOTICIAS -->
     <div id="noticiasSection" class="section"><div class="news-card"><h3>📰 Últimas noticias</h3><div id="newsContainer"></div></div></div>
 
-    <!-- CURIOSIDADES -->
     <div id="curiosidadesSection" class="section">
         <div class="curiosities-card">
             <h3>🤯 Curiosidades de NMIXX</h3>
@@ -327,7 +201,6 @@
         </div>
     </div>
 
-    <!-- CHAT -->
     <div id="chatSection" class="section">
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages"></div>
@@ -335,7 +208,6 @@
         </div>
     </div>
 
-    <!-- AMIGOS -->
     <div id="friendsSection" class="section">
         <div class="friends-tabs"><button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button><button class="friends-tab" data-friend-tab="sent">📤 Enviadas</button><button class="friends-tab" data-friend-tab="received">📥 Recibidas</button></div>
         <div id="friendsContainer" class="friends-list"></div>
@@ -345,7 +217,6 @@
 <script type="module">
     import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js';
     
-    // ========== CONFIGURACIÓN FIREBASE ==========
     const firebaseConfig = {
         apiKey: "AIzaSyCDFKC1WS8PccR633Sd_9KWag7WcWOKQsY",
         authDomain: "chat-nswer.firebaseapp.com",
@@ -360,7 +231,7 @@
     const auth = firebase.auth();
     const database = firebase.database();
     
-    // ========== DATOS MIEMBROS ==========
+    // Datos de miembros
     const membersData = {
         Lily: { fullName: "Lily (릴리)", animal: "🐨 Koala (Lilangi)", birth: "17 de octubre de 2002", height: "165 cm", position: "Vocalista principal", color: "Rosa", emoji: "🐨", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Lily-1-360x360.jpg" },
         Haewon: { fullName: "Haewon (해원)", animal: "🐻‍❄️ Oso polar (Haengmani)", birth: "25 de febrero de 2003", height: "161 cm", position: "Líder, vocalista", color: "Amarillo", emoji: "🐻‍❄️", imgUrl: "https://kprofiles.com/wp-content/uploads/2022/02/Haewon-1-360x360.jpg" },
@@ -375,10 +246,6 @@
     
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
     const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
-    
-    // Variable global para pestaña de amigos
-    let currentFriendTab = 'friends';
-    let friendsUnsubscribe = null;
     
     // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
@@ -633,7 +500,6 @@
             if (!container) return;
             container.innerHTML = "";
             if (messages.length === 0) { container.innerHTML = '<div class="message other">¡Escribe el primer mensaje!</div>'; return; }
-            
             messages.forEach(msg => {
                 const isOwn = (msg.uid === currentUser.uid);
                 const avatarLetter = getAvatarInitial(msg.bias);
@@ -646,7 +512,6 @@
                 msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 container.appendChild(msgDiv);
             });
-            
             document.querySelectorAll('.msg-username').forEach(el => {
                 el.removeEventListener('click', handleUsernameClick);
                 el.addEventListener('click', handleUsernameClick);
@@ -659,15 +524,11 @@
     // ========== BUSCAR USUARIO POR NOMBRE ==========
     async function findUserByUsername(username) {
         if (!username) return null;
-        try {
-            const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
-            const data = snapshot.val();
-            if (data) {
-                const uids = Object.keys(data);
-                if (uids.length > 0) return uids[0];
-            }
-        } catch(e) {
-            console.error("Error buscando usuario:", e);
+        const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
+        const data = snapshot.val();
+        if (data) {
+            const uids = Object.keys(data);
+            if (uids.length > 0) return uids[0];
         }
         return null;
     }
@@ -676,7 +537,6 @@
     async function handleUsernameClick(event) {
         const uid = event.currentTarget.getAttribute('data-uid');
         const username = event.currentTarget.getAttribute('data-username');
-        
         if (uid) {
             if (uid === currentUser.uid) {
                 Swal.fire({
@@ -699,21 +559,13 @@
             }
             showUserProfile(uid);
         } else if (username) {
-            // Buscar por nombre
-            Swal.fire({
-                title: 'Buscando usuario...',
-                text: `Intentando encontrar a ${username}`,
-                icon: 'info',
-                timer: 1000,
-                showConfirmButton: false
-            });
+            Swal.fire({ title: 'Buscando...', text: `Intentando encontrar a ${username}`, icon: 'info', timer: 1000, showConfirmButton: false });
             const foundUid = await findUserByUsername(username);
-            if (foundUid) {
-                showUserProfile(foundUid);
-            } else {
+            if (foundUid) showUserProfile(foundUid);
+            else {
                 Swal.fire({
                     title: `👤 ${escapeHtml(username)}`,
-                    html: `<p>⚠️ No se encontró una cuenta activa para este usuario.</p><p>Pídele que escriba un mensaje nuevo en el chat para actualizar su información.</p>`,
+                    html: `<p>⚠️ No se encontró una cuenta activa para este usuario.</p><p>Pídele que escriba un mensaje nuevo en el chat.</p>`,
                     icon: 'warning',
                     confirmButtonText: 'Cerrar',
                     customClass: { popup: 'custom-swal' },
@@ -726,7 +578,7 @@
         }
     }
     
-    // ========== MOSTRAR PERFIL COMPLETO (robusto) ==========
+    // ========== MOSTRAR PERFIL COMPLETO ==========
     async function showUserProfile(uid) {
         if (!uid) return;
         let userData = null;
@@ -734,24 +586,14 @@
             const snapshot = await database.ref(`users/${uid}`).once('value');
             userData = snapshot.val();
         } catch (error) {
-            console.error("Error al obtener usuario:", error);
+            console.error(error);
             Swal.fire('Error', 'No se pudo cargar el perfil', 'error');
             return;
         }
-        
         if (!userData) {
-            Swal.fire({
-                title: 'Usuario no encontrado',
-                html: `<p>Esta cuenta ya no existe o fue eliminada.</p>`,
-                icon: 'warning',
-                confirmButtonText: 'Cerrar',
-                customClass: { popup: 'custom-swal' },
-                background: '#1e1b4b',
-                color: 'white'
-            });
+            Swal.fire({ title: 'Usuario no encontrado', html: `<p>Esta cuenta ya no existe.</p>`, icon: 'warning', confirmButtonText: 'Cerrar', customClass: { popup: 'custom-swal' }, background: '#1e1b4b', color: 'white' });
             return;
         }
-        
         const username = userData.username || "NSWER";
         const bias = userData.bias || "Lily";
         const level = userData.level || 1;
@@ -764,9 +606,8 @@
         if (uid !== currentUser.uid) {
             try {
                 const friendCheck = await database.ref(`friends/${currentUser.uid}/friends/${uid}`).once('value');
-                if (friendCheck.exists()) {
-                    friendStatus = 'friends';
-                } else {
+                if (friendCheck.exists()) friendStatus = 'friends';
+                else {
                     const sentRequest = await database.ref(`friends/${currentUser.uid}/sent/${uid}`).once('value');
                     if (sentRequest.exists()) friendStatus = 'sent';
                     else {
@@ -774,9 +615,7 @@
                         if (receivedRequest.exists()) friendStatus = 'received';
                     }
                 }
-            } catch(e) {
-                console.warn("Error verificando amistad:", e);
-            }
+            } catch(e) { console.warn("Error checking friend status:", e); }
             
             if (friendStatus === 'none') {
                 actionButtonsHtml = `<button id="friendActionBtn" style="background:#7c3aed; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">➕ Agregar amigo</button>`;
@@ -788,7 +627,6 @@
                 actionButtonsHtml = `<button id="removeFriendBtn" style="background:#f44336; border:none; padding:8px 16px; border-radius:40px; color:white; margin-top:10px; cursor:pointer;">❌ Eliminar amigo</button>`;
             }
         }
-        
         await Swal.fire({
             title: `👤 ${escapeHtml(username)}`,
             html: `<div style="text-align:left">
@@ -822,7 +660,7 @@
         });
     }
     
-    // ========== SISTEMA DE AMIGOS COMPLETO ==========
+    // ========== SISTEMA DE AMIGOS ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -843,8 +681,8 @@
             });
             Swal.fire('Solicitud enviada', '', 'success');
             if (currentFriendTab === 'sent') loadSentRequests();
-        } catch(e) {
-            console.error("Error enviando solicitud:", e);
+        } catch(error) {
+            console.error(error);
             Swal.fire('Error', 'No se pudo enviar la solicitud. Verifica las reglas de Firebase.', 'error');
         }
     }
@@ -864,9 +702,9 @@
             Swal.fire('¡Amigos!', 'Ahora son amigos', 'success');
             if (currentFriendTab === 'friends') loadFriendsList();
             else if (currentFriendTab === 'received') loadReceivedRequests();
-        } catch(e) {
-            console.error("Error aceptando solicitud:", e);
-            Swal.fire('Error', 'No se pudo aceptar la solicitud', 'error');
+        } catch(error) {
+            console.error(error);
+            Swal.fire('Error', 'No se pudo aceptar la solicitud. Verifica las reglas.', 'error');
         }
     }
     
@@ -876,9 +714,9 @@
             await database.ref(`friends/${fromUid}/sent/${currentUser.uid}`).remove();
             Swal.fire('Solicitud rechazada', '', 'info');
             if (currentFriendTab === 'received') loadReceivedRequests();
-        } catch(e) {
-            console.error("Error rechazando solicitud:", e);
-            Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
+        } catch(error) {
+            console.error(error);
+            Swal.fire('Error', 'No se pudo rechazar la solicitud.', 'error');
         }
     }
     
@@ -893,9 +731,9 @@
             await database.ref(`friends/${friendUid}/friends/${currentUser.uid}`).remove();
             Swal.fire('Amigo eliminado', '', 'success');
             if (currentFriendTab === 'friends') loadFriendsList();
-        } catch(e) {
-            console.error("Error eliminando amigo:", e);
-            Swal.fire('Error', 'No se pudo eliminar al amigo', 'error');
+        } catch(error) {
+            console.error(error);
+            Swal.fire('Error', 'No se pudo eliminar amigo.', 'error');
         }
     }
     
@@ -914,28 +752,18 @@
             for (let req of sentList) {
                 const div = document.createElement('div');
                 div.className = 'friend-item';
-                div.innerHTML = `
-                    <div><span class="friend-name" data-uid="${req.to}">${escapeHtml(req.username || req.to)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
-                    <div class="friend-actions"><button class="cancel-request-btn" data-uid="${req.to}">Cancelar</button></div>
-                `;
+                div.innerHTML = `<div><span class="friend-name" data-uid="${req.to}">${escapeHtml(req.username || req.to)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div><div class="friend-actions"><button class="cancel-request-btn" data-uid="${req.to}">Cancelar</button></div>`;
                 container.appendChild(div);
             }
-            document.querySelectorAll('.friend-name').forEach(el => {
-                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-            });
-            document.querySelectorAll('.cancel-request-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const toUid = btn.getAttribute('data-uid');
-                    await database.ref(`friends/${currentUser.uid}/sent/${toUid}`).remove();
-                    await database.ref(`friends/${toUid}/received/${currentUser.uid}`).remove();
-                    loadSentRequests();
-                    Swal.fire('Solicitud cancelada', '', 'info');
-                });
-            });
-        } catch(e) {
-            console.error("Error cargando solicitudes enviadas:", e);
-            container.innerHTML = '<div class="empty-message">Error al cargar</div>';
-        }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.cancel-request-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+                const toUid = btn.getAttribute('data-uid');
+                await database.ref(`friends/${currentUser.uid}/sent/${toUid}`).remove();
+                await database.ref(`friends/${toUid}/received/${currentUser.uid}`).remove();
+                loadSentRequests();
+                Swal.fire('Solicitud cancelada', '', 'info');
+            }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar solicitudes enviadas</div>'; }
     }
     
     async function loadReceivedRequests() {
@@ -953,42 +781,20 @@
             for (let req of receivedList) {
                 const div = document.createElement('div');
                 div.className = 'friend-item';
-                div.innerHTML = `
-                    <div><span class="friend-name" data-uid="${req.from}">${escapeHtml(req.username || req.from)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div>
-                    <div class="friend-actions"><button class="accept-request-btn" data-uid="${req.from}">Aceptar</button><button class="decline-request-btn" data-uid="${req.from}">Rechazar</button></div>
-                `;
+                div.innerHTML = `<div><span class="friend-name" data-uid="${req.from}">${escapeHtml(req.username || req.from)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div><div class="friend-actions"><button class="accept-request-btn" data-uid="${req.from}">Aceptar</button><button class="decline-request-btn" data-uid="${req.from}">Rechazar</button></div>`;
                 container.appendChild(div);
             }
-            document.querySelectorAll('.friend-name').forEach(el => {
-                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-            });
-            document.querySelectorAll('.accept-request-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const fromUid = btn.getAttribute('data-uid');
-                    await acceptFriendRequest(fromUid);
-                    loadReceivedRequests();
-                    if (currentFriendTab === 'friends') loadFriendsList();
-                });
-            });
-            document.querySelectorAll('.decline-request-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const fromUid = btn.getAttribute('data-uid');
-                    await declineFriendRequest(fromUid);
-                    loadReceivedRequests();
-                });
-            });
-        } catch(e) {
-            console.error("Error cargando solicitudes recibidas:", e);
-            container.innerHTML = '<div class="empty-message">Error al cargar</div>';
-        }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.accept-request-btn').forEach(btn => btn.addEventListener('click', async (e) => { const fromUid = btn.getAttribute('data-uid'); await acceptFriendRequest(fromUid); loadReceivedRequests(); if (currentFriendTab === 'friends') loadFriendsList(); }));
+            document.querySelectorAll('.decline-request-btn').forEach(btn => btn.addEventListener('click', async (e) => { const fromUid = btn.getAttribute('data-uid'); await declineFriendRequest(fromUid); loadReceivedRequests(); }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar solicitudes recibidas</div>'; }
     }
     
+    let friendsUnsubscribe = null;
     function startFriendsListener() {
         if (friendsUnsubscribe) friendsUnsubscribe();
         const friendsRef = database.ref(`friends/${currentUser.uid}/friends`);
-        friendsUnsubscribe = friendsRef.on('value', () => {
-            if (currentFriendTab === 'friends') loadFriendsList();
-        });
+        friendsUnsubscribe = friendsRef.on('value', () => { if (currentFriendTab === 'friends') loadFriendsList(); });
     }
     
     async function loadFriendsList() {
@@ -1006,26 +812,12 @@
             for (let friend of friendsList) {
                 const div = document.createElement('div');
                 div.className = 'friend-item';
-                div.innerHTML = `
-                    <div><span class="friend-name" data-uid="${friend.uid}">${escapeHtml(friend.username)}</span><div class="friend-bias">Bias: ${escapeHtml(friend.bias)}</div></div>
-                    <div class="friend-actions"><button class="remove-friend-btn" data-uid="${friend.uid}">Eliminar</button></div>
-                `;
+                div.innerHTML = `<div><span class="friend-name" data-uid="${friend.uid}">${escapeHtml(friend.username)}</span><div class="friend-bias">Bias: ${escapeHtml(friend.bias)}</div></div><div class="friend-actions"><button class="remove-friend-btn" data-uid="${friend.uid}">Eliminar</button></div>`;
                 container.appendChild(div);
             }
-            document.querySelectorAll('.friend-name').forEach(el => {
-                el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); });
-            });
-            document.querySelectorAll('.remove-friend-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const friendUid = btn.getAttribute('data-uid');
-                    await removeFriend(friendUid);
-                    loadFriendsList();
-                });
-            });
-        } catch(e) {
-            console.error("Error cargando lista de amigos:", e);
-            container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>';
-        }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.remove-friend-btn').forEach(btn => btn.addEventListener('click', async (e) => { const friendUid = btn.getAttribute('data-uid'); await removeFriend(friendUid); loadFriendsList(); }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>'; }
     }
     
     // ========== NOTICIAS ==========
@@ -1354,6 +1146,8 @@
         picker.addEventListener('emoji-click', (event) => { input.value += event.detail.unicode; picker.style.display = 'none'; input.focus(); });
         document.addEventListener('click', (e) => { if (!emojiBtn.contains(e.target) && !picker.contains(e.target)) picker.style.display = 'none'; });
     }
+    
+    let currentFriendTab = 'friends'; // <--- VARIABLE GLOBAL DECLARADA CORRECTAMENTE
     
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
