@@ -588,7 +588,7 @@
         }
     }
     
-    // ========== CHAT CORREGIDO (maneja mensajes sin uid) ==========
+    // ========== CHAT (con manejo de usuarios sin uid) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -614,7 +614,7 @@
             bias: currentUser.bias,
             level: currentUser.level,
             timestamp: Date.now(),
-            uid: currentUser.uid  // Aseguramos que los mensajes nuevos tengan uid
+            uid: currentUser.uid
         });
         input.value = "";
         addXP(1);
@@ -632,20 +632,14 @@
             
             messages.forEach(msg => {
                 const isOwn = (msg.uid === currentUser.uid);
-                let uidForClick = msg.uid || null;
-                let usernameForClick = msg.username;
                 const avatarLetter = getAvatarInitial(msg.bias);
                 const avatarColor = avatarColors[msg.bias] || "#2d2a55";
                 const timeStr = formatTimestamp(msg.timestamp);
                 const msgDiv = document.createElement("div");
                 msgDiv.className = `message ${isOwn ? 'own' : 'other'}`;
-                
-                if (uidForClick) {
-                    msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-uid="${uidForClick}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
-                } else {
-                    // Usuario sin uid (antiguo)
-                    msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" data-username="${escapeHtml(usernameForClick)}" style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
-                }
+                const usernameAttr = `data-username="${escapeHtml(msg.username)}"`;
+                const uidAttr = msg.uid ? `data-uid="${msg.uid}"` : '';
+                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 container.appendChild(msgDiv);
             });
             
@@ -658,8 +652,20 @@
     }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    // ========== MANEJAR CLIC EN NOMBRE (corregido) ==========
-    function handleUsernameClick(event) {
+    // ========== BUSCAR USUARIO POR NOMBRE ==========
+    async function findUserByUsername(username) {
+        if (!username) return null;
+        const snapshot = await database.ref('users').orderByChild('username').equalTo(username).once('value');
+        const data = snapshot.val();
+        if (data) {
+            const uids = Object.keys(data);
+            if (uids.length > 0) return uids[0];
+        }
+        return null;
+    }
+    
+    // ========== MANEJAR CLIC EN NOMBRE (con búsqueda por nombre) ==========
+    async function handleUsernameClick(event) {
         const uid = event.currentTarget.getAttribute('data-uid');
         const username = event.currentTarget.getAttribute('data-username');
         
@@ -685,24 +691,34 @@
             }
             showUserProfile(uid);
         } else if (username) {
+            // Intentar encontrar el UID por nombre
             Swal.fire({
-                title: `👤 ${escapeHtml(username)}`,
-                html: `<div style="text-align:left">
-                    <p>⚠️ Este usuario no está registrado o es un visitante antiguo.</p>
-                    <p>No es posible interactuar con él/ella.</p>
-                </div>`,
-                icon: 'warning',
-                confirmButtonText: 'Cerrar',
-                customClass: { popup: 'custom-swal' },
-                background: '#1e1b4b',
-                color: 'white'
+                title: 'Buscando usuario...',
+                text: `Intentando encontrar a ${username}`,
+                icon: 'info',
+                timer: 1000,
+                showConfirmButton: false
             });
+            const foundUid = await findUserByUsername(username);
+            if (foundUid) {
+                showUserProfile(foundUid);
+            } else {
+                Swal.fire({
+                    title: `👤 ${escapeHtml(username)}`,
+                    html: `<p>⚠️ No se encontró una cuenta activa para este usuario.</p><p>Pídele que escriba un mensaje nuevo en el chat para actualizar su información.</p>`,
+                    icon: 'warning',
+                    confirmButtonText: 'Cerrar',
+                    customClass: { popup: 'custom-swal' },
+                    background: '#1e1b4b',
+                    color: 'white'
+                });
+            }
         } else {
             Swal.fire('Error', 'No se pudo identificar al usuario', 'error');
         }
     }
     
-    // ========== showUserProfile robusto ==========
+    // ========== MOSTRAR PERFIL COMPLETO (robusto) ==========
     async function showUserProfile(uid) {
         if (!uid) return;
         let userData = null;
@@ -761,7 +777,7 @@
             }
         }
         
-        const result = await Swal.fire({
+        await Swal.fire({
             title: `👤 ${escapeHtml(username)}`,
             html: `<div style="text-align:left">
                 <p><strong>🎀 Bias:</strong> ${escapeHtml(bias)}</p>
