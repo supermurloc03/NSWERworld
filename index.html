@@ -915,7 +915,7 @@
         }
     }
     
-    // ========== CHAT ==========
+    // ========== CHAT Y AMIGOS ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -1157,11 +1157,85 @@
             Swal.fire('Error', 'No se pudo eliminar amigo.', 'error');
         }
     }
-    async function loadSentRequests() { /* implementación igual que antes, omitida por brevedad */ }
-    async function loadReceivedRequests() { /* omitida */ }
+    async function loadSentRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/sent`).once('value');
+            const sent = snapshot.val() || {};
+            const sentList = Object.values(sent);
+            if (sentList.length === 0) {
+                container.innerHTML = '<div class="empty-message">📤 No tienes solicitudes enviadas</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let req of sentList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `<div><span class="friend-name" data-uid="${req.to}">${escapeHtml(req.username || req.to)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div><div class="friend-actions"><button class="cancel-request-btn" data-uid="${req.to}">Cancelar</button></div>`;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.cancel-request-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+                const toUid = btn.getAttribute('data-uid');
+                await database.ref(`friends/${currentUser.uid}/sent/${toUid}`).remove();
+                await database.ref(`friends/${toUid}/received/${currentUser.uid}`).remove();
+                loadSentRequests();
+                Swal.fire('Solicitud cancelada', '', 'info');
+            }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar solicitudes enviadas</div>'; }
+    }
+    async function loadReceivedRequests() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/received`).once('value');
+            const received = snapshot.val() || {};
+            const receivedList = Object.values(received);
+            if (receivedList.length === 0) {
+                container.innerHTML = '<div class="empty-message">📥 No tienes solicitudes recibidas</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let req of receivedList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `<div><span class="friend-name" data-uid="${req.from}">${escapeHtml(req.username || req.from)}</span><div class="friend-bias">Bias: ${escapeHtml(req.bias || '?')}</div></div><div class="friend-actions"><button class="accept-request-btn" data-uid="${req.from}">Aceptar</button><button class="decline-request-btn" data-uid="${req.from}">Rechazar</button></div>`;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.accept-request-btn').forEach(btn => btn.addEventListener('click', async (e) => { const fromUid = btn.getAttribute('data-uid'); await acceptFriendRequest(fromUid); loadReceivedRequests(); if (currentFriendTab === 'friends') loadFriendsList(); }));
+            document.querySelectorAll('.decline-request-btn').forEach(btn => btn.addEventListener('click', async (e) => { const fromUid = btn.getAttribute('data-uid'); await declineFriendRequest(fromUid); loadReceivedRequests(); }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar solicitudes recibidas</div>'; }
+    }
     let friendsUnsubscribe = null;
-    function startFriendsListener() { /* omitida */ }
-    async function loadFriendsList() { /* omitida */ }
+    function startFriendsListener() {
+        if (friendsUnsubscribe) friendsUnsubscribe();
+        const friendsRef = database.ref(`friends/${currentUser.uid}/friends`);
+        friendsUnsubscribe = friendsRef.on('value', () => { if (currentFriendTab === 'friends') loadFriendsList(); });
+    }
+    async function loadFriendsList() {
+        const container = document.getElementById('friendsContainer');
+        if (!container) return;
+        try {
+            const snapshot = await database.ref(`friends/${currentUser.uid}/friends`).once('value');
+            const friends = snapshot.val() || {};
+            const friendsList = Object.values(friends);
+            if (friendsList.length === 0) {
+                container.innerHTML = '<div class="empty-message">👥 Aún no tienes amigos. ¡Envía solicitudes!</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let friend of friendsList) {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `<div><span class="friend-name" data-uid="${friend.uid}">${escapeHtml(friend.username)}</span><div class="friend-bias">Bias: ${escapeHtml(friend.bias)}</div></div><div class="friend-actions"><button class="remove-friend-btn" data-uid="${friend.uid}">Eliminar</button></div>`;
+                container.appendChild(div);
+            }
+            document.querySelectorAll('.friend-name').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showUserProfile(el.getAttribute('data-uid')); }));
+            document.querySelectorAll('.remove-friend-btn').forEach(btn => btn.addEventListener('click', async (e) => { const friendUid = btn.getAttribute('data-uid'); await removeFriend(friendUid); loadFriendsList(); }));
+        } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>'; }
+    }
     
     // ========== NOTICIAS ==========
     async function loadNewsFromJSON() {
@@ -1239,7 +1313,42 @@
         { texto: "Su primer EP 'expérgo' vendió más de 600,000 copias.", member: "all" },
         { texto: "NMIXX es conocida por sus cambios de ritmo dentro de una misma canción (MIXX POP).", member: "all" },
         { texto: "Las miembros tienen colores oficiales: Lily (rosa), Haewon (amarillo), Sullyoon (verde), BAE (azul claro), Jiwoo (morado), Kyujin (naranja).", member: "all" },
-        // ... resto de curiosidades (se omiten por brevedad, pero puedes incluir el array completo de tu versión anterior)
+        { texto: "Lily nació en Australia y tiene nacionalidad australiana y coreana.", member: "Lily" },
+        { texto: "Lily habla inglés con fluidez y a veces corrige la pronunciación.", member: "Lily" },
+        { texto: "Lily puede tocar el piano, la guitarra y el ukelele.", member: "Lily" },
+        { texto: "Lily fue aprendiz de JYP durante 5 años.", member: "Lily" },
+        { texto: "La comida favorita de Lily es el pollo frito y el sushi.", member: "Lily" },
+        { texto: "Lily tiene una hermana mayor y un hermano menor.", member: "Lily" },
+        { texto: "Haewon fue aprendiz por 7 años, la más larga del grupo.", member: "Haewon" },
+        { texto: "Haewon es conocida por imitar voces.", member: "Haewon" },
+        { texto: "Haewon tiene certificación en inglés TOEIC casi perfecta.", member: "Haewon" },
+        { texto: "Haewon es la líder del grupo.", member: "Haewon" },
+        { texto: "Haewon practicó taekwondo de niña.", member: "Haewon" },
+        { texto: "A Haewon le encanta el café y colecciona tazas.", member: "Haewon" },
+        { texto: "Sullyoon fue modelo infantil y apareció en comerciales.", member: "Sullyoon" },
+        { texto: "Sullyoon le encanta dibujar y pintar.", member: "Sullyoon" },
+        { texto: "Sullyoon fue compañera de escuela de una miembro de IVE.", member: "Sullyoon" },
+        { texto: "Sullyoon es la más alta del grupo.", member: "Sullyoon" },
+        { texto: "Sullyoon tiene una personalidad tímida al principio.", member: "Sullyoon" },
+        { texto: "La comida favorita de Sullyoon es el tteokbokki.", member: "Sullyoon" },
+        { texto: "BAE toca la batería y practicó kendo.", member: "BAE" },
+        { texto: "BAE tiene certificación en cocina coreana.", member: "BAE" },
+        { texto: "BAE es la más extrovertida.", member: "BAE" },
+        { texto: "BAE se unió a JYP después de una audición en línea.", member: "BAE" },
+        { texto: "A BAE le gusta el baloncesto y los videojuegos.", member: "BAE" },
+        { texto: "El lema de BAE es 'Siempre sonríe'.", member: "BAE" },
+        { texto: "Jiwoo es la más joven del grupo (maknae).", member: "Jiwoo" },
+        { texto: "Jiwoo aprendió a bailar viendo YouTube.", member: "Jiwoo" },
+        { texto: "Jiwoo es bailarina principal y destaca en freestyle.", member: "Jiwoo" },
+        { texto: "Jiwoo entrenó solo 6 meses antes de debutar.", member: "Jiwoo" },
+        { texto: "Jiwoo adora a los gatos y tiene dos mascotas.", member: "Jiwoo" },
+        { texto: "El color favorito de Jiwoo es el morado.", member: "Jiwoo" },
+        { texto: "Kyujin puede imitar a todos los miembros.", member: "Kyujin" },
+        { texto: "Kyujin es bailarina principal y sabe cantar muy bien.", member: "Kyujin" },
+        { texto: "Kyujin fue compañera de escuela de Jang Wonyoung (IVE).", member: "Kyujin" },
+        { texto: "Kyujin practicó natación competitiva.", member: "Kyujin" },
+        { texto: "Kyujin es la más baja del grupo pero tiene gran presencia.", member: "Kyujin" },
+        { texto: "A Kyujin le encanta el chocolate y los postres.", member: "Kyujin" }
     ];
     let currentCuriosityFilter = "all";
     function loadCuriosities() {
@@ -1484,14 +1593,15 @@
     let currentFriendTab = 'friends';
     
     // ========== MÚSICA ==========
+    // Catálogo con los enlaces CORREGIDOS (O.O actualizado)
     const songsCatalog = [
-        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, videoId: "gJliq_f4k0M", defaultUnlocked: true },
+        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, videoId: "oiqUjW5OHV4", defaultUnlocked: true },
         { id: "song_dice", title: "DICE", artist: "NMIXX", price: 50, videoId: "qVJNalVgW4I", defaultUnlocked: false },
-        { id: "song_lmtl", title: "Love Me Like This", artist: "NMIXX", price: 100, videoId: "PqMk_4w5gkU", defaultUnlocked: false },
+        { id: "song_lmtl", title: "Love Me Like This", artist: "NMIXX", price: 100, videoId: "EDnwWcFpObo", defaultUnlocked: false },
         { id: "song_party", title: "Party O'Clock", artist: "NMIXX", price: 100, videoId: "gTqRbFv7R1E", defaultUnlocked: false },
-        { id: "song_dash", title: "Dash", artist: "NMIXX", price: 150, videoId: "LQj--KMN9Rc", defaultUnlocked: false },
-        { id: "song_sonar", title: "Soñar (Breaker)", artist: "NMIXX", price: 150, videoId: "M7qxKpqpzwc", defaultUnlocked: false },
-        { id: "song_runforroses", title: "Run For Roses", artist: "NMIXX", price: 200, videoId: "MfQ9rcoZQNk", defaultUnlocked: false }
+        { id: "song_dash", title: "Dash", artist: "NMIXX", price: 150, videoId: "7UecFm_bSTU", defaultUnlocked: false },
+        { id: "song_sonar", title: "Soñar (Breaker)", artist: "NMIXX", price: 150, videoId: "MMtRxcy8PX0", defaultUnlocked: false },
+        { id: "song_runforroses", title: "Run For Roses", artist: "NMIXX", price: 200, videoId: "j6tKIdt9K9M", defaultUnlocked: false }
     ];
     
     async function initSongsCatalog() {
