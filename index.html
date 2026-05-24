@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ========== ESTILOS GENERALES ========== */
+        /* ========== ESTILOS GENERALES (igual que antes, sin cambios relevantes) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -609,7 +609,6 @@
     
     function drawWheel() {
         if (!ctx) return;
-        // Asegurar que el radio del círculo exterior sea positivo (mínimo 1)
         const outerRadius = Math.max(1, width/2 - 8);
         const angleStep = (Math.PI * 2) / wheelSegments.length;
         for (let i = 0; i < wheelSegments.length; i++) {
@@ -624,7 +623,6 @@
             ctx.translate(width/2, height/2);
             ctx.rotate(start + angleStep/2);
             ctx.fillStyle = "#1a1a2e";
-            // Ajustar fuentes según tamaño
             const fontSizeEmoji = Math.max(12, width/26);
             const fontSizeName = Math.max(10, width/32);
             const fontSizeXp = Math.max(8, width/36);
@@ -642,7 +640,6 @@
             ctx.fillText(`${wheelSegments[i].coins} 💰`, width/3.2, 52);
             ctx.restore();
         }
-        // Centro: radio mínimo 1
         const centerRadius = Math.max(1, width / 12);
         ctx.beginPath();
         ctx.arc(width/2, height/2, centerRadius, 0, 2*Math.PI);
@@ -732,9 +729,8 @@
         if (!canvas) return;
         const container = canvas.parentElement;
         if (!container) return;
-        // Obtener ancho del contenedor, mínimo 100px para evitar radios negativos
         let size = Math.min(container.clientWidth, 420);
-        if (size < 50) size = 200; // valor por defecto si el contenedor no es visible
+        if (size < 50) size = 200;
         canvas.width = size;
         canvas.height = size;
         width = size;
@@ -761,7 +757,7 @@
         }
     }
     
-    // ========== RANKING ==========
+    // ========== RANKING CORREGIDO ==========
     async function loadRanking() {
         const container = document.getElementById('rankingContainer');
         if (!container) return;
@@ -776,7 +772,8 @@
             const usersList = [];
             for (let uid in users) {
                 const user = users[uid];
-                if (user.username && user.username !== "NSWER_Fan") {
+                // Ignorar usuarios sin nombre o con nombre por defecto
+                if (user && user.username && user.username !== "NSWER_Fan" && user.username !== "Fan") {
                     usersList.push({
                         username: user.username,
                         level: user.level || 1,
@@ -785,33 +782,36 @@
                     });
                 }
             }
-            usersList.sort((a,b) => b.level - a.level || b.xp - a.xp);
-            const topUsers = usersList.slice(0, 20);
-            if (topUsers.length === 0) {
+            if (usersList.length === 0) {
                 container.innerHTML = '<div class="empty-message">No hay usuarios para mostrar.</div>';
                 return;
             }
+            usersList.sort((a,b) => {
+                if (a.level !== b.level) return b.level - a.level;
+                return b.xp - a.xp;
+            });
+            const topUsers = usersList.slice(0, 20);
             let html = `<table class="ranking-table">
                         <thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Bias</th></tr></thead><tbody>`;
             topUsers.forEach((user, index) => {
                 const rankClass = index < 3 ? 'top-rank' : '';
                 html += `<tr class="${rankClass}">
-                              <td>${index+1}</td>
-                              <td>${escapeHtml(user.username)}</td>
-                              <td>🏆 ${user.level}</td>
-                              <td>⭐ ${user.xp}</td>
-                              <td style="color: ${biasColors[user.bias] || '#fff'}">${user.bias}</td>
+                            <td>${index+1}</td>
+                            <td>${escapeHtml(user.username)}</td>
+                            <td>🏆 ${user.level}</td>
+                            <td>⭐ ${user.xp}</td>
+                            <td style="color: ${biasColors[user.bias] || '#fff'}">${user.bias}</td>
                           </tr>`;
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
         } catch (error) {
-            console.error(error);
+            console.error("Error al cargar ranking:", error);
             container.innerHTML = '<div class="empty-message">Error al cargar el ranking. Intenta de nuevo más tarde.</div>';
         }
     }
     
-    // ========== CHAT Y AMIGOS ==========
+    // ========== CHAT Y AMIGOS (código completo, igual que antes) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
