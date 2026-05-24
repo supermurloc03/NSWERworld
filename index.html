@@ -23,7 +23,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -51,7 +50,7 @@
         .bias-fixed { background: #2d2a55; padding: 4px 14px; border-radius: 40px; display: flex; gap: 8px; font-size: 0.85rem; }
         .pronoun-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffb3e0; }
         
-        /* ===== NUEVO SISTEMA DE NIVELES CON BARRA DE PROGRESO ===== */
+        /* NIVELES CON BARRA DE PROGRESO */
         .level-area {
             background: rgba(30, 27, 75, 0.8);
             backdrop-filter: blur(12px);
@@ -114,7 +113,7 @@
             color: #ddd;
         }
         
-        /* Tabla de clasificación */
+        /* TABLA DE CLASIFICACIÓN */
         .ranking-section {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -141,7 +140,7 @@
             border-radius: 12px;
         }
         
-        /* Resto de estilos (sin cambios relevantes) */
+        /* Secciones */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
@@ -153,7 +152,7 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* Ruleta */
+        /* RULETA */
         .wheel-wrapper {
             background: linear-gradient(145deg, #1e1a3a, #0f0c2a);
             backdrop-filter: blur(12px);
@@ -224,14 +223,13 @@
         .remaining-time { font-size: 1rem; margin-top: 18px; color: #ffd966; background: rgba(0,0,0,0.5); display: inline-block; padding: 6px 22px; border-radius: 40px; }
         
         /* Noticias, curiosidades, chat, amigos */
-        .news-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
+        .news-card, .curiosities-card, .chat-container, .ranking-section { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
         .news-text { font-size: 0.95rem; line-height: 1.4; margin-bottom: 10px; }
         .like-controls { display: flex; justify-content: flex-end; }
         .like-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 12px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .like-btn.liked { background: #ff7eb3; color: #1e1a2f; }
-        .curiosities-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }
         .filter-btn { background: #2d2a55; border: none; color: white; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
         .filter-btn.active { background: #ff7eb3; color: #1e1a2f; box-shadow: 0 0 8px #ff7eb3; }
@@ -240,7 +238,6 @@
         .curio-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; background: #ff7eb3; color: #1e1a2f; flex-shrink: 0; }
         .curio-text { font-size: 0.9rem; line-height: 1.4; margin-bottom: 5px; }
         .curio-member-tag { font-size: 0.7rem; background: rgba(255,126,179,0.2); display: inline-block; padding: 2px 8px; border-radius: 20px; color: #ffb3e0; }
-        .chat-container { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .chat-messages { background: #0a0c1a; border-radius: 24px; height: 440px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .message { display: flex; flex-direction: column; max-width: 80%; border-radius: 20px; padding: 8px 14px; position: relative; word-wrap: break-word; }
         .message.own { align-self: flex-end; background: linear-gradient(135deg, #ff7eb3, #c084fc); color: #1a0f2a; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -327,18 +324,18 @@
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
     </div>
 
-    <!-- SECCIÓN INICIO -->
+    <!-- SECCIÓN INICIO (con nivel y ruleta) -->
     <div id="homeSection" class="section active-section">
         <div class="level-area">
             <div class="level-header">
                 <div class="level-badge" id="levelDisplay">🏆 Nivel 1</div>
-                <div class="rank-title" id="rankDisplay">🌱 NSWER Novato</div>
+                <div class="rank-title" id="rankTitle">🌱 NSWER Novato</div>
                 <div class="points" id="pointsDisplay">⭐ 0 XP</div>
             </div>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="xpProgressBar" style="width: 0%;"></div>
             </div>
-            <div class="xp-text" id="xpText">0 / 150 XP para siguiente nivel</div>
+            <div class="xp-text" id="xpText">0 / 150 XP</div>
         </div>
         <div class="hero"><img class="hero-logo" src="img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
         
@@ -382,18 +379,20 @@
         </div>
     </div>
 
-    <!-- AMIGOS -->
-    <div id="friendsSection" class="section">
-        <div class="friends-tabs"><button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button><button class="friends-tab" data-friend-tab="sent">📤 Enviadas</button><button class="friends-tab" data-friend-tab="received">📥 Recibidas</button></div>
-        <div id="friendsContainer" class="friends-list"></div>
-    </div>
-
     <!-- RANKING -->
     <div id="rankingSection" class="section">
         <div class="ranking-section">
             <h3>🏆 Clasificación de NSWERs</h3>
-            <div id="rankingContainer">Cargando ranking...</div>
+            <div id="rankingContainer">
+                <div class="empty-message">Cargando ranking...</div>
+            </div>
         </div>
+    </div>
+
+    <!-- AMIGOS -->
+    <div id="friendsSection" class="section">
+        <div class="friends-tabs"><button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button><button class="friends-tab" data-friend-tab="sent">📤 Enviadas</button><button class="friends-tab" data-friend-tab="received">📥 Recibidas</button></div>
+        <div id="friendsContainer" class="friends-list"></div>
     </div>
 </div>
 
@@ -426,26 +425,22 @@
     };
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
     
-    // Sistema de niveles: XP por nivel = 150 * nivel (pero el umbral es acumulativo)
-    // Para simplificar, usaremos XP necesario para subir de nivel: nivel * 150.
-    // Así, nivel 1 -> 0 XP, nivel 2 -> 150 XP, nivel 3 -> 300 XP, etc.
-    // Función para calcular nivel a partir de XP
-    function calcLevel(xp) {
-        return Math.floor(xp / 150) + 1;
-    }
-    function xpForNextLevel(level) {
-        return level * 150;
-    }
-    function xpForCurrentLevel(level) {
-        return (level - 1) * 150;
-    }
+    // Sistema de niveles: 150 XP por nivel, rango cada 25 niveles
+    const XP_PER_LEVEL = 150;
+    const rankLevels = [
+        { minLevel: 1, title: "NSWER Novato", emoji: "🌱" },
+        { minLevel: 26, title: "Ad Mare Aprendiz", emoji: "🌊" },
+        { minLevel: 51, title: "Entusiasta de MIXX", emoji: "🎵" },
+        { minLevel: 76, title: "Star NSWER", emoji: "⭐" },
+        { minLevel: 101, title: "Leyenda MIXXTOPIA", emoji: "🏆" },
+        { minLevel: 126, title: "Ídolo NSWER", emoji: "👑" }
+    ];
+    
     function getRankTitle(level) {
-        if (level <= 25) return "🌱 NSWER Novato";
-        if (level <= 50) return "🌊 Ad Mare Aprendiz";
-        if (level <= 75) return "🎵 Entusiasta de MIXX";
-        if (level <= 100) return "⭐ Star NSWER";
-        if (level <= 125) return "🏆 Leyenda MIXXTOPIA";
-        return "👑 Ídolo NSWER";
+        for (let i = rankLevels.length-1; i >= 0; i--) {
+            if (level >= rankLevels[i].minLevel) return `${rankLevels[i].emoji} ${rankLevels[i].title}`;
+        }
+        return "🌱 NSWER Novato";
     }
     
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0 };
@@ -470,7 +465,7 @@
         if (data) {
             currentUser.username = data.username || "NSWER_Fan";
             currentUser.xp = data.xp || 0;
-            currentUser.level = data.level || calcLevel(currentUser.xp);
+            currentUser.level = data.level || 1;
             currentUser.bias = data.bias || "Lily";
             currentUser.pronoun = data.pronoun || "No especificado";
             currentUser.lastUsernameChange = data.lastUsernameChange || null;
@@ -482,7 +477,7 @@
         }
         updateUI();
         saveUserDataToFirebase();
-        // Escuchar cambios en tiempo real en las monedas
+        // Escuchar cambios en tiempo real en monedas y XP
         database.ref(`users/${currentUser.uid}/coins`).on('value', (snapshot) => {
             const newCoins = snapshot.val();
             if (newCoins !== null && newCoins !== currentUser.coins) {
@@ -490,13 +485,11 @@
                 document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
             }
         });
-        // Escuchar cambios en XP para actualizar barra y nivel en tiempo real
         database.ref(`users/${currentUser.uid}/xp`).on('value', (snapshot) => {
             const newXp = snapshot.val();
             if (newXp !== null && newXp !== currentUser.xp) {
                 currentUser.xp = newXp;
-                recalcLevel(false); // false para no guardar de nuevo en bucle
-                updateUI();
+                recalcLevel(false);
             }
         });
     }
@@ -535,67 +528,66 @@
     
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
-        const level = currentUser.level;
-        document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${level}`;
-        document.getElementById("rankDisplay").innerHTML = getRankTitle(level);
+        document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
+        document.getElementById("rankTitle").innerHTML = getRankTitle(currentUser.level);
         document.getElementById("homeUsername").innerText = currentUser.username;
         document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
+        // Actualizar barra de progreso
+        const xpForCurrentLevel = (currentUser.level - 1) * XP_PER_LEVEL;
+        const xpForNextLevel = currentUser.level * XP_PER_LEVEL;
+        const currentLevelXp = currentUser.xp - xpForCurrentLevel;
+        const percent = (currentLevelXp / XP_PER_LEVEL) * 100;
+        document.getElementById("xpProgressBar").style.width = Math.min(100, percent) + "%";
+        document.getElementById("xpText").innerHTML = `${currentUser.xp} / ${xpForNextLevel} XP`;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
         if (biasFixedSpan) biasFixedSpan.style.color = biasColors[currentUser.bias] || "#ffb3e0";
         const pronounDiv = document.getElementById("pronounDisplay");
         if (currentUser.pronoun && currentUser.pronoun !== "No especificado") { pronounDiv.style.display = "inline-block"; pronounDiv.innerText = `🏳️‍🌈 ${currentUser.pronoun}`; }
         else { pronounDiv.style.display = "none"; }
-        // Actualizar barra de progreso
-        const currentLevelXP = (level - 1) * 150;
-        const nextLevelXP = level * 150;
-        const xpInLevel = currentUser.xp - currentLevelXP;
-        const percent = (xpInLevel / 150) * 100;
-        document.getElementById("xpProgressBar").style.width = `${Math.min(100, percent)}%`;
-        document.getElementById("xpText").innerHTML = `${currentUser.xp - currentLevelXP} / 150 XP para nivel ${level+1}`;
     }
     
-    let isLevelingUp = false;
-    function recalcLevel(save = true) {
-        const newLevel = calcLevel(currentUser.xp);
+    function showLevelUpAnimation(newLevel) {
+        showConfetti();
+        Swal.fire({
+            title: `🎉 ¡SUBIDA DE NIVEL! 🎉`,
+            text: `¡Has alcanzado el Nivel ${newLevel}! Recibes 25 💰 por tu esfuerzo.`,
+            icon: 'success',
+            background: '#1e1b4b',
+            color: 'white',
+            confirmButtonColor: '#7c3aed',
+            timer: 3000,
+            showConfirmButton: true
+        });
+    }
+    
+    function recalcLevel(giveReward = true) {
+        let newLevel = Math.floor(currentUser.xp / XP_PER_LEVEL) + 1;
+        if (newLevel < 1) newLevel = 1;
         if (newLevel !== currentUser.level) {
             const oldLevel = currentUser.level;
             currentUser.level = newLevel;
-            // Recompensa por subir de nivel: 50 monedas por cada nivel ganado
-            const levelsGained = newLevel - oldLevel;
-            const rewardCoins = levelsGained * 50;
-            if (rewardCoins > 0) {
-                currentUser.coins += rewardCoins;
-                if (!isLevelingUp) {
-                    isLevelingUp = true;
-                    showConfetti(); // animación level up
-                    Swal.fire({
-                        title: `🎉 ¡SUBIDA DE NIVEL! 🎉`,
-                        html: `¡Has alcanzado el nivel ${newLevel}!<br>➕ +${rewardCoins} monedas`,
-                        icon: 'success',
-                        background: '#1e1b4b',
-                        color: 'white',
-                        confirmButtonColor: '#7c3aed',
-                        timer: 3000
-                    });
-                    setTimeout(() => { isLevelingUp = false; }, 1000);
-                }
+            if (giveReward && newLevel > oldLevel) {
+                currentUser.coins += 25;
                 saveUserDataToFirebase();
+                showLevelUpAnimation(newLevel);
             }
             updateUI();
+            saveUserDataToFirebase();
         }
-        if (save) saveUserDataToFirebase();
         updateUI();
+        saveUserDataToFirebase();
     }
     
     function addXP(points=1) {
         currentUser.xp += points;
         recalcLevel(true);
         updateUI();
+        saveUserDataToFirebase();
     }
-    function addCoins(amount) {
-        currentUser.coins += amount;
-        updateUI();
+    function addCoins(amount) { 
+        currentUser.coins += amount; 
+        updateUI(); 
         saveUserDataToFirebase();
     }
     
@@ -679,7 +671,6 @@
             return;
         }
         spinning = true;
-        
         const prize = getRandomPrize();
         const extraSpins = Math.floor(Math.random() * 16) + 5;
         const segmentIndex = wheelSegments.findIndex(s => s.name === prize.member);
@@ -759,6 +750,56 @@
         }
     }
     
+    // ========== RANKING ==========
+    async function loadRanking() {
+        const container = document.getElementById('rankingContainer');
+        if (!container) return;
+        container.innerHTML = '<div class="empty-message">Cargando ranking...</div>';
+        try {
+            const snapshot = await database.ref('users').once('value');
+            const users = snapshot.val();
+            if (!users) {
+                container.innerHTML = '<div class="empty-message">No hay usuarios registrados aún.</div>';
+                return;
+            }
+            const usersList = [];
+            for (let uid in users) {
+                const user = users[uid];
+                if (user.username && user.username !== "NSWER_Fan") {
+                    usersList.push({
+                        username: user.username,
+                        level: user.level || 1,
+                        xp: user.xp || 0,
+                        bias: user.bias || "Lily"
+                    });
+                }
+            }
+            usersList.sort((a,b) => b.level - a.level || b.xp - a.xp);
+            const topUsers = usersList.slice(0, 20);
+            if (topUsers.length === 0) {
+                container.innerHTML = '<div class="empty-message">No hay usuarios para mostrar.</div>';
+                return;
+            }
+            let html = `<table class="ranking-table">
+                        <thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Bias</th></tr></thead><tbody>`;
+            topUsers.forEach((user, index) => {
+                const rankClass = index < 3 ? 'top-rank' : '';
+                html += `<tr class="${rankClass}">
+                             <td>${index+1}</td>
+                             <td>${escapeHtml(user.username)}</td>
+                             <td>🏆 ${user.level}</td>
+                             <td>⭐ ${user.xp}</td>
+                             <td style="color: ${biasColors[user.bias] || '#fff'}">${user.bias}</td>
+                         </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = '<div class="empty-message">Error al cargar el ranking. Intenta de nuevo más tarde.</div>';
+        }
+    }
+    
     // ========== CHAT Y AMIGOS ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
@@ -808,8 +849,7 @@
                 msgDiv.className = `message ${isOwn ? 'own' : 'other'}`;
                 const usernameAttr = `data-username="${escapeHtml(msg.username)}"`;
                 const uidAttr = msg.uid ? `data-uid="${msg.uid}"` : '';
-                const levelBadge = msg.level ? `<span class="msg-level">Nvl ${msg.level}</span>` : '';
-                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span>${levelBadge}<span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-level">🏆 Nvl ${msg.level || 1}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 container.appendChild(msgDiv);
             });
             document.querySelectorAll('.msg-username').forEach(el => {
@@ -957,7 +997,7 @@
         });
     }
     
-    // Funciones de amigos (simplificadas pero completas)
+    // FUNCIONES DE AMIGOS (completas)
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -1358,7 +1398,6 @@
             });
         });
     }
-    
     async function enforceRules() {
         if (isAcceptingRules) return;
         isAcceptingRules = true;
@@ -1386,50 +1425,6 @@
         isAcceptingRules = false;
     }
     
-    // ========== RANKING ==========
-    async function loadRanking() {
-        const container = document.getElementById('rankingContainer');
-        if (!container) return;
-        container.innerHTML = '<div class="empty-message">Cargando ranking...</div>';
-        try {
-            const snapshot = await database.ref('users').once('value');
-            const users = snapshot.val();
-            if (!users) {
-                container.innerHTML = '<div class="empty-message">No hay usuarios registrados.</div>';
-                return;
-            }
-            const usersList = Object.entries(users).map(([uid, data]) => ({
-                uid: uid,
-                username: data.username || "Anónimo",
-                level: data.level || calcLevel(data.xp || 0),
-                xp: data.xp || 0,
-                bias: data.bias || "Lily"
-            }));
-            usersList.sort((a, b) => b.xp - a.xp);
-            const topUsers = usersList.slice(0, 20);
-            let html = `<table class="ranking-table">
-                        <thead>
-                            <tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Bias</th></tr>
-                        </thead>
-                        <tbody>`;
-            topUsers.forEach((user, index) => {
-                const rankClass = index < 3 ? 'top-rank' : '';
-                html += `<tr class="${rankClass}">
-                            <td>${index + 1}</td>
-                            <td>${escapeHtml(user.username)}</td>
-                            <td>${user.level}</td>
-                            <td>${user.xp}</td>
-                            <td style="color: ${biasColors[user.bias] || '#ffb3e0'}">${escapeHtml(user.bias)}</td>
-                         </tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        } catch(error) {
-            console.error(error);
-            container.innerHTML = '<div class="empty-message">Error al cargar el ranking.</div>';
-        }
-    }
-    
     // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
@@ -1438,8 +1433,8 @@
             noticias: document.getElementById('noticiasSection'),
             curiosidades: document.getElementById('curiosidadesSection'),
             chat: document.getElementById('chatSection'),
-            friends: document.getElementById('friendsSection'),
-            ranking: document.getElementById('rankingSection')
+            ranking: document.getElementById('rankingSection'),
+            friends: document.getElementById('friendsSection')
         };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
@@ -1450,8 +1445,8 @@
             else if (sec === 'noticias') sections.noticias.classList.add('active-section');
             else if (sec === 'curiosidades') sections.curiosidades.classList.add('active-section');
             else if (sec === 'chat') sections.chat.classList.add('active-section');
-            else if (sec === 'friends') sections.friends.classList.add('active-section');
             else if (sec === 'ranking') { sections.ranking.classList.add('active-section'); loadRanking(); }
+            else if (sec === 'friends') sections.friends.classList.add('active-section');
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
     }
@@ -1510,7 +1505,7 @@
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
         initNavigation(); initDropdown(); initFriendsTabs(); initEmojiPicker(); initCuriosityFilters();
-        startFriendsListener(); updateSpinButtonState(); loadRanking();
+        startFriendsListener(); updateSpinButtonState();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         window.addEventListener('resize', () => resizeCanvas());
