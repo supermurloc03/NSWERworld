@@ -236,8 +236,18 @@
             width: 60px;
             cursor: pointer;
         }
+        .activate-music-btn {
+            background: #7c3aed;
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
         
-        /* Otras secciones */
+        /* Secciones */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
@@ -504,6 +514,7 @@
     <div class="player-controls">
         <button id="playPauseBtn" class="player-btn">⏸️</button>
         <button id="nextSongBtn" class="player-btn">⏭️</button>
+        <button id="activateMusicBtn" class="activate-music-btn">🔊 Activar</button>
     </div>
     <input type="range" id="volumeSlider" class="player-volume" min="0" max="100" value="50">
 </div>
@@ -587,7 +598,6 @@
         }
         updateUI();
         saveUserDataToFirebase();
-        // Escuchar cambios en monedas y XP
         database.ref(`users/${currentUser.uid}/coins`).on('value', (snapshot) => {
             const newCoins = snapshot.val();
             if (newCoins !== null && newCoins !== currentUser.coins) {
@@ -700,7 +710,7 @@
         saveUserDataToFirebase();
     }
     
-    // ========== RULETA EQUITATIVA ==========
+    // ========== RULETA ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, color: "#FFB7C5", img: "img/lily.jpg" },
@@ -801,9 +811,8 @@
             const ease = 1 - Math.pow(1 - t, 3);
             currentRotation = startRot + totalAngle * ease;
             drawWheel();
-            if (t < 1) {
-                requestAnimationFrame(animate);
-            } else {
+            if (t < 1) requestAnimationFrame(animate);
+            else {
                 currentRotation = (startRot + totalAngle) % (Math.PI * 2);
                 drawWheel();
                 addXP(prize.xp);
@@ -908,7 +917,7 @@
         }
     }
     
-    // ========== CHAT ==========
+    // ========== CHAT Y AMIGOS (implementaciones completas) ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -1078,7 +1087,7 @@
         });
     }
     
-    // ========== AMIGOS ==========
+    // ========== FUNCIONES DE AMIGOS ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -1576,7 +1585,7 @@
     
     let currentFriendTab = 'friends';
     
-    // ========== MÚSICA ==========
+    // ========== SISTEMA DE MÚSICA (con activación manual) ==========
     const songsCatalog = [
         { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, videoId: "gJliq_f4k0M", defaultUnlocked: true },
         { id: "song_dice", title: "DICE", artist: "NMIXX", price: 50, videoId: "qVJNalVgW4I", defaultUnlocked: false },
@@ -1606,6 +1615,7 @@
     
     let player;
     let playerReady = false;
+    let musicActivated = false;
     
     async function loadUserMusicData() {
         if (!currentUser.uid) return;
@@ -1625,11 +1635,7 @@
         }
         document.getElementById('musicPlayer').style.display = 'flex';
         updateMusicUI();
-        if (!playerReady && typeof YT !== 'undefined' && YT.Player) {
-            initYouTubePlayer();
-        } else if (playerReady) {
-            loadSong(currentUser.currentSong);
-        }
+        // No activamos música automáticamente, esperamos al botón "Activar"
     }
     
     function updateMusicUI() {
@@ -1651,14 +1657,16 @@
                 playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },
                 events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange }
             });
-        } else if (player && player.loadVideoById) {
+        } else if (player && player.loadVideoById && musicActivated) {
             loadSong(currentUser.currentSong);
         }
     }
     
     function onPlayerReady(event) {
         playerReady = true;
-        loadSong(currentUser.currentSong);
+        if (musicActivated) {
+            loadSong(currentUser.currentSong);
+        }
     }
     
     function onPlayerStateChange(event) {
@@ -1672,19 +1680,25 @@
         const song = songsCatalog.find(s => s.id === songId);
         if (song) {
             player.loadVideoById(song.videoId);
-            player.playVideo();
-            currentSongId = songId;
+            if (musicActivated) player.playVideo();
             updateMusicUI();
         }
     }
     
     function togglePlayPause() {
-        if (!playerReady) return;
+        if (!playerReady || !musicActivated) {
+            Swal.fire('Música no activada', 'Haz clic en "Activar música" para comenzar a escuchar.', 'info');
+            return;
+        }
         if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
         else player.playVideo();
     }
     
     function nextSong() {
+        if (!musicActivated) {
+            Swal.fire('Música no activada', 'Primero activa la música.', 'info');
+            return;
+        }
         if (!currentUser.unlockedSongs || currentUser.unlockedSongs.length === 0) return;
         const currentIndex = currentUser.unlockedSongs.indexOf(currentUser.currentSong);
         const nextIndex = (currentIndex + 1) % currentUser.unlockedSongs.length;
@@ -1692,6 +1706,18 @@
         currentUser.currentSong = newSongId;
         database.ref(`users/${currentUser.uid}/music/currentSong`).set(newSongId);
         loadSong(newSongId);
+    }
+    
+    function activateMusic() {
+        musicActivated = true;
+        if (!playerReady) {
+            initYouTubePlayer();
+        } else {
+            loadSong(currentUser.currentSong);
+            player.playVideo();
+        }
+        Swal.fire('Música activada', '¡Disfruta de tu selección musical!', 'success');
+        document.getElementById('activateMusicBtn').style.display = 'none';
     }
     
     async function renderStore() {
@@ -1752,7 +1778,7 @@
                     if (currentUser.currentSong !== songId) {
                         currentUser.currentSong = songId;
                         await database.ref(`users/${currentUser.uid}/music/currentSong`).set(songId);
-                        loadSong(songId);
+                        if (musicActivated && playerReady) loadSong(songId);
                         renderStore();
                         Swal.fire('Canción seleccionada', `Ahora suena "${song.title}"`, 'success');
                     }
@@ -1775,6 +1801,7 @@
         document.getElementById('playPauseBtn').onclick = togglePlayPause;
         document.getElementById('nextSongBtn').onclick = nextSong;
         document.getElementById('volumeSlider').oninput = (e) => { if(player && player.setVolume) player.setVolume(e.target.value); };
+        document.getElementById('activateMusicBtn').addEventListener('click', activateMusic);
     }
     
     // ========== LOGIN/REGISTRO ==========
