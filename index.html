@@ -50,10 +50,98 @@
         .coins-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffd966; display: inline-flex; align-items: center; gap: 5px; }
         .bias-fixed { background: #2d2a55; padding: 4px 14px; border-radius: 40px; display: flex; gap: 8px; font-size: 0.85rem; }
         .pronoun-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffb3e0; }
-        .level-area { background: rgba(30, 27, 75, 0.7); backdrop-filter: blur(12px); border-radius: 32px; padding: 10px 22px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border: 1px solid #ffb347; }
-        .level-stats { display: flex; gap: 20px; align-items: center; }
-        .level-badge { background: linear-gradient(135deg, #ffb347, #ff7e05); padding: 4px 14px; border-radius: 40px; font-weight: bold; color: #1e1a2f; font-size: 0.85rem; }
-        .points { background: #2a2a5a; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; }
+        
+        /* ===== NUEVO SISTEMA DE NIVELES CON BARRA DE PROGRESO ===== */
+        .level-area {
+            background: rgba(30, 27, 75, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 15px 22px;
+            margin-bottom: 25px;
+            border: 1px solid #ffb347;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .level-badge {
+            background: linear-gradient(135deg, #ffb347, #ff7e05);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #1e1a2f;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rank-title {
+            background: rgba(255,126,179,0.3);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #ffb3e0;
+        }
+        .points {
+            background: #2a2a5a;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+        .progress-bar-container {
+            background: #0a0c1a;
+            border-radius: 20px;
+            height: 12px;
+            overflow: hidden;
+            margin: 12px 0 5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff7eb3, #c084fc, #ffb347);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 6px #ff7eb3;
+        }
+        .xp-text {
+            font-size: 0.75rem;
+            text-align: right;
+            color: #ddd;
+        }
+        
+        /* Tabla de clasificación */
+        .ranking-section {
+            background: rgba(20, 25, 55, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+        }
+        .ranking-table th, .ranking-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .ranking-table th {
+            color: #ffb3e0;
+            font-weight: 600;
+        }
+        .top-rank {
+            background: rgba(255,126,179,0.2);
+            border-radius: 12px;
+        }
+        
+        /* Resto de estilos (sin cambios relevantes) */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
@@ -65,7 +153,7 @@
         .avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; color: #1e1a2f; margin: 0 auto 8px; border: 3px solid #ffb347; }
         .member-name { font-weight: bold; color: #ffb3e0; font-size: 0.9rem; }
         
-        /* ===== RULETA ===== */
+        /* Ruleta */
         .wheel-wrapper {
             background: linear-gradient(145deg, #1e1a3a, #0f0c2a);
             backdrop-filter: blur(12px);
@@ -87,7 +175,6 @@
             color: transparent;
             margin-bottom: 20px;
             letter-spacing: 2px;
-            text-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
         .wheel-container {
             position: relative;
@@ -130,34 +217,13 @@
             cursor: pointer;
             transition: 0.3s;
             box-shadow: 0 8px 18px rgba(0,0,0,0.3);
-            letter-spacing: 1px;
             display: inline-block;
-            width: auto;
-            font-family: 'Poppins', sans-serif;
         }
-        .spin-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
-            background-position: right center;
-        }
-        .spin-btn:disabled {
-            background: #5a5a7a;
-            cursor: not-allowed;
-            opacity: 0.7;
-            transform: none;
-        }
-        .remaining-time {
-            font-size: 1rem;
-            margin-top: 18px;
-            color: #ffd966;
-            background: rgba(0,0,0,0.5);
-            display: inline-block;
-            padding: 6px 22px;
-            border-radius: 40px;
-            font-weight: 500;
-        }
+        .spin-btn:hover { transform: scale(1.03); }
+        .spin-btn:disabled { background: #5a5a7a; cursor: not-allowed; opacity: 0.7; }
+        .remaining-time { font-size: 1rem; margin-top: 18px; color: #ffd966; background: rgba(0,0,0,0.5); display: inline-block; padding: 6px 22px; border-radius: 40px; }
         
-        /* Noticias, curiosidades, chat, amigos (estilos originales) */
+        /* Noticias, curiosidades, chat, amigos */
         .news-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 28px; padding: 20px; }
         .news-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
         .news-date { font-size: 0.7rem; color: #9ca3ff; margin-bottom: 8px; }
@@ -182,6 +248,7 @@
         .message-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 0.7rem; flex-wrap: wrap; }
         .msg-avatar { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; background: #ffb3c6; color: #1e1a2f; }
         .msg-username { font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+        .msg-level { font-size: 0.6rem; background: #2d2a55; padding: 2px 6px; border-radius: 20px; margin-left: 5px; }
         .msg-timestamp { font-size: 0.6rem; opacity: 0.7; margin-left: 6px; }
         .chat-input { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
         .chat-input input { flex: 1; padding: 12px; border-radius: 60px; border: none; background: #141829; color: white; font-size: 0.9rem; }
@@ -242,6 +309,7 @@
                 <button class="nav-btn" data-section="noticias">📰 Noticias</button>
                 <button class="nav-btn" data-section="curiosidades">🤯 Curiosidades</button>
                 <button class="nav-btn" data-section="chat">💬 Chat</button>
+                <button class="nav-btn" data-section="ranking">🏆 Ranking</button>
                 <button id="logoutBtn">Cerrar sesión</button>
             </div>
         </div>
@@ -259,13 +327,18 @@
         <div class="bias-fixed"><span>🎀 Mi bias:</span><span id="biasFixedDisplay">Lily</span></div>
     </div>
 
-    <!-- SECCIÓN INICIO (con la nueva ruleta) -->
+    <!-- SECCIÓN INICIO -->
     <div id="homeSection" class="section active-section">
         <div class="level-area">
-            <div class="level-stats">
-                <div class="level-badge" id="levelDisplay">Nivel 1</div>
+            <div class="level-header">
+                <div class="level-badge" id="levelDisplay">🏆 Nivel 1</div>
+                <div class="rank-title" id="rankDisplay">🌱 NSWER Novato</div>
                 <div class="points" id="pointsDisplay">⭐ 0 XP</div>
             </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="xpProgressBar" style="width: 0%;"></div>
+            </div>
+            <div class="xp-text" id="xpText">0 / 150 XP para siguiente nivel</div>
         </div>
         <div class="hero"><img class="hero-logo" src="img/Logo.png" alt="Logo"><p>💙 La comunidad definitiva para los fans de NMIXX 💗💜</p></div>
         
@@ -314,6 +387,14 @@
         <div class="friends-tabs"><button class="friends-tab active" data-friend-tab="friends">👥 Amigos</button><button class="friends-tab" data-friend-tab="sent">📤 Enviadas</button><button class="friends-tab" data-friend-tab="received">📥 Recibidas</button></div>
         <div id="friendsContainer" class="friends-list"></div>
     </div>
+
+    <!-- RANKING -->
+    <div id="rankingSection" class="section">
+        <div class="ranking-section">
+            <h3>🏆 Clasificación de NSWERs</h3>
+            <div id="rankingContainer">Cargando ranking...</div>
+        </div>
+    </div>
 </div>
 
 <script type="module">
@@ -344,7 +425,29 @@
         Kyujin: { fullName: "Kyujin (규진)", animal: "🐱 Gato (Kkyu-nyang)", birth: "26 de mayo de 2006", height: "160 cm", position: "Bailarina principal, vocalista, center", color: "Naranja", emoji: "🐱", imgUrl: "img/kyujin.jpg" }
     };
     const members = ["Lily", "Haewon", "Sullyoon", "BAE", "Jiwoo", "Kyujin"];
-    const levelThresholds = [0, 100, 300, 600, 1000];
+    
+    // Sistema de niveles: XP por nivel = 150 * nivel (pero el umbral es acumulativo)
+    // Para simplificar, usaremos XP necesario para subir de nivel: nivel * 150.
+    // Así, nivel 1 -> 0 XP, nivel 2 -> 150 XP, nivel 3 -> 300 XP, etc.
+    // Función para calcular nivel a partir de XP
+    function calcLevel(xp) {
+        return Math.floor(xp / 150) + 1;
+    }
+    function xpForNextLevel(level) {
+        return level * 150;
+    }
+    function xpForCurrentLevel(level) {
+        return (level - 1) * 150;
+    }
+    function getRankTitle(level) {
+        if (level <= 25) return "🌱 NSWER Novato";
+        if (level <= 50) return "🌊 Ad Mare Aprendiz";
+        if (level <= 75) return "🎵 Entusiasta de MIXX";
+        if (level <= 100) return "⭐ Star NSWER";
+        if (level <= 125) return "🏆 Leyenda MIXXTOPIA";
+        return "👑 Ídolo NSWER";
+    }
+    
     let currentUser = { uid: null, username: "", xp: 0, level: 1, bias: "Lily", email: "", pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0 };
     
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
@@ -367,7 +470,7 @@
         if (data) {
             currentUser.username = data.username || "NSWER_Fan";
             currentUser.xp = data.xp || 0;
-            currentUser.level = data.level || 1;
+            currentUser.level = data.level || calcLevel(currentUser.xp);
             currentUser.bias = data.bias || "Lily";
             currentUser.pronoun = data.pronoun || "No especificado";
             currentUser.lastUsernameChange = data.lastUsernameChange || null;
@@ -385,6 +488,15 @@
             if (newCoins !== null && newCoins !== currentUser.coins) {
                 currentUser.coins = newCoins;
                 document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
+            }
+        });
+        // Escuchar cambios en XP para actualizar barra y nivel en tiempo real
+        database.ref(`users/${currentUser.uid}/xp`).on('value', (snapshot) => {
+            const newXp = snapshot.val();
+            if (newXp !== null && newXp !== currentUser.xp) {
+                currentUser.xp = newXp;
+                recalcLevel(false); // false para no guardar de nuevo en bucle
+                updateUI();
             }
         });
     }
@@ -423,9 +535,10 @@
     
     function updateUI() {
         document.getElementById("usernameDisplay").innerText = currentUser.username;
-        document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${currentUser.level}`;
+        const level = currentUser.level;
+        document.getElementById("levelDisplay").innerHTML = `🏆 Nivel ${level}`;
+        document.getElementById("rankDisplay").innerHTML = getRankTitle(level);
         document.getElementById("pointsDisplay").innerHTML = `⭐ ${currentUser.xp} XP`;
-        document.getElementById("biasFixedDisplay").innerText = currentUser.bias;
         document.getElementById("homeUsername").innerText = currentUser.username;
         document.getElementById("coinsDisplay").innerHTML = `💰 ${currentUser.coins}`;
         const biasFixedSpan = document.getElementById("biasFixedDisplay");
@@ -433,27 +546,60 @@
         const pronounDiv = document.getElementById("pronounDisplay");
         if (currentUser.pronoun && currentUser.pronoun !== "No especificado") { pronounDiv.style.display = "inline-block"; pronounDiv.innerText = `🏳️‍🌈 ${currentUser.pronoun}`; }
         else { pronounDiv.style.display = "none"; }
+        // Actualizar barra de progreso
+        const currentLevelXP = (level - 1) * 150;
+        const nextLevelXP = level * 150;
+        const xpInLevel = currentUser.xp - currentLevelXP;
+        const percent = (xpInLevel / 150) * 100;
+        document.getElementById("xpProgressBar").style.width = `${Math.min(100, percent)}%`;
+        document.getElementById("xpText").innerHTML = `${currentUser.xp - currentLevelXP} / 150 XP para nivel ${level+1}`;
     }
     
-    function recalcLevel() {
-        let newLevel = 1;
-        for (let i=levelThresholds.length-1; i>=0; i--) if (currentUser.xp >= levelThresholds[i]) { newLevel = i+1; break; }
+    let isLevelingUp = false;
+    function recalcLevel(save = true) {
+        const newLevel = calcLevel(currentUser.xp);
         if (newLevel !== currentUser.level) {
+            const oldLevel = currentUser.level;
             currentUser.level = newLevel;
-            Swal.fire({ title: `🎉 ¡Felicidades ${currentUser.username}! 🎉`, text: `Has subido al NIVEL ${currentUser.level}`, icon: 'success', timer: 2000, showConfirmButton: false, background: '#1e1b4b', color: 'white' });
-            saveUserDataToFirebase(); updateUI();
+            // Recompensa por subir de nivel: 50 monedas por cada nivel ganado
+            const levelsGained = newLevel - oldLevel;
+            const rewardCoins = levelsGained * 50;
+            if (rewardCoins > 0) {
+                currentUser.coins += rewardCoins;
+                if (!isLevelingUp) {
+                    isLevelingUp = true;
+                    showConfetti(); // animación level up
+                    Swal.fire({
+                        title: `🎉 ¡SUBIDA DE NIVEL! 🎉`,
+                        html: `¡Has alcanzado el nivel ${newLevel}!<br>➕ +${rewardCoins} monedas`,
+                        icon: 'success',
+                        background: '#1e1b4b',
+                        color: 'white',
+                        confirmButtonColor: '#7c3aed',
+                        timer: 3000
+                    });
+                    setTimeout(() => { isLevelingUp = false; }, 1000);
+                }
+                saveUserDataToFirebase();
+            }
+            updateUI();
         }
+        if (save) saveUserDataToFirebase();
+        updateUI();
+    }
+    
+    function addXP(points=1) {
+        currentUser.xp += points;
+        recalcLevel(true);
+        updateUI();
+    }
+    function addCoins(amount) {
+        currentUser.coins += amount;
+        updateUI();
         saveUserDataToFirebase();
     }
     
-    function addXP(points=1) { currentUser.xp += points; recalcLevel(); updateUI(); saveUserDataToFirebase(); }
-    function addCoins(amount) { 
-        currentUser.coins += amount; 
-        updateUI(); 
-        saveUserDataToFirebase();
-    }
-    
-    // ========== RULETA EQUITATIVA (misma probabilidad para todos) ==========
+    // ========== RULETA EQUITATIVA ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, color: "#FFB7C5", img: "img/lily.jpg" },
@@ -510,7 +656,6 @@
         ctx.fillText("NMIXX", width/2, height/2);
     }
     
-    // Selección aleatoria uniforme (todos con la misma probabilidad)
     function getRandomPrize() {
         const randomIndex = Math.floor(Math.random() * wheelSegments.length);
         const seg = wheelSegments[randomIndex];
@@ -536,18 +681,17 @@
         spinning = true;
         
         const prize = getRandomPrize();
-        const extraSpins = Math.floor(Math.random() * 16) + 5; // 5 a 20 vueltas extra
+        const extraSpins = Math.floor(Math.random() * 16) + 5;
         const segmentIndex = wheelSegments.findIndex(s => s.name === prize.member);
         const angleStep = (Math.PI * 2) / wheelSegments.length;
         const segmentStart = segmentIndex * angleStep;
-        const segmentEnd = segmentStart + angleStep;
         const randomAngleInSegment = segmentStart + Math.random() * angleStep;
         const pointerAngle = -Math.PI / 2;
         let targetRotation = pointerAngle - randomAngleInSegment;
         targetRotation = ((targetRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
         const totalAngle = (Math.PI * 2) * extraSpins + targetRotation;
         const startRot = currentRotation;
-        const duration = Math.random() * 1000 + 2000; // entre 2000 y 3000 ms
+        const duration = Math.random() * 1000 + 2000;
         const startTime = performance.now();
         
         function animate(nowTime) {
@@ -582,7 +726,6 @@
                 spinning = false;
             }
         }
-        
         requestAnimationFrame(animate);
     }
     
@@ -665,7 +808,8 @@
                 msgDiv.className = `message ${isOwn ? 'own' : 'other'}`;
                 const usernameAttr = `data-username="${escapeHtml(msg.username)}"`;
                 const uidAttr = msg.uid ? `data-uid="${msg.uid}"` : '';
-                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span><span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
+                const levelBadge = msg.level ? `<span class="msg-level">Nvl ${msg.level}</span>` : '';
+                msgDiv.innerHTML = `<div class="message-header"><div class="msg-avatar" style="background-color: ${avatarColor};">${avatarLetter}</div><span class="msg-username" ${uidAttr} ${usernameAttr} style="color: ${biasColors[msg.bias] || '#ffb3e0'}">${escapeHtml(msg.username)}</span>${levelBadge}<span class="msg-timestamp">${timeStr}</span></div><div class="message-text">${escapeHtml(msg.text)}</div>`;
                 container.appendChild(msgDiv);
             });
             document.querySelectorAll('.msg-username').forEach(el => {
@@ -1188,7 +1332,7 @@
         }
     }
     
-    // ========== NORMAS MEJORADA ==========
+    // ========== NORMAS ==========
     let isAcceptingRules = false;
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
@@ -1242,6 +1386,50 @@
         isAcceptingRules = false;
     }
     
+    // ========== RANKING ==========
+    async function loadRanking() {
+        const container = document.getElementById('rankingContainer');
+        if (!container) return;
+        container.innerHTML = '<div class="empty-message">Cargando ranking...</div>';
+        try {
+            const snapshot = await database.ref('users').once('value');
+            const users = snapshot.val();
+            if (!users) {
+                container.innerHTML = '<div class="empty-message">No hay usuarios registrados.</div>';
+                return;
+            }
+            const usersList = Object.entries(users).map(([uid, data]) => ({
+                uid: uid,
+                username: data.username || "Anónimo",
+                level: data.level || calcLevel(data.xp || 0),
+                xp: data.xp || 0,
+                bias: data.bias || "Lily"
+            }));
+            usersList.sort((a, b) => b.xp - a.xp);
+            const topUsers = usersList.slice(0, 20);
+            let html = `<table class="ranking-table">
+                        <thead>
+                            <tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Bias</th></tr>
+                        </thead>
+                        <tbody>`;
+            topUsers.forEach((user, index) => {
+                const rankClass = index < 3 ? 'top-rank' : '';
+                html += `<tr class="${rankClass}">
+                            <td>${index + 1}</td>
+                            <td>${escapeHtml(user.username)}</td>
+                            <td>${user.level}</td>
+                            <td>${user.xp}</td>
+                            <td style="color: ${biasColors[user.bias] || '#ffb3e0'}">${escapeHtml(user.bias)}</td>
+                         </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } catch(error) {
+            console.error(error);
+            container.innerHTML = '<div class="empty-message">Error al cargar el ranking.</div>';
+        }
+    }
+    
     // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
@@ -1250,7 +1438,8 @@
             noticias: document.getElementById('noticiasSection'),
             curiosidades: document.getElementById('curiosidadesSection'),
             chat: document.getElementById('chatSection'),
-            friends: document.getElementById('friendsSection')
+            friends: document.getElementById('friendsSection'),
+            ranking: document.getElementById('rankingSection')
         };
         btns.forEach(btn => btn.addEventListener('click', () => {
             const sec = btn.dataset.section;
@@ -1262,6 +1451,7 @@
             else if (sec === 'curiosidades') sections.curiosidades.classList.add('active-section');
             else if (sec === 'chat') sections.chat.classList.add('active-section');
             else if (sec === 'friends') sections.friends.classList.add('active-section');
+            else if (sec === 'ranking') { sections.ranking.classList.add('active-section'); loadRanking(); }
             document.getElementById('dropdownMenu').classList.remove('show');
         }));
     }
@@ -1320,7 +1510,7 @@
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
         initNavigation(); initDropdown(); initFriendsTabs(); initEmojiPicker(); initCuriosityFilters();
-        startFriendsListener(); updateSpinButtonState();
+        startFriendsListener(); updateSpinButtonState(); loadRanking();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         window.addEventListener('resize', () => resizeCanvas());
