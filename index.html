@@ -23,6 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -591,7 +592,7 @@
         saveUserDataToFirebase();
     }
     
-    // ========== RULETA EQUITATIVA ==========
+    // ========== RULETA EQUITATIVA (CON CORRECCIÓN DEL RADIO) ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, color: "#FFB7C5", img: "img/lily.jpg" },
@@ -608,40 +609,47 @@
     
     function drawWheel() {
         if (!ctx) return;
+        // Asegurar que el radio del círculo exterior sea positivo (mínimo 1)
+        const outerRadius = Math.max(1, width/2 - 8);
         const angleStep = (Math.PI * 2) / wheelSegments.length;
         for (let i = 0; i < wheelSegments.length; i++) {
             const start = i * angleStep + currentRotation;
             const end = start + angleStep;
             ctx.beginPath();
             ctx.moveTo(width/2, height/2);
-            ctx.arc(width/2, height/2, width/2 - 8, start, end);
+            ctx.arc(width/2, height/2, outerRadius, start, end);
             ctx.fillStyle = wheelSegments[i].color;
             ctx.fill();
             ctx.save();
             ctx.translate(width/2, height/2);
             ctx.rotate(start + angleStep/2);
             ctx.fillStyle = "#1a1a2e";
-            ctx.font = `bold ${Math.max(16, width/26)}px "Poppins"`;
+            // Ajustar fuentes según tamaño
+            const fontSizeEmoji = Math.max(12, width/26);
+            const fontSizeName = Math.max(10, width/32);
+            const fontSizeXp = Math.max(8, width/36);
+            ctx.font = `bold ${fontSizeEmoji}px "Poppins"`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText(wheelSegments[i].emoji, width/3.2, -15);
-            ctx.font = `${Math.max(12, width/32)}px "Poppins"`;
+            ctx.font = `${fontSizeName}px "Poppins"`;
             ctx.fillStyle = "#0f0f1f";
             ctx.fillText(wheelSegments[i].name, width/3.2, 12);
-            ctx.font = `${Math.max(10, width/36)}px "Poppins"`;
+            ctx.font = `${fontSizeXp}px "Poppins"`;
             ctx.fillStyle = "#2c2a4a";
             ctx.fillText(`${wheelSegments[i].xp} XP`, width/3.2, 34);
             ctx.fillStyle = "#d4af37";
             ctx.fillText(`${wheelSegments[i].coins} 💰`, width/3.2, 52);
             ctx.restore();
         }
-        const centerRadius = Math.max(28, width / 12);
+        // Centro: radio mínimo 1
+        const centerRadius = Math.max(1, width / 12);
         ctx.beginPath();
         ctx.arc(width/2, height/2, centerRadius, 0, 2*Math.PI);
         ctx.fillStyle = "#1e1b4b";
         ctx.fill();
         ctx.fillStyle = "#ffd966";
-        const centerFontSize = Math.max(12, centerRadius * 0.55);
+        const centerFontSize = Math.max(10, centerRadius * 0.55);
         ctx.font = `bold ${centerFontSize}px "Orbitron"`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -723,7 +731,10 @@
     function resizeCanvas() {
         if (!canvas) return;
         const container = canvas.parentElement;
-        const size = Math.min(container.clientWidth, 420);
+        if (!container) return;
+        // Obtener ancho del contenedor, mínimo 100px para evitar radios negativos
+        let size = Math.min(container.clientWidth, 420);
+        if (size < 50) size = 200; // valor por defecto si el contenedor no es visible
         canvas.width = size;
         canvas.height = size;
         width = size;
@@ -785,12 +796,12 @@
             topUsers.forEach((user, index) => {
                 const rankClass = index < 3 ? 'top-rank' : '';
                 html += `<tr class="${rankClass}">
-                             <td>${index+1}</td>
-                             <td>${escapeHtml(user.username)}</td>
-                             <td>🏆 ${user.level}</td>
-                             <td>⭐ ${user.xp}</td>
-                             <td style="color: ${biasColors[user.bias] || '#fff'}">${user.bias}</td>
-                         </tr>`;
+                              <td>${index+1}</td>
+                              <td>${escapeHtml(user.username)}</td>
+                              <td>🏆 ${user.level}</td>
+                              <td>⭐ ${user.xp}</td>
+                              <td style="color: ${biasColors[user.bias] || '#fff'}">${user.bias}</td>
+                          </tr>`;
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
