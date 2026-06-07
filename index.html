@@ -22,9 +22,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-    
     <style>
         /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
@@ -194,9 +191,9 @@
             width: 100%;
         }
         .song-btn:hover { background: #c084fc; }
-        .song-btn:disabled { background: #555; cursor: not-allowed; }
+        .song-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.7; }
         
-        /* REPRODUCTOR FLOTANTE */
+        /* REPRODUCTOR FLOTANTE (NUEVO, SIN YOUTUBE) */
         .music-player {
             position: fixed;
             bottom: 20px;
@@ -492,7 +489,7 @@
     <div id="musicSection" class="section">
         <div class="music-section">
             <h3>🎵 Tienda de temas musicales</h3>
-            <p>🎧 Compra canciones de NMIXX con tus monedas y escúchalas cuando quieras.</p>
+            <p>🎧 Compra canciones de NMIXX con tus monedas y escúchalas sin publicidad.</p>
             <div id="songsContainer" class="songs-grid">
                 <div class="empty-message">Cargando canciones...</div>
             </div>
@@ -506,15 +503,15 @@
     </div>
 </div>
 
-<!-- REPRODUCTOR FLOTANTE -->
+<!-- REPRODUCTOR FLOTANTE (NUEVO) -->
 <div id="musicPlayer" class="music-player" style="display: none;">
     <div class="player-info" id="currentSongName">NMIXX - O.O</div>
     <div class="player-controls">
-        <button id="playPauseBtn" class="player-btn">⏸️</button>
+        <button id="playPauseBtn" class="player-btn">▶️</button>
         <button id="nextSongBtn" class="player-btn">⏭️</button>
         <button id="activateMusicBtn" class="activate-music-btn">🔊 Activar</button>
     </div>
-    <input type="range" id="volumeSlider" class="player-volume" min="0" max="100" value="50">
+    <input type="range" id="volumeSlider" class="player-volume" min="0" max="100" value="70">
 </div>
 
 <script type="module">
@@ -610,6 +607,8 @@
                 recalcLevel(false);
             }
         });
+        // Cargar música del usuario
+        await loadUserMusicData();
     }
     
     async function showProfileSetupModal() {
@@ -1592,39 +1591,19 @@
     
     let currentFriendTab = 'friends';
     
-    // ========== MÚSICA ==========
-    // Catálogo con los enlaces CORREGIDOS (O.O actualizado)
+    // ========== MÚSICA (NUEVO REPRODUCTOR SIN YOUTUBE) ==========
+    // Catálogo con URLs de archivos MP3 (DEBES SUBIR LOS ARCHIVOS a una carpeta 'audio' en tu servidor)
     const songsCatalog = [
-        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, videoId: "oiqUjW5OHV4", defaultUnlocked: true },
-        { id: "song_dice", title: "DICE", artist: "NMIXX", price: 50, videoId: "qVJNalVgW4I", defaultUnlocked: false },
-        { id: "song_lmtl", title: "Love Me Like This", artist: "NMIXX", price: 100, videoId: "EDnwWcFpObo", defaultUnlocked: false },
-        { id: "song_party", title: "Party O'Clock", artist: "NMIXX", price: 100, videoId: "gTqRbFv7R1E", defaultUnlocked: false },
-        { id: "song_dash", title: "Dash", artist: "NMIXX", price: 150, videoId: "7UecFm_bSTU", defaultUnlocked: false },
-        { id: "song_sonar", title: "Soñar (Breaker)", artist: "NMIXX", price: 150, videoId: "MMtRxcy8PX0", defaultUnlocked: false },
-        { id: "song_runforroses", title: "Run For Roses", artist: "NMIXX", price: 200, videoId: "j6tKIdt9K9M", defaultUnlocked: false }
+        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, audioUrl: "audio/O.O.mp3", defaultUnlocked: true },
+        { id: "song_dice", title: "DICE", artist: "NMIXX", price: 50, audioUrl: "audio/DICE.mp3", defaultUnlocked: false },
+        { id: "song_lmtl", title: "Love Me Like This", artist: "NMIXX", price: 100, audioUrl: "audio/LoveMeLikeThis.mp3", defaultUnlocked: false },
+        { id: "song_party", title: "Party O'Clock", artist: "NMIXX", price: 100, audioUrl: "audio/PartyOClock.mp3", defaultUnlocked: false },
+        { id: "song_dash", title: "Dash", artist: "NMIXX", price: 150, audioUrl: "audio/Dash.mp3", defaultUnlocked: false },
+        { id: "song_sonar", title: "Soñar (Breaker)", artist: "NMIXX", price: 150, audioUrl: "audio/SonarBreaker.mp3", defaultUnlocked: false },
+        { id: "song_runforroses", title: "Run For Roses", artist: "NMIXX", price: 200, audioUrl: "audio/RunForRoses.mp3", defaultUnlocked: false }
     ];
     
-    async function initSongsCatalog() {
-        for (const song of songsCatalog) {
-            try {
-                const ref = database.ref(`songs/${song.id}`);
-                const snapshot = await ref.once('value');
-                if (!snapshot.exists()) {
-                    await ref.set({
-                        title: song.title,
-                        artist: song.artist,
-                        price: song.price,
-                        videoId: song.videoId,
-                        defaultUnlocked: song.defaultUnlocked
-                    });
-                }
-            } catch (e) { console.warn(`No se pudo inicializar ${song.id}:`, e); }
-        }
-    }
-    initSongsCatalog();
-    
-    let player;
-    let playerReady = false;
+    let audioElement = null;
     let musicActivated = false;
     
     async function loadUserMusicData() {
@@ -1659,52 +1638,46 @@
         if (document.getElementById('musicSection').classList.contains('active-section')) renderStore();
     }
     
-    function initYouTubePlayer() {
-        if (!document.getElementById('youtube-player') && typeof YT !== 'undefined') {
-            const div = document.createElement('div');
-            div.id = 'youtube-player';
-            div.style.display = 'none';
-            document.body.appendChild(div);
-            player = new YT.Player('youtube-player', {
-                height: '0',
-                width: '0',
-                videoId: songsCatalog.find(s => s.id === currentUser.currentSong)?.videoId,
-                playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },
-                events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange }
+    function initAudioPlayer() {
+        if (!audioElement) {
+            audioElement = new Audio();
+            audioElement.volume = document.getElementById('volumeSlider').value / 100;
+            audioElement.addEventListener('ended', () => {
+                // Siguiente canción automática
+                nextSong();
             });
-        } else if (player && player.loadVideoById && musicActivated) {
-            loadSong(currentUser.currentSong);
         }
+        // Si ya hay una canción cargada, la preparamos
+        loadSong(currentUser.currentSong, false); // no autoplay hasta que se active
     }
     
-    function onPlayerReady(event) {
-        playerReady = true;
-        if (musicActivated) loadSong(currentUser.currentSong);
-    }
-    
-    function onPlayerStateChange(event) {
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        if (event.data === YT.PlayerState.PLAYING) playPauseBtn.innerHTML = '⏸️';
-        else if (event.data === YT.PlayerState.PAUSED) playPauseBtn.innerHTML = '▶️';
-    }
-    
-    function loadSong(songId) {
-        if (!playerReady || !player || !player.loadVideoById) return;
+    function loadSong(songId, autoplay = true) {
         const song = songsCatalog.find(s => s.id === songId);
-        if (song) {
-            player.loadVideoById(song.videoId);
-            if (musicActivated) player.playVideo();
-            updateMusicUI();
+        if (!song || !audioElement) return;
+        audioElement.src = song.audioUrl;
+        audioElement.load();
+        updateMusicUI();
+        if (autoplay && musicActivated) {
+            audioElement.play().catch(e => console.warn("No se pudo reproducir automáticamente:", e));
+            document.getElementById('playPauseBtn').innerHTML = '⏸️';
+        } else {
+            document.getElementById('playPauseBtn').innerHTML = '▶️';
         }
     }
     
     function togglePlayPause() {
-        if (!playerReady || !musicActivated) {
+        if (!musicActivated) {
             Swal.fire('Música no activada', 'Haz clic en "Activar música" para comenzar a escuchar.', 'info');
             return;
         }
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
-        else player.playVideo();
+        if (!audioElement) return;
+        if (audioElement.paused) {
+            audioElement.play().catch(e => console.warn(e));
+            document.getElementById('playPauseBtn').innerHTML = '⏸️';
+        } else {
+            audioElement.pause();
+            document.getElementById('playPauseBtn').innerHTML = '▶️';
+        }
     }
     
     function nextSong() {
@@ -1718,15 +1691,18 @@
         const newSongId = currentUser.unlockedSongs[nextIndex];
         currentUser.currentSong = newSongId;
         database.ref(`users/${currentUser.uid}/music/currentSong`).set(newSongId);
-        loadSong(newSongId);
+        loadSong(newSongId, true);
     }
     
     function activateMusic() {
+        if (musicActivated) return;
         musicActivated = true;
-        if (!playerReady) initYouTubePlayer();
-        else { loadSong(currentUser.currentSong); player.playVideo(); }
-        Swal.fire('Música activada', '¡Disfruta de tu selección musical!', 'success');
+        if (!audioElement) initAudioPlayer();
+        loadSong(currentUser.currentSong, true);
+        Swal.fire('Música activada', '¡Disfruta de tu selección musical sin publicidad!', 'success');
         document.getElementById('activateMusicBtn').style.display = 'none';
+        // Forzar que el botón de play/pause muestre el estado correcto
+        document.getElementById('playPauseBtn').innerHTML = '⏸️';
     }
     
     async function renderStore() {
@@ -1740,14 +1716,26 @@
             if (isCurrent) statusText = '<span class="song-status current">▶️ Actual</span>';
             else if (isUnlocked) statusText = '<span class="song-status unlocked">🔓 Desbloqueada</span>';
             else statusText = `<span class="song-status locked">🔒 ${song.price} 💰</span>`;
-            const buttonText = isUnlocked ? (isCurrent ? 'Reproduciendo' : 'Seleccionar') : 'Comprar';
-            const buttonDisabled = isUnlocked ? '' : 'disabled';
+            // Botón habilitado si está desbloqueada (para seleccionar) O si está bloqueada (para comprar)
+            // Deshabilitado solo si ya es la actual (no tiene sentido seleccionar de nuevo)
+            let buttonDisabled = false;
+            let buttonText = '';
+            if (isCurrent) {
+                buttonDisabled = true;
+                buttonText = 'Reproduciendo';
+            } else if (isUnlocked) {
+                buttonDisabled = false;
+                buttonText = 'Seleccionar';
+            } else {
+                buttonDisabled = false;
+                buttonText = 'Comprar';
+            }
             html += `
                 <div class="song-card">
                     <div class="song-title">${song.title}</div>
                     <div class="song-price">${song.artist}</div>
                     ${statusText}
-                    <button class="song-btn" data-id="${song.id}" data-unlocked="${isUnlocked}" ${buttonDisabled}>${buttonText}</button>
+                    <button class="song-btn" data-id="${song.id}" data-unlocked="${isUnlocked}" ${buttonDisabled ? 'disabled' : ''}>${buttonText}</button>
                 </div>
             `;
         }
@@ -1758,6 +1746,7 @@
                 const song = songsCatalog.find(s => s.id === songId);
                 const isUnlocked = currentUser.unlockedSongs?.includes(songId);
                 if (!isUnlocked) {
+                    // Comprar
                     if (currentUser.coins >= song.price) {
                         const confirm = await Swal.fire({
                             title: '¿Comprar canción?',
@@ -1774,16 +1763,17 @@
                             await database.ref(`users/${currentUser.uid}/music/unlockedSongs`).set(currentUser.unlockedSongs);
                             updateUI();
                             renderStore();
-                            Swal.fire('¡Comprado!', `Ahora puedes escuchar "${song.title}"`, 'success');
+                            Swal.fire('¡Comprado!', `Ahora puedes escuchar "${song.title}" sin publicidad.`, 'success');
                         }
                     } else {
                         Swal.fire('Monedas insuficientes', `Necesitas ${song.price} monedas. Gira la ruleta o participa en el chat.`, 'warning');
                     }
                 } else {
+                    // Seleccionar canción (ya desbloqueada)
                     if (currentUser.currentSong !== songId) {
                         currentUser.currentSong = songId;
                         await database.ref(`users/${currentUser.uid}/music/currentSong`).set(songId);
-                        if (musicActivated && playerReady) loadSong(songId);
+                        if (musicActivated && audioElement) loadSong(songId, true);
                         renderStore();
                         Swal.fire('Canción seleccionada', `Ahora suena "${song.title}"`, 'success');
                     }
@@ -1792,10 +1782,12 @@
         });
     }
     
+    // ========== INICIALIZACIÓN POST LOGIN ==========
     function initializeAfterLogin() {
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
         initNavigation(); initDropdown(); initFriendsTabs(); initEmojiPicker(); initCuriosityFilters();
-        startFriendsListener(); updateSpinButtonState(); loadUserMusicData();
+        startFriendsListener(); updateSpinButtonState(); 
+        initAudioPlayer(); // Prepara el reproductor de audio
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         window.addEventListener('resize', () => resizeCanvas());
@@ -1805,8 +1797,10 @@
         if (refreshBtn) refreshBtn.onclick = loadRanking;
         document.getElementById('playPauseBtn').onclick = togglePlayPause;
         document.getElementById('nextSongBtn').onclick = nextSong;
-        document.getElementById('volumeSlider').oninput = (e) => { if(player && player.setVolume) player.setVolume(e.target.value); };
+        document.getElementById('volumeSlider').oninput = (e) => { if(audioElement) audioElement.volume = e.target.value / 100; };
         document.getElementById('activateMusicBtn').addEventListener('click', activateMusic);
+        // Mostrar la tienda si es necesario
+        if (document.getElementById('musicSection').classList.contains('active-section')) renderStore();
     }
     
     // ========== LOGIN/REGISTRO ==========
