@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ========== ESTILOS GENERALES (no cambio nada aquí, solo añado mejoras en .song-card) ========== */
+        /* ========== ESTILOS GENERALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
         body { background: radial-gradient(circle at 10% 20%, #0a0f2a, #050a1a); color: #f0f0f0; min-height: 100vh; padding-top: 100px; position: relative; }
         body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; pointer-events: none; z-index: 0; }
@@ -51,7 +51,7 @@
         .bias-fixed { background: #2d2a55; padding: 4px 14px; border-radius: 40px; display: flex; gap: 8px; font-size: 0.85rem; }
         .pronoun-badge { background: #2d2a55; padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; color: #ffb3e0; }
         
-        /* NIVELES CON BARRA DE PROGRESO */
+        /* NIVELES */
         .level-area {
             background: rgba(30, 27, 75, 0.8);
             backdrop-filter: blur(12px);
@@ -151,7 +151,7 @@
             font-size: 0.8rem;
         }
         
-        /* TIENDA MÚSICA - MEJORAS VISUALES */
+        /* TIENDA MÚSICA */
         .music-section {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
@@ -173,28 +173,28 @@
         }
         .song-card:hover { transform: translateY(-5px); }
         .song-title { font-size: 1.1rem; font-weight: bold; color: #ffb3e0; }
-        .song-price { font-size: 0.85rem; margin-top: 8px; color: #ffd966; }
-        .song-status { 
-            font-size: 0.75rem; 
-            margin-top: 8px; 
-            padding: 4px 12px; 
-            border-radius: 20px; 
+        .song-artist { font-size: 0.85rem; margin-top: 8px; color: #ffd966; }
+        .song-status {
+            font-size: 0.75rem;
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
             display: inline-block;
             font-weight: bold;
         }
-        .song-status.unlocked { 
-            background: #2e7d32; 
-            color: white; 
+        .song-status.unlocked {
+            background: #2e7d32;
+            color: white;
             border: 1px solid #81c784;
             box-shadow: 0 0 5px #4caf50;
         }
-        .song-status.locked { 
-            background: #c62828; 
+        .song-status.locked {
+            background: #c62828;
             color: white;
             border: 1px solid #ef5350;
         }
-        .song-status.current { 
-            background: #7c3aed; 
+        .song-status.current {
+            background: #7c3aed;
             color: white;
             border: 1px solid #c084fc;
             box-shadow: 0 0 8px #c084fc;
@@ -207,13 +207,13 @@
             border-radius: 40px;
             margin-top: 12px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             transition: 0.2s;
             width: 100%;
             font-weight: bold;
         }
         .song-btn:hover { background: #c084fc; transform: scale(1.02);}
-        .song-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.7; transform: none; }
+        .song-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.6; transform: none; }
         
         /* REPRODUCTOR FLOTANTE */
         .music-player {
@@ -255,12 +255,11 @@
             width: 60px;
             cursor: pointer;
         }
-        /* El botón activar ya no es necesario, lo ocultamos */
         .activate-music-btn {
             display: none;
         }
         
-        /* RULETA (sin cambios) */
+        /* RULETA */
         .wheel-wrapper {
             background: linear-gradient(145deg, #1e1a3a, #0f0c2a);
             backdrop-filter: blur(12px);
@@ -330,7 +329,7 @@
         .spin-btn:disabled { background: #5a5a7a; cursor: not-allowed; opacity: 0.7; }
         .remaining-time { font-size: 1rem; margin-top: 18px; color: #ffd966; background: rgba(0,0,0,0.5); display: inline-block; padding: 6px 22px; border-radius: 40px; }
         
-        /* Noticias, curiosidades, chat, amigos (sin cambios) */
+        /* Noticias, curiosidades, chat, amigos */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active-section { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
@@ -395,7 +394,7 @@
 </head>
 <body>
 
-<!-- MODAL LOGIN/REGISTRO (igual) -->
+<!-- MODAL LOGIN/REGISTRO -->
 <div id="authModal" class="auth-modal">
     <div class="auth-card">
         <h2 id="authTitle">✨ Iniciar Sesión ✨</h2>
@@ -411,7 +410,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL (igual) -->
+<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="main-content" style="display: none;">
     <div class="navbar">
         <div class="navbar-top">
@@ -519,7 +518,7 @@
     </div>
 </div>
 
-<!-- REPRODUCTOR FLOTANTE (simplificado) -->
+<!-- REPRODUCTOR FLOTANTE (sin YouTube) -->
 <div id="musicPlayer" class="music-player" style="display: none;">
     <div class="player-info" id="currentSongName">NMIXX - O.O</div>
     <div class="player-controls">
@@ -532,7 +531,7 @@
 <script type="module">
     import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.0/index.js';
     
-    // ========== CONFIGURACIÓN FIREBASE (la misma) ==========
+    // ========== CONFIGURACIÓN FIREBASE ==========
     const firebaseConfig = {
         apiKey: "AIzaSyCDFKC1WS8PccR633Sd_9KWag7WcWOKQsY",
         authDomain: "chat-nswer.firebaseapp.com",
@@ -547,7 +546,7 @@
     const auth = firebase.auth();
     const database = firebase.database();
     
-    // ========== DATOS MIEMBROS (sin cambios) ==========
+    // ========== DATOS MIEMBROS ==========
     const membersData = {
         Lily: { fullName: "Lily (릴리)", animal: "🐨 Koala (Lilangi)", birth: "17 de octubre de 2002", height: "165 cm", position: "Vocalista principal", color: "Rosa", emoji: "🐨", imgUrl: "img/lily.jpg" },
         Haewon: { fullName: "Haewon (해원)", animal: "🐻‍❄️ Oso polar (Haengmani)", birth: "25 de febrero de 2003", height: "161 cm", position: "Líder, vocalista", color: "Amarillo", emoji: "🐻‍❄️", imgUrl: "img/haewon.jpg" },
@@ -579,7 +578,7 @@
     const biasColors = { "Lily": "#D95B7A", "Haewon": "#E6A157", "Sullyoon": "#4CAF7A", "BAE": "#8A6ED1", "Jiwoo": "#D9A83C", "Kyujin": "#4A9ED9" };
     const avatarColors = { "Lily": "#FFB7C5", "Haewon": "#FFD8B7", "Sullyoon": "#B7F0C4", "BAE": "#C5B9FF", "Jiwoo": "#FFF2B7", "Kyujin": "#B7E4FF" };
     
-    // ========== FUNCIONES USUARIO (iguales) ==========
+    // ========== FUNCIONES USUARIO ==========
     function saveUserDataToFirebase() {
         if (!currentUser.uid) return;
         database.ref(`users/${currentUser.uid}`).update({
@@ -721,7 +720,7 @@
         saveUserDataToFirebase();
     }
     
-    // ========== RULETA (sin cambios) ==========
+    // ========== RULETA ==========
     let canSpinToday = true;
     const wheelSegments = [
         { name: "Lily", emoji: "🐨", xp: 15, coins: 8, color: "#FFB7C5", img: "img/lily.jpg" },
@@ -882,7 +881,7 @@
         }
     }
     
-    // ========== RANKING (sin cambios) ==========
+    // ========== RANKING ==========
     async function loadRanking() {
         const container = document.getElementById('rankingContainer');
         if (!container) return;
@@ -928,7 +927,7 @@
         }
     }
     
-    // ========== CHAT Y AMIGOS (sin cambios) ==========
+    // ========== CHAT Y AMIGOS ==========
     function formatTimestamp(timestamp) {
         if (!timestamp) return "ahora";
         const diff = Date.now() - timestamp;
@@ -1098,7 +1097,7 @@
         });
     }
     
-    // ========== AMIGOS (sin cambios) ==========
+    // ========== AMIGOS ==========
     async function sendFriendRequest(targetUid) {
         if (!currentUser.uid || targetUid === currentUser.uid) return;
         try {
@@ -1250,7 +1249,7 @@
         } catch(e) { console.error(e); container.innerHTML = '<div class="empty-message">Error al cargar amigos</div>'; }
     }
     
-    // ========== NOTICIAS (sin cambios) ==========
+    // ========== NOTICIAS ==========
     async function loadNewsFromJSON() {
         const newsContainer = document.getElementById('newsContainer');
         if (!newsContainer) return;
@@ -1317,7 +1316,7 @@
         }
     }
     
-    // ========== CURIOSIDADES (sin cambios) ==========
+    // ========== CURIOSIDADES ==========
     const curiosidadesData = [
         { texto: "El fandom se llama NSWER (pronunciado 'Answer') porque NMIXX responde a los fans.", member: "all" },
         { texto: "NMIXX debutó el 22 de febrero de 2022 con el single 'AD MARE'.", member: "all" },
@@ -1394,7 +1393,7 @@
         });
     }
     
-    // ========== MIEMBROS (sin cambios) ==========
+    // ========== MIEMBROS ==========
     function showMemberModal(memberName) {
         const data = membersData[memberName];
         if (!data) return;
@@ -1426,7 +1425,7 @@
         });
     }
     
-    // ========== EDICIÓN DE PERFIL (sin cambios) ==========
+    // ========== EDICIÓN DE PERFIL ==========
     function canChangeUsername() {
         if (!currentUser.lastUsernameChange) return true;
         const daysPassed = (Date.now() - currentUser.lastUsernameChange) / (1000 * 60 * 60 * 24);
@@ -1473,7 +1472,7 @@
         }
     }
     
-    // ========== NORMAS (sin cambios) ==========
+    // ========== NORMAS ==========
     let isAcceptingRules = false;
     async function showRulesModal(requireAcceptance = false) {
         return new Promise((resolve) => {
@@ -1526,7 +1525,7 @@
         isAcceptingRules = false;
     }
     
-    // ========== NAVEGACIÓN (sin cambios) ==========
+    // ========== NAVEGACIÓN ==========
     function initNavigation() {
         const btns = document.querySelectorAll('.nav-btn');
         const sections = {
@@ -1605,10 +1604,9 @@
     
     let currentFriendTab = 'friends';
     
-    // ========== MÚSICA MEJORADA (con colores verdes y autoplay al seleccionar) ==========
-    // Catálogo con nombres de archivo sin puntos problemáticos (cambia O.O.mp3 por O_O.mp3 si es necesario)
+    // ========== MÚSICA (COMPRA FUNCIONAL Y REPRODUCTOR MP3) ==========
     const songsCatalog = [
-        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, audioUrl: "audio/O_O.mp3", defaultUnlocked: true },   // <-- CAMBIA A O_O.mp3 si usaste ese nombre
+        { id: "song_oo", title: "O.O", artist: "NMIXX", price: 0, audioUrl: "audio/O_O.mp3", defaultUnlocked: true },
         { id: "song_dice", title: "DICE", artist: "NMIXX", price: 50, audioUrl: "audio/DICE.mp3", defaultUnlocked: false },
         { id: "song_lmtl", title: "Love Me Like This", artist: "NMIXX", price: 100, audioUrl: "audio/LoveMeLikeThis.mp3", defaultUnlocked: false },
         { id: "song_party", title: "Party O'Clock", artist: "NMIXX", price: 100, audioUrl: "audio/PartyOClock.mp3", defaultUnlocked: false },
@@ -1618,7 +1616,7 @@
     ];
     
     let audioElement = null;
-    let musicActivated = false; // Se activará al primer clic en un botón de canción
+    let musicActivated = false;
     
     async function loadUserMusicData() {
         if (!currentUser.uid) return;
@@ -1656,16 +1654,12 @@
         if (!audioElement) {
             audioElement = new Audio();
             audioElement.volume = document.getElementById('volumeSlider').value / 100;
-            audioElement.addEventListener('ended', () => {
-                // Siguiente canción automática
-                nextSong();
-            });
+            audioElement.addEventListener('ended', () => nextSong());
             audioElement.addEventListener('error', (e) => {
                 console.error("Error de audio:", e);
-                Swal.fire('Error de reproducción', 'No se pudo cargar el archivo de audio. Revisa que el MP3 exista en la carpeta "audio".', 'error');
+                Swal.fire('Error de reproducción', 'No se pudo cargar el archivo MP3. Revisa que exista en la carpeta "audio".', 'error');
             });
         }
-        // No cargamos ninguna canción todavía; esperamos a que el usuario haga clic en "Seleccionar"
     }
     
     function loadSong(songId, autoplay = true) {
@@ -1675,12 +1669,7 @@
         audioElement.load();
         updateMusicUI();
         if (autoplay && musicActivated) {
-            audioElement.play().catch(e => {
-                console.warn("Autoplay bloqueado, esperando interacción:", e);
-                // Si falla autoplay, mostramos mensaje sutil
-                Swal.fire('Presiona "Reproducir"', 'Haz clic en el botón ▶️ del reproductor para empezar.', 'info');
-                document.getElementById('playPauseBtn').innerHTML = '▶️';
-            });
+            audioElement.play().catch(e => console.warn("Autoplay bloqueado:", e));
             document.getElementById('playPauseBtn').innerHTML = '⏸️';
         } else {
             document.getElementById('playPauseBtn').innerHTML = '▶️';
@@ -1688,14 +1677,10 @@
     }
     
     function togglePlayPause() {
-        if (!musicActivated) {
-            // Si no se ha activado la música, la activamos con esta interacción
-            activateMusic();
-            return;
-        }
+        if (!musicActivated) { activateMusic(); return; }
         if (!audioElement) return;
         if (audioElement.paused) {
-            audioElement.play().catch(e => console.warn(e));
+            audioElement.play();
             document.getElementById('playPauseBtn').innerHTML = '⏸️';
         } else {
             audioElement.pause();
@@ -1704,10 +1689,7 @@
     }
     
     function nextSong() {
-        if (!musicActivated) {
-            activateMusic();
-            return;
-        }
+        if (!musicActivated) { activateMusic(); return; }
         if (!currentUser.unlockedSongs || currentUser.unlockedSongs.length === 0) return;
         const currentIndex = currentUser.unlockedSongs.indexOf(currentUser.currentSong);
         const nextIndex = (currentIndex + 1) % currentUser.unlockedSongs.length;
@@ -1721,15 +1703,13 @@
         if (musicActivated) return;
         musicActivated = true;
         if (!audioElement) initAudioPlayer();
-        // Cargar la canción actual pero no autoplay aún (por si el navegador lo bloquea)
         const currentSongId = currentUser.currentSong;
         const song = songsCatalog.find(s => s.id === currentSongId);
         if (song) {
             audioElement.src = song.audioUrl;
             audioElement.load();
             updateMusicUI();
-            // No llamamos a play() aquí, dejamos que el usuario dé play manualmente
-            Swal.fire('Música activada', 'Ahora puedes seleccionar canciones y usar el reproductor.', 'success');
+            Swal.fire('Música activada', 'Usa los botones del reproductor.', 'success');
         }
         document.getElementById('playPauseBtn').innerHTML = '▶️';
     }
@@ -1741,35 +1721,28 @@
         for (const song of songsCatalog) {
             const isUnlocked = currentUser.unlockedSongs?.includes(song.id);
             const isCurrent = currentUser.currentSong === song.id;
-            let statusText = '';
-            if (isCurrent) statusText = '<span class="song-status current">🎵 SONANDO AHORA</span>';
-            else if (isUnlocked) statusText = '<span class="song-status unlocked">✅ DESBLOQUEADA</span>';
-            else statusText = `<span class="song-status locked">🔒 ${song.price} 💰</span>`;
+            let statusClass = '', statusText = '';
+            if (isCurrent) { statusClass = 'current'; statusText = '🎵 SONANDO AHORA'; }
+            else if (isUnlocked) { statusClass = 'unlocked'; statusText = '✅ DESBLOQUEADA'; }
+            else { statusClass = 'locked'; statusText = `🔒 ${song.price} 💰`; }
             
-            let buttonDisabled = false;
             let buttonText = '';
-            if (isCurrent) {
-                buttonDisabled = true;
-                buttonText = 'Reproduciendo';
-            } else if (isUnlocked) {
-                buttonDisabled = false;
-                buttonText = '🎧 Seleccionar';
-            } else {
-                buttonDisabled = false;
-                buttonText = '💰 Comprar';
-            }
+            let disabled = false;
+            if (isCurrent) { buttonText = 'Reproduciendo'; disabled = true; }
+            else if (isUnlocked) { buttonText = '🎧 Seleccionar'; disabled = false; }
+            else { buttonText = '💰 Comprar'; disabled = false; }
+            
             html += `
                 <div class="song-card">
                     <div class="song-title">${song.title}</div>
-                    <div class="song-price">${song.artist}</div>
-                    ${statusText}
-                    <button class="song-btn" data-id="${song.id}" data-unlocked="${isUnlocked}" ${buttonDisabled ? 'disabled' : ''}>${buttonText}</button>
+                    <div class="song-artist">${song.artist}</div>
+                    <div class="song-status ${statusClass}">${statusText}</div>
+                    <button class="song-btn" data-id="${song.id}" ${disabled ? 'disabled' : ''}>${buttonText}</button>
                 </div>
             `;
         }
         container.innerHTML = html;
         
-        // Asignar eventos
         document.querySelectorAll('#songsContainer .song-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const songId = btn.dataset.id;
@@ -1784,31 +1757,35 @@
                             text: `¿Deseas comprar "${song.title}" por ${song.price} monedas?`,
                             icon: 'question',
                             showCancelButton: true,
-                            confirmButtonText: 'Sí, comprar',
-                            cancelButtonText: 'Cancelar'
+                            confirmButtonText: 'Sí, comprar'
                         });
                         if (confirm.isConfirmed) {
+                            // Descontar monedas
                             currentUser.coins -= song.price;
-                            currentUser.unlockedSongs.push(songId);
+                            // Añadir a la lista de desbloqueadas
+                            if (!currentUser.unlockedSongs.includes(songId)) {
+                                currentUser.unlockedSongs.push(songId);
+                            }
+                            // Guardar en Firebase
                             await database.ref(`users/${currentUser.uid}/coins`).set(currentUser.coins);
                             await database.ref(`users/${currentUser.uid}/music/unlockedSongs`).set(currentUser.unlockedSongs);
+                            // Actualizar UI
                             updateUI();
                             renderStore();
-                            // Activar música si no lo estaba (para que pueda escuchar)
+                            // Activar música si no lo estaba
                             if (!musicActivated) activateMusic();
-                            Swal.fire('¡Comprado!', `Ahora puedes escuchar "${song.title}" sin publicidad.`, 'success');
+                            Swal.fire('¡Comprado!', `"${song.title}" desbloqueada.`, 'success');
                         }
                     } else {
                         Swal.fire('Monedas insuficientes', `Necesitas ${song.price} monedas. Gira la ruleta o participa en el chat.`, 'warning');
                     }
                 } else {
-                    // SELECCIONAR CANCIÓN (ya desbloqueada)
+                    // SELECCIONAR (ya desbloqueada)
                     if (currentUser.currentSong !== songId) {
                         currentUser.currentSong = songId;
                         await database.ref(`users/${currentUser.uid}/music/currentSong`).set(songId);
-                        // Activar música si no lo estaba
                         if (!musicActivated) activateMusic();
-                        loadSong(songId, true); // reproducir automáticamente al seleccionar
+                        loadSong(songId, true);
                         renderStore();
                         Swal.fire('Canción seleccionada', `Ahora suena "${song.title}"`, 'success');
                     } else {
@@ -1824,7 +1801,7 @@
         updateUI(); generateMemberCards(); loadMessages(); loadCuriosities(); loadNewsFromJSON();
         initNavigation(); initDropdown(); initFriendsTabs(); initEmojiPicker(); initCuriosityFilters();
         startFriendsListener(); updateSpinButtonState(); 
-        initAudioPlayer(); // Solo crea el objeto Audio, no carga aún
+        initAudioPlayer();
         document.getElementById("sendBtn").onclick = sendMessage;
         document.getElementById("messageInput").onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
         window.addEventListener('resize', () => resizeCanvas());
@@ -1835,11 +1812,10 @@
         document.getElementById('playPauseBtn').onclick = togglePlayPause;
         document.getElementById('nextSongBtn').onclick = nextSong;
         document.getElementById('volumeSlider').oninput = (e) => { if(audioElement) audioElement.volume = e.target.value / 100; };
-        // El botón "Activar música" ya no es necesario, pero lo ocultamos en CSS
         if (document.getElementById('musicSection').classList.contains('active-section')) renderStore();
     }
     
-    // ========== LOGIN/REGISTRO (sin cambios) ==========
+    // ========== LOGIN/REGISTRO ==========
     let isLoginMode = true;
     const authModal = document.getElementById('authModal');
     const authTitle = document.getElementById('authTitle');
@@ -1898,7 +1874,7 @@
                 });
                 Swal.fire('Éxito', 'Cuenta creada. ¡Bienvenido!', 'success');
                 authModal.style.display = 'none';
-                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias, email, pronoun, lastUsernameChange: Date.now(), rulesAccepted: false, coins: 0, lastSpin: 0 };
+                currentUser = { uid: user.uid, username: nickname, xp: 0, level: 1, bias, email, pronoun, lastUsernameChange: Date.now(), rulesAccepted: false, coins: 0, lastSpin: 0, unlockedSongs: [], currentSong: null };
                 enforceRules();
             } catch (error) { Swal.fire('Error', getFriendlyErrorMessage(error), 'error'); }
         } else {
@@ -1908,9 +1884,9 @@
                 const snapshot = await database.ref(`users/${user.uid}`).once('value');
                 const data = snapshot.val();
                 if (data) {
-                    currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted, coins: data.coins || 0, lastSpin: data.lastSpin || 0 };
+                    currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted, coins: data.coins || 0, lastSpin: data.lastSpin || 0, unlockedSongs: [], currentSong: null };
                 } else {
-                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0 };
+                    currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0, unlockedSongs: [], currentSong: null };
                 }
                 authModal.style.display = 'none';
                 enforceRules();
@@ -1923,9 +1899,9 @@
             const snapshot = await database.ref(`users/${user.uid}`).once('value');
             const data = snapshot.val();
             if (data) {
-                currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email: user.email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted, coins: data.coins || 0, lastSpin: data.lastSpin || 0 };
+                currentUser = { uid: user.uid, username: data.username, xp: data.xp, level: data.level, bias: data.bias, pronoun: data.pronoun, email: user.email, lastUsernameChange: data.lastUsernameChange, rulesAccepted: data.rulesAccepted, coins: data.coins || 0, lastSpin: data.lastSpin || 0, unlockedSongs: [], currentSong: null };
             } else {
-                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0 };
+                currentUser = { uid: user.uid, username: "NSWER_Fan", xp: 0, level: 1, bias: "Lily", email: user.email, pronoun: "No especificado", lastUsernameChange: null, rulesAccepted: false, coins: 0, lastSpin: 0, unlockedSongs: [], currentSong: null };
             }
             authModal.style.display = 'none';
             enforceRules();
